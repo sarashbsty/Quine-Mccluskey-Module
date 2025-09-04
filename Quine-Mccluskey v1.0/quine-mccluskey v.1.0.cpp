@@ -21,6 +21,7 @@ SOFTWARE.
 
 */
 
+// bugs found : after entering minterms input, instead of ending it with -1 but with *1, all the leftover space of array is filled with 0
 
 #include<iostream>
 #include<math.h>
@@ -136,6 +137,23 @@ void display_implicants(){
 		}
 	}
 }
+
+void display_essential_table(int arr[100][100] , int min_terms[] , int min_count){
+	
+	cout<<"    ";
+	for(int i=0;i<min_count;i++) 
+		cout << setw(4) << min_terms[i];
+	
+	cout << "\n" <<string(4+(min_count*4), '-');
+	
+	for(int i = 0; i < prime.count; i++){
+		cout<< "\n" << setw(2) << char('A'+i) <<"| ";
+		for(int x = 0; x < min_count; x++)
+			cout << setw(4) << arr[i][min_terms[x]];
+		
+		cout << "\n" <<string(4+(min_count*4), '-');
+	}
+}
 	
 void group_table(int Mid_terms[], string Binary[], int n_terms, int variables){
 	for(int i = 0; i <= variables; i++){
@@ -248,27 +266,16 @@ void prime_implicants(int variables){
 	prime = temp;
 }
 
-void removeDuplicates(string arr[], int &size) {
-    int newSize = 0;
-
+bool is_exist(string arr[], int size, string item) {
     for (int i = 0; i < size; i++) {
-        bool duplicate = false;
-        for (int j = 0; j < newSize; j++) {
-            if (arr[i] == arr[j]) {
-                duplicate = true;
-                break;
-            }
-        }
-        if (!duplicate) {
-            arr[newSize++] = arr[i];
-        }
+        if (arr[i] == item) 
+            return true;
     }
-
-    size = newSize;
+    return false;
 }
 
-void essential(int min_terms[] , int min_count, string result[100] , int &iterate){
-	int arr[100][100];
+int essential(int arr[100][100] , int min_terms[] , int min_count, string result[100]){
+	
 	//all zero initialize
 	for(int i = 0; i < prime.count; i++)
 		for(int x = 0; x < min_count; x++)
@@ -279,25 +286,11 @@ void essential(int min_terms[] , int min_count, string result[100] , int &iterat
 		for(int x = 0; x < prime.mintermCount[i]; x++)
 			arr[i][prime.minterms[i][x]] = 1;
 	}
-		
-	//display table start
-	cout<<"    ";
-	for(int i=0;i<min_count;i++) 
-		cout << setw(4) << min_terms[i];
 	
-	cout << "\n" <<string(4+(min_count*4), '-');
-	
-	for(int i = 0; i < prime.count; i++){
-		cout<< "\n" << setw(2) << char('A'+i) <<"| ";
-		for(int x = 0; x < min_count; x++)
-			cout << setw(4) << arr[i][min_terms[x]];
-		
-		cout << "\n" <<string(4+(min_count*4), '-');
-	}
-	//display table end
-	
-	int index, ones;
+	//Finding the essential implicant by finding column with only one '1' and the prime implecant in that 1's row
+	int count = 0,index, ones;
 	for(int i = 0; i < min_count; i++){
+		
 		ones = 0;
 		for(int x = 0; x < prime.count; x++){
 			if(arr[x][min_terms[i]] == 1){
@@ -305,30 +298,32 @@ void essential(int min_terms[] , int min_count, string result[100] , int &iterat
 				index = x;
 			}
 		}
-		if(ones == 1)
-			result[iterate++] = prime.binary[index];
+		
+		// checking ones is only 1 and duplicates
+		bool check = is_exist(result, count , prime.binary[index]);
+		if(ones == 1 && check == false) 
+			result[count++] = prime.binary[index];
 	}
 	
-	removeDuplicates(result,iterate); // remove duplicates from the result
+	return count;
 }	
 		
 int main(){
-	int n , min_terms[10000] , min_count = 0, dont_care_count = 0 , temp;
+	int var , essential_table[100][100] , min_terms[10000] , min_count = 0, dont_care_count = 0 , temp;
 	string result[100];
-	int iterate = 0;
 	
 	cout<<"Enter no. of variables : ";
-	cin>>n;
+	cin>>var;
 	
 	cout<<"Enter min terms (-1 to end) : ";
-	while(min_count < pow(2,n)){
+	while(min_count < pow(2,var)){
 		cin>>temp;
 		if(temp == -1) break;
 		min_terms[min_count++] = temp;
 	}
 	
 	cout<<"Enter dont care (-1 to end) : ";
-	while((min_count+dont_care_count) < pow(2,n)){
+	while((min_count+dont_care_count) < pow(2,var)){
 		cin>>temp;
 		if(temp == -1) break;
 		min_terms[min_count + dont_care_count] = temp;
@@ -337,7 +332,7 @@ int main(){
 	
 	int n_terms = min_count + dont_care_count;
 	string binary[10000];
-	for(int i = 0; i < n_terms; i++) binary[i] = ToBinary(min_terms[i],n);
+	for(int i = 0; i < n_terms; i++) binary[i] = ToBinary(min_terms[i],var);
 	
 	
 	cout<<"\n\n"<< min_count<<" Mid terms : "; for(int i=0;i<min_count;i++) cout<<min_terms[i]<<" ";
@@ -345,28 +340,30 @@ int main(){
 	
 	
 	
-	group_table(min_terms,binary,n_terms,n);
+	group_table(min_terms,binary,n_terms,var);
 	
-	int CanReduce = reduceGroups(n);
-	prime_implicants(n); // get prime-implicant from the Uncombineds
+	int CanReduce = reduceGroups(var);
+	prime_implicants(var); // get prime-implicant from the Uncombineds
 	cout << "\n\nInitial Grouping:\n";
-    displayGroups(n);
+    displayGroups(var);
 	
 	
 	int i = 1;
     while(CanReduce){
-		for (int i = 0; i <= n; i++) group[i] = reduced[i];
-        CanReduce = reduceGroups(n);
-		prime_implicants(n);
+		for (int i = 0; i <= var; i++) group[i] = reduced[i];
+        CanReduce = reduceGroups(var);
+		prime_implicants(var);
 		
 		cout << "\n" << i++ <<"th Reduction: \n";
-        displayGroups(n);	
+        displayGroups(var);	
     }	
 	
 	display_implicants();
 	
-	cout<<"\n\n\n Table to find Essential prime Implicants: \n\n";
-	essential(min_terms,min_count,result,iterate);
+	int iterate = essential(essential_table, min_terms, min_count, result);
+	
+	cout<<"\n\n\nTable to find Essential prime Implicants: \n\n";
+	display_essential_table(essential_table,min_terms,min_count);
 	
 	cout<<"\n\nEssential Prime Implicants : ";
 	for(int i = 0; i < iterate; i++)
@@ -374,7 +371,7 @@ int main(){
 	cout<<endl;
 	
 	cout<<"\nresult : Y ";
-	for(int i = 0; i < n; i++)
+	for(int i = 0; i < var; i++)
 		cout << (i ? "," : "(") << char('A'+i);    //print: A,B,C,....
 	for(int i = 0; i < iterate; i++)
 		cout << (i ? " + " : ") = ") << Expression(result[i]);
