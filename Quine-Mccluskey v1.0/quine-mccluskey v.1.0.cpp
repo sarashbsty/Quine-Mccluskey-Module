@@ -122,6 +122,20 @@ void displayGroups(int variables) {
 	// separator line at end
     cout << string(line, '-') << "\n";
 }
+
+void display_implicants(){
+	cout<<"\n\nPrime Implicants:";
+	cout<<"\n\nBinary \t\tminterms\n";
+	cout << string(25, '-');
+	for(int i = 0; i < prime.count; i++){
+		cout<<"\n"<<prime.binary[i]<<"\t  |\t";
+		for(int j = 0; j < prime.mintermCount[i]; j++){
+			cout<<prime.minterms[i][j];
+			if(j < prime.mintermCount[i]-1)
+				cout<<",";
+		}
+	}
+}
 	
 void group_table(int Mid_terms[], string Binary[], int n_terms, int variables){
 	for(int i = 0; i <= variables; i++){
@@ -269,16 +283,16 @@ void essential(int min_terms[] , int min_count, string result[100] , int &iterat
 	//display table start
 	cout<<"    ";
 	for(int i=0;i<min_count;i++) 
-		cout<<setw(2)<<min_terms[i]<<"  ";
+		cout << setw(4) << min_terms[i];
 	
-	cout << "\n" <<string(6+(min_count*4), '-');
+	cout << "\n" <<string(4+(min_count*4), '-');
 	
-	for(int i =0; i < prime.count; i++){
+	for(int i = 0; i < prime.count; i++){
 		cout<< "\n" << setw(2) << char('A'+i) <<"| ";
 		for(int x = 0; x < min_count; x++)
-			cout<<setw(2)<<arr[i][min_terms[x]]<<"  ";
+			cout << setw(4) << arr[i][min_terms[x]];
 		
-		cout << "\n" <<string(6+(min_count*4), '-');
+		cout << "\n" <<string(4+(min_count*4), '-');
 	}
 	//display table end
 	
@@ -297,21 +311,7 @@ void essential(int min_terms[] , int min_count, string result[100] , int &iterat
 	
 	removeDuplicates(result,iterate); // remove duplicates from the result
 }	
-	
-void implicants_display(){
-	cout<<"\n\nPrime Implicants:";
-	cout<<"\n\nBinary \t\tminterms\n";
-	cout << string(25, '-');
-	for(int i = 0; i < prime.count; i++){
-		cout<<"\n"<<prime.binary[i]<<"\t  |\t";
-		for(int j = 0; j < prime.mintermCount[i]; j++){
-			cout<<prime.minterms[i][j];
-			if(j < prime.mintermCount[i]-1)
-				cout<<",";
-		}
-	}
-}
-	
+		
 int main(){
 	int n , min_terms[10000] , min_count = 0, dont_care_count = 0 , temp;
 	string result[100];
@@ -363,7 +363,7 @@ int main(){
         displayGroups(n);	
     }	
 	
-	implicants_display();
+	display_implicants();
 	
 	cout<<"\n\n\n Table to find Essential prime Implicants: \n\n";
 	essential(min_terms,min_count,result,iterate);
