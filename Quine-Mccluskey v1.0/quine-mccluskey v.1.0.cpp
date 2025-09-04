@@ -71,6 +71,14 @@ string Expression(const string &binary) {
     return expr;
 }
 
+bool is_exist(string arr[], int size, string item) {
+    for (int i = 0; i < size; i++) {
+        if (arr[i] == item) 
+            return true;
+    }
+    return false;
+}
+
 int count_1s(const string &binary){
 	int count = 0;
 	for(int i = 0; i < binary.size(); i++)
@@ -78,7 +86,8 @@ int count_1s(const string &binary){
 	return count;
 }
 
-void displayGroups(int variables) {
+void displayGroups(int variables){
+	
 	int line = 2+8+2+20+2+20+1;
     
 	// separator line at start
@@ -99,7 +108,7 @@ void displayGroups(int variables) {
 			
 			cout << left <<setw(2)  << "|";
             if (j == 0) 
-                cout << setw(8) << group[i].No; // print group number only once
+                cout << setw(8) << i ; // print group number only once
             else 
                 cout << setw(8) << " ";
 			cout << setw(2) << "|";
@@ -174,10 +183,8 @@ void group_table(int Mid_terms[], string Binary[], int n_terms, int variables){
 int reduceGroups(int variables) {
     int newCount = 0;
 	
-    for (int i = 0; i <= variables; i++) {
-        reduced[i].No = i;
+    for (int i = 0; i <= variables; i++)
         reduced[i].count = 0;
-    }
 
     // Compare group[i] with group[i+1]
     for (int i = 0; i < variables; i++) {
@@ -224,8 +231,8 @@ int reduceGroups(int variables) {
 }
 		
 void prime_implicants(int variables){
-	 for (int i = 0; i <= variables; i++) {
-        if (group[i].count == 0) continue; // skip empty groups
+	for (int i = 0; i <= variables; i++) {
+		if (group[i].count == 0) continue; // skip empty groups
 
         for (int j = 0; j < group[i].count; j++){
 			
@@ -241,20 +248,21 @@ void prime_implicants(int variables){
 				prime.count++;
 			}
         }
-	 }
+	}
 	 
 	//clearing out commons
 	table2 temp = {0}; 
-	 int duplicate;
-	 for(int i = 0; i < prime.count; i++){
-		duplicate = 0;
+	for(int i = 0; i < prime.count; i++){
+		 
+		int duplicate = 0;
 		for(int j = 0; j < temp.count; j++){
-			//if(isequal(prime.binary[i],temp.binary[j])){
+			
 			if(temp.binary[j] == prime.binary[i]){	
 				duplicate++;
 				break;
 			}
 		}
+		
 		if(duplicate == 0){
 			temp.binary[temp.count] = prime.binary[i];
 			for(int x = 0; x < prime.mintermCount[i]; x++)
@@ -262,16 +270,9 @@ void prime_implicants(int variables){
 			temp.mintermCount[temp.count] = prime.mintermCount[i];
 			temp.count++;
 		}
-	 }
+		
+	}
 	prime = temp;
-}
-
-bool is_exist(string arr[], int size, string item) {
-    for (int i = 0; i < size; i++) {
-        if (arr[i] == item) 
-            return true;
-    }
-    return false;
 }
 
 int essential(int arr[100][100] , int min_terms[] , int min_count, string result[100]){
