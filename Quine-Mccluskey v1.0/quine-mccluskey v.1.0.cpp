@@ -28,8 +28,7 @@ SOFTWARE.
 #include <iomanip>
 using namespace std;
 
-struct table1 {
-    int No;                         
+struct table1 {                   
     int count;                       
     string binary[1000];             
     int minterms[1000][50];          
@@ -166,21 +165,23 @@ void display_essential_table(int arr[100][100] , int min_terms[] , int min_count
 	
 void group_table(int Mid_terms[], string Binary[], int n_terms, int variables){
 	for(int i = 0; i <= variables; i++){
-		group[i].No = i;
-		int index = 0;
+		group[i].count = 0; // initialize
+		
 		for(int j = 0; j < n_terms; j++){
+			
 			if(count_1s(Binary[j]) == i){ 
+			
+				int &index = group[i].count;
 				group[i].binary[index] = Binary[j];
 				group[i].minterms[index][0] = Mid_terms[j];
 				group[i].mintermCount[index] = 1;
 				index++;
 			}
 		}
-		group[i].count = index;
 	}
 }
 	
-int reduceGroups(int variables) {
+int reduceGroups(int variables){
     int newCount = 0;
 	
     for (int i = 0; i <= variables; i++)
@@ -254,8 +255,7 @@ void prime_implicants(int variables){
 				index++;
 			}
         }
-	}
-	
+	}	
 }
 
 int essential(int arr[100][100] , int min_terms[] , int min_count, string result[100]){
