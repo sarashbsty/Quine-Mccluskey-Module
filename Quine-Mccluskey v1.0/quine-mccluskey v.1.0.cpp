@@ -28,7 +28,7 @@ SOFTWARE.
 #include <iomanip>
 using namespace std;
 
-struct table1 {                   
+struct table{                   
     int count;                       
     string binary[1000];             
     int minterms[1000][50];          
