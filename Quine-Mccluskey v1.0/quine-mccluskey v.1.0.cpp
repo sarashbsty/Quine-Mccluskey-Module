@@ -34,14 +34,7 @@ struct table1 {
     int minterms[1000][50];          
     int mintermCount[1000];          
     bool combined[1000];             
-} group[100], reduced[100];
-
-struct table2{
-	int count;
-	string binary[1000]; 
-	int minterms[1000][50];
-	int mintermCount[1000]; 
-} prime;
+} group[100], reduced[100] , prime;
 
 string ToBinary(int minterm, int variables) {
     string binary = "";
