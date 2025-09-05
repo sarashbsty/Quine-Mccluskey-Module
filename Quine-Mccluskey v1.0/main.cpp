@@ -26,114 +26,20 @@ SOFTWARE.
 #include<iostream>
 #include<math.h>
 #include <iomanip>
-#include "helper.h" // for ToBinary() , Expression(), is_exist(), count_1s
-using namespace std;
 
-struct table{                   
+#include "helper.h"
+
+struct quine{                   
     int count;                       
     string binary[1000];             
     int minterms[1000][50];          
     int mintermCount[1000];          
-    bool combined[1000];             
-} group[100], reduced[100] , prime;
+    bool combined[1000];   	
+};
 
-void displayGroups(int variables){
-	
-	int line = 2+8+2+20+2+20+1;
-    
-	// separator line at start
-	cout << string(line, '-') << "\n";
-	
-	cout << left << setw(2)  << "|";
-    cout << setw(8)  << "Group"   << setw(2) << "|"; 
-	cout << setw(20) << "MinTerm" << setw(2) << "|";
-	cout << setw(20) << "Binary"  << "|\n";
-         
-    for (int i = 0; i <= variables; i++) {
-        if (group[i].count == 0) continue; // skip empty groups
-		
-		// separator line before every group
-		cout << string(line, '-') << "\n";  
-		
-        for (int j = 0; j < group[i].count; j++) {
-			
-			cout << left <<setw(2)  << "|";
-            if (j == 0) 
-                cout << setw(8) << i ; // print group number only once
-            else 
-                cout << setw(8) << " ";
-			cout << setw(2) << "|";
+using namespace std;
 
-            // print all minterms associated with this binary
-            string mintermStr = "";
-            for (int k = 0; k < group[i].mintermCount[j]; k++) {
-                mintermStr += to_string(group[i].minterms[j][k]);
-                if (k < group[i].mintermCount[j] - 1) mintermStr += ","; 
-            }
-			if(group[i].combined[j] == false) mintermStr += " (x) ";
-
-            cout << setw(20) << mintermStr;
-			cout << setw(2) << "|";
-			cout << setw(20) << group[i].binary[j];
-			cout << "|\n";
-                 
-        }        
-    }
-	
-	// separator line at end
-    cout << string(line, '-') << "\n";
-}
-
-void display_implicants(){
-	cout<<"\n\nPrime Implicants:";
-	cout<<"\n\nBinary \t\tminterms\n";
-	cout << string(25, '-');
-	for(int i = 0; i < prime.count; i++){
-		cout<<"\n"<<prime.binary[i]<<"\t  |\t";
-		for(int j = 0; j < prime.mintermCount[i]; j++){
-			cout<<prime.minterms[i][j];
-			if(j < prime.mintermCount[i]-1)
-				cout<<",";
-		}
-	}
-}
-
-void display_essential_table(int arr[100][100] , int min_terms[] , int min_count){
-	
-	cout<<"    ";
-	for(int i=0;i<min_count;i++) 
-		cout << setw(4) << min_terms[i];
-	
-	cout << "\n" <<string(4+(min_count*4), '-');
-	
-	for(int i = 0; i < prime.count; i++){
-		cout<< "\n" << setw(2) << char('A'+i) <<"| ";
-		for(int x = 0; x < min_count; x++)
-			cout << setw(4) << arr[i][min_terms[x]];
-		
-		cout << "\n" <<string(4+(min_count*4), '-');
-	}
-}
-	
-void group_table(int Mid_terms[], string Binary[], int n_terms, int variables){
-	for(int i = 0; i <= variables; i++){
-		group[i].count = 0; // initialize
-		
-		for(int j = 0; j < n_terms; j++){
-			
-			if(count_1s(Binary[j]) == i){ 
-			
-				int &index = group[i].count;
-				group[i].binary[index] = Binary[j];
-				group[i].minterms[index][0] = Mid_terms[j];
-				group[i].mintermCount[index] = 1;
-				index++;
-			}
-		}
-	}
-}
-	
-int reduceGroups(int variables){
+int reduce_table(quine group[] , quine reduced[] , int variables){
     int newCount = 0;
 	
     for (int i = 0; i <= variables; i++)
@@ -182,8 +88,8 @@ int reduceGroups(int variables){
 
     return newCount; // how many min terms combined. 0 -> no min terms combined means no futher reduction
 }
-		
-void prime_implicants(int variables){
+
+void prime_implicants(quine group[] , quine &prime , int variables){
 	
 	for (int i = 0; i <= variables; i++){
 		if (group[i].count == 0) continue; // skip empty groups
@@ -210,7 +116,25 @@ void prime_implicants(int variables){
 	}	
 }
 
-int essential(int arr[100][100] , int min_terms[] , int min_count, string result[100]){
+void fill_group_table(quine group[] , int Mid_terms[], string Binary[], int n_terms, int variables){
+	for(int i = 0; i <= variables; i++){
+		group[i].count = 0; // initialize
+		
+		for(int j = 0; j < n_terms; j++){
+			
+			if(count_1s(Binary[j]) == i){ 
+			
+				int &index = group[i].count;
+				group[i].binary[index] = Binary[j];
+				group[i].minterms[index][0] = Mid_terms[j];
+				group[i].mintermCount[index] = 1;
+				index++;
+			}
+		}
+	}
+}
+
+int essential_implicants(quine &prime , int arr[100][100] , int min_terms[] , int min_count, string result[100]){
 	
 	//all zero initialize
 	for(int i = 0; i < prime.count; i++)
@@ -242,12 +166,90 @@ int essential(int arr[100][100] , int min_terms[] , int min_count, string result
 	}
 	
 	return count;
-}	
+}
+
+void display_implicants(quine &prime){
+	cout<<"\n\nPrime Implicants:";
+	cout<<"\n\nBinary \t\tminterms\n";
+	cout << string(25, '-');
+	for(int i = 0; i < prime.count; i++){
+		cout<<"\n"<<prime.binary[i]<<"\t  |\t";
+		for(int j = 0; j < prime.mintermCount[i]; j++){
+			cout<<prime.minterms[i][j];
+			if(j < prime.mintermCount[i]-1)
+				cout<<",";
+		}
+	}
+}
+
+void displayGroups(quine group[] , int variables){
+	
+	int line = 2+8+2+20+2+20+1;
+    
+	// separator line at start
+	cout << string(line, '-') << "\n";
+	
+	cout << left << setw(2)  << "|";
+    cout << setw(8)  << "Group"   << setw(2) << "|"; 
+	cout << setw(20) << "MinTerm" << setw(2) << "|";
+	cout << setw(20) << "Binary"  << "|\n";
+         
+    for (int i = 0; i <= variables; i++) {
+        if (group[i].count == 0) continue; // skip empty groups
 		
+		// separator line before every group
+		cout << string(line, '-') << "\n";  
+		
+        for (int j = 0; j < group[i].count; j++) {
+			
+			cout << left <<setw(2)  << "|";
+            if (j == 0) 
+                cout << setw(8) << i ; // print group number only once
+            else 
+                cout << setw(8) << " ";
+			cout << setw(2) << "|";
+
+            // print all minterms associated with this binary
+            string mintermStr = "";
+            for (int k = 0; k < group[i].mintermCount[j]; k++) {
+                mintermStr += to_string(group[i].minterms[j][k]);
+                if (k < group[i].mintermCount[j] - 1) mintermStr += ","; 
+            }
+			if(group[i].combined[j] == false) mintermStr += " (x) ";
+
+            cout << setw(20) << mintermStr;
+			cout << setw(2) << "|";
+			cout << setw(20) << group[i].binary[j];
+			cout << "|\n";
+                 
+        }        
+    }
+	
+	// separator line at end
+    cout << string(line, '-') << "\n";
+}
+
+void display_essential_table(quine &prime , int arr[100][100] , int min_terms[] , int min_count){
+	
+	cout<<"    ";
+	for(int i=0;i<min_count;i++) 
+		cout << setw(4) << min_terms[i];
+	
+	cout << "\n" <<string(4+(min_count*4), '-');
+	
+	for(int i = 0; i < prime.count; i++){
+		cout<< "\n" << setw(2) << char('A'+i) <<"| ";
+		for(int x = 0; x < min_count; x++)
+			cout << setw(4) << arr[i][min_terms[x]];
+		
+		cout << "\n" <<string(4+(min_count*4), '-');
+	}
+}
+					
 int main(){
 	int var , essential_table[100][100] , min_terms[10000] , min_count = 0, dont_care_count = 0 , temp;
-	string result[100];
 	
+	// data input start
 	cout<<"Enter no. of variables : ";
 	cin>>var;
 	
@@ -274,32 +276,36 @@ int main(){
 	cout<<"\n\n"<< min_count<<" Mid terms : "; for(int i=0;i<min_count;i++) cout<<min_terms[i]<<" ";
 	cout<< "\n" << dont_care_count <<" Dont care : "; for(int i = min_count; i < n_terms; i++) cout<<min_terms[i]<<" ";
 	
+	//data input stops
 	
+	string result[100];
 	
-	group_table(min_terms,binary,n_terms,var);
+	static quine group[100], reduced[100] , prime;
 	
-	int CanReduce = reduceGroups(var);
-	prime_implicants(var); // get prime-implicant from the Uncombineds
+	fill_group_table(group, min_terms, binary, n_terms, var);
+	
+	int CanReduce = reduce_table(group, reduced, var);
+	prime_implicants(group, prime, var); // get prime-implicant from the Uncombineds
 	cout << "\n\nInitial Grouping:\n";
-    displayGroups(var);
+    displayGroups(group, var);
 	
 	
 	int i = 1;
     while(CanReduce){
 		for (int i = 0; i <= var; i++) group[i] = reduced[i];
-        CanReduce = reduceGroups(var);
-		prime_implicants(var);
+        CanReduce = reduce_table(group, reduced, var);
+		prime_implicants(group, prime, var);
 		
 		cout << "\n" << i++ <<"th Reduction: \n";
-        displayGroups(var);	
+        displayGroups(group, var);	
     }	
 	
-	display_implicants();
+	display_implicants(prime);
 	
-	int iterate = essential(essential_table, min_terms, min_count, result);
+	int iterate = essential_implicants(prime, essential_table, min_terms, min_count, result);
 	
 	cout<<"\n\n\nTable to find Essential prime Implicants: \n\n";
-	display_essential_table(essential_table,min_terms,min_count);
+	display_essential_table(prime, essential_table, min_terms, min_count);
 	
 	cout<<"\n\nEssential Prime Implicants : ";
 	for(int i = 0; i < iterate; i++)
@@ -312,7 +318,7 @@ int main(){
 	for(int i = 0; i < iterate; i++)
 		cout << (i ? " + " : ") = ") << Expression(result[i]);
 	cout<<"\n\n";
-	
+
 	return 0;
 }
 	
