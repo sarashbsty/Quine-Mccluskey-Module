@@ -21,8 +21,8 @@ void display_essential_table(const quine &prime , string arr[100][100] , unorder
 	
 	for(int i = 0; i < row; i++){
 		
-		string str = prime.binary[i] + " [" + char('A'+i) + "]  | ";
-		cout<< "\n|  " << str;
+		string str = prime.binary[i] + " [" + char('A'+i) + "]  ";
+		cout<< "\n| " << setw(12) <<str << "| ";
 		for(int j = 0; j < col; j++)
 			cout << setw(s) << arr[i][j];
 		cout << " |\n" <<string(18+line , '-');
