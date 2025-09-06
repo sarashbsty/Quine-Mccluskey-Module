@@ -26,13 +26,13 @@ SOFTWARE.
 #include<iostream>
 #include<math.h>
 #include <iomanip>
-
+#include <unordered_map>
 #include "quine.h" // quine struture and its functions
 #include "helper.h"
 using namespace std;
-					
+
 int main(){
-	int var , essential_table[100][100] , min_terms[10000] , min_count = 0, dont_care_count = 0 , temp;
+	int var , min_terms[10000] , min_count = 0, dont_care_count = 0 , temp;
 	
 	// data input start
 	cout<<"Enter no. of variables : ";
@@ -63,7 +63,7 @@ int main(){
 	
 	//data input stops
 	
-	string result[100];
+	string result[100] , essential_table[100][100];
 	static quine group[100], reduced[100] , prime;  // stack memory very low (8mb). group[100] -> 30mb
 	
 	fill_group_table(group, min_terms, binary, n_terms, var);
@@ -86,10 +86,16 @@ int main(){
 	
 	display_implicants(prime);
 	
-	int iterate = essential_implicants(prime, essential_table, min_terms, min_count, result);
+	unordered_map<int, int> dict , rev_dict; // reverse dict;
+	for(int i = 0; i < min_count; i++){
+		dict[min_terms[i]] = i;
+		rev_dict[i] = min_terms[i];
+	}
+	
+	int iterate = essential_implicants(prime, essential_table, dict, result);
 	
 	cout<<"\n\n\nTable to find Essential prime Implicants: \n\n";
-	display_essential_table(prime, essential_table, min_terms, min_count);
+	display_essential_table(prime, essential_table, rev_dict);
 	
 	cout<<"\n\nEssential Prime Implicants : ";
 	for(int i = 0; i < iterate; i++)
@@ -105,7 +111,3 @@ int main(){
 	
 	return 0;
 }
-	
-			
-	
-	

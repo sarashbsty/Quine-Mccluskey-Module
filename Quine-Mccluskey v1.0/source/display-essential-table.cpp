@@ -1,23 +1,31 @@
 #include<iostream>
+#include <unordered_map>
 #include<iomanip>
 #include "quine.h" // quine struture
 using namespace std;
 
-//check for improvemnt
-
-void display_essential_table(const quine &prime , int arr[100][100] , int min_terms[] , int min_count){
+void display_essential_table(const quine &prime , string arr[100][100] , unordered_map<int, int> dict){
 	
-	cout<<"    ";
-	for(int i=0;i<min_count;i++) 
-		cout << setw(4) << min_terms[i];
+	int col = dict.size();
+	int row = prime.count;
+	int s = 5;
+	int line = col*s;
 	
-	cout << "\n" <<string(4+(min_count*4), '-');
+	cout << string(18+line , '-') << "\n";
 	
-	for(int i = 0; i < prime.count; i++){
-		cout<< "\n" << setw(2) << char('A'+i) <<"| ";
-		for(int x = 0; x < min_count; x++)
-			cout << setw(4) << arr[i][min_terms[x]];
+	cout<<"|                ";  // 13 spaces
+	for(int i = 0; i < col; i++) 
+		cout << setw(s) << dict[i];
+	
+	cout << "|\n" <<string(18+line , '-');
+	
+	for(int i = 0; i < row; i++){
 		
-		cout << "\n" <<string(4+(min_count*4), '-');
+		string str = prime.binary[i] + " [" + char('A'+i) + "]  | ";
+		cout<< "\n|  " << str;
+		for(int j = 0; j < col; j++)
+			cout << setw(s) << arr[i][j];
+		cout << " |\n" <<string(18+line , '-');
 	}
+	
 }
