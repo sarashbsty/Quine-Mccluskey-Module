@@ -38,16 +38,31 @@ int main(){
 	cout<<"Enter no. of variables : ";
 	cin>>var;
 	
-	cout<<"Enter min terms (-1 to end) : ";
-	while(min_count < pow(2,var)){
-		cin>>temp;
-		if(temp == -1) break;
+	cout << "Enter min terms (-1 to end) : ";
+	while (min_count < pow(2, var)) {
+		if (!(cin >> temp)) {  
+			// input failed
+			cout << "Invalid input! Try again.\n";
+			cin.clear(); // clear failbit
+			cin.ignore(numeric_limits<streamsize>::max(), '\n'); // discard bad input
+			continue; // ask again
+		}
+
+		if (temp == -1) break;
 		min_terms[min_count++] = temp;
 	}
+
 	
 	cout<<"Enter dont care (-1 to end) : ";
 	while((min_count+dont_care_count) < pow(2,var)){
-		cin>>temp;
+		if (!(cin >> temp)) {  
+			// input failed
+			cout << "Invalid input! Try again.\n";
+			cin.clear(); // clear failbit
+			cin.ignore(numeric_limits<streamsize>::max(), '\n'); // discard bad input
+			continue; // ask again
+		}
+		
 		if(temp == -1) break;
 		min_terms[min_count + dont_care_count] = temp;
 		dont_care_count++;
