@@ -1,7 +1,7 @@
 #pragma once
-using namespace std;
+//note: is_exist() not fully sure
 
-string ToBinary(int minterm, int variables);
-int count_1s(const string &binary);
-string Expression(const string &binary);
-bool is_exist(string arr[], int size, string item) ;
+void ToBinary(char binary[][100] , int minterms[] , int ,int);
+int count_1s(char binary[]);
+void Expression(char binary[]);
+int is_exist(char arr[][100], const char item[] , int);

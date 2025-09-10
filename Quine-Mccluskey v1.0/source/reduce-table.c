@@ -1,6 +1,5 @@
-#include<iostream>
+#include<string.h>
 #include "quine.h" // quine struture
-using namespace std;
 
 int reduce_table(quine group[] , quine reduced[] , int variables){
     int newCount = 0;
@@ -23,11 +22,10 @@ int reduce_table(quine group[] , quine reduced[] , int variables){
                 }
 
                 if (diff == 1) {
-                    string newBinary = group[i].binary[a];
-                    newBinary[pos] = '-';
 					
 					int idx = reduced[i].count;
-					reduced[i].binary[idx] = newBinary;
+					strcpy(reduced[i].binary[idx] , group[i].binary[a]);
+					reduced[i].binary[idx][pos] = '-';
                     
                     // Merge minterm
                     int mCount = 0;
@@ -37,11 +35,11 @@ int reduce_table(quine group[] , quine reduced[] , int variables){
                         reduced[i].minterms[idx][mCount++] = group[i+1].minterms[b][m];
 
                     reduced[i].mintermCount[idx] = mCount;
-                    reduced[i].combined[idx] = false;
+                    reduced[i].combined[idx] = 0;
                     reduced[i].count++;
 
-                    group[i].combined[a] = true;
-                    group[i+1].combined[b] = true;
+                    group[i].combined[a] = 1;
+                    group[i+1].combined[b] = 1;
 
                     newCount++;
                 }

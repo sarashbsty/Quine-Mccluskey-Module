@@ -23,69 +23,63 @@ SOFTWARE.
 
 // bugs found : after entering minterms input, instead of ending it with -1 but with *1, all the leftover space of array is filled with 0
 
-#include<iostream>
-#include<math.h>
-#include <iomanip>
-#include <unordered_map>
-#include "quine.h" // quine struture and its functions
-#include "helper.h"
-using namespace std;
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
+#include<stdio.h>
+#include<math.h>
+#include "quine.h"
+#include "helper.h"
+					
 int main(){
+	
+	#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+	#endif
+	
 	int var , min_terms[10000] , min_count = 0, dont_care_count = 0 , temp;
 	
 	// data input start
-	cout<<"Enter no. of variables : ";
-	cin>>var;
+	printf("Enter no. of variables : ");
+	scanf("%d" ,&var);
 	
-	cout << "Enter min terms (-1 to end) : ";
-	while (min_count < pow(2, var)) {
-		if (!(cin >> temp)) {  
-			// input failed
-			cout << "Invalid input! Try again.\n";
-			cin.clear(); // clear failbit
-			cin.ignore(numeric_limits<streamsize>::max(), '\n'); // discard bad input
-			continue; // ask again
-		}
-
-		if (temp == -1) break;
+	printf("Enter min terms (-1 to end) : ");
+	while(min_count < pow(2,var)){
+		scanf("%d",&temp);
+		if(temp == -1) break;
 		min_terms[min_count++] = temp;
 	}
-
 	
-	cout<<"Enter dont care (-1 to end) : ";
+	printf("Enter dont care (-1 to end) : ");
 	while((min_count+dont_care_count) < pow(2,var)){
-		if (!(cin >> temp)) {  
-			// input failed
-			cout << "Invalid input! Try again.\n";
-			cin.clear(); // clear failbit
-			cin.ignore(numeric_limits<streamsize>::max(), '\n'); // discard bad input
-			continue; // ask again
-		}
-		
+		scanf("%d",&temp);
 		if(temp == -1) break;
 		min_terms[min_count + dont_care_count] = temp;
 		dont_care_count++;
 	}
 	
 	int n_terms = min_count + dont_care_count;
-	string binary[10000];
-	for(int i = 0; i < n_terms; i++) binary[i] = ToBinary(min_terms[i],var);
+	char binary[1000][100];
+	ToBinary(binary ,min_terms, n_terms ,var);
 	
+	printf("\n\n%d Mid terms : ",min_count); 
+	for(int i=0;i<min_count;i++) 
+		printf("%d ",min_terms[i]);
 	
-	cout<<"\n\n"<< min_count<<" Mid terms : "; for(int i=0;i<min_count;i++) cout<<min_terms[i]<<" ";
-	cout<< "\n" << dont_care_count <<" Dont care : "; for(int i = min_count; i < n_terms; i++) cout<<min_terms[i]<<" ";
-	
+	printf("\n%d Dont care  : ",dont_care_count); 
+	for(int i = min_count; i < n_terms; i++) 
+		printf("%d ",min_terms[i]);
+		
 	//data input stops
 	
-	string result[100] , essential_table[100][100];
 	static quine group[100], reduced[100] , prime;  // stack memory very low (8mb). group[100] -> 30mb
 	
 	fill_group_table(group, min_terms, binary, n_terms, var);
 	
 	int CanReduce = reduce_table(group, reduced, var);
-	prime_implicants(group, prime, var); // get prime-implicant from the Uncombineds
-	cout << "\n\nInitial Grouping:\n";
+	prime_implicants(group, &prime, var); // get prime-implicant from the Uncombineds
+	printf("\n\nInitial Grouping:\n");
     displayGroups(group, var);
 	
 	
@@ -93,36 +87,39 @@ int main(){
     while(CanReduce){
 		for (int i = 0; i <= var; i++) group[i] = reduced[i];
         CanReduce = reduce_table(group, reduced, var);
-		prime_implicants(group, prime, var);
+		prime_implicants(group, &prime, var);
 		
-		cout << "\n" << i++ <<"th Reduction: \n";
+		printf("\n%dth Reduction: \n" , i++);
         displayGroups(group, var);	
     }	
 	
-	display_implicants(prime);
+	printf("\n");
+	display_implicants(&prime);
 	
-	unordered_map<int, int> dict , rev_dict; // reverse dict;
-	for(int i = 0; i < min_count; i++){
-		dict[min_terms[i]] = i;
-		rev_dict[i] = min_terms[i];
+	char result[1000][100];
+	char essential_table[100][100][6];
+	
+	int iterate = essential_implicants(&prime, essential_table, min_terms, min_count, result);
+	
+	printf("\n\n\nTable to find Essential prime Implicants: \n");
+	display_essential_table(&prime, essential_table, min_terms, min_count);
+	
+	printf("\n\nEssential Prime Implicants : ");
+	for(int i = 0; i < iterate; i++)
+		printf("%s  ", result[i]);
+	printf("\n");
+	
+	printf("\nresult : Y (");
+	for(int i = 0; i < var; i++){
+		printf("%c" , (char)('A'+i));
+		if(i < var-1) printf(",");
+		else printf(") = ");
 	}
 	
-	int iterate = essential_implicants(prime, essential_table, dict, result);
-	
-	cout<<"\n\n\nTable to find Essential prime Implicants: \n\n";
-	display_essential_table(prime, essential_table, rev_dict);
-	
-	cout<<"\n\nEssential Prime Implicants : ";
-	for(int i = 0; i < iterate; i++)
-		cout<<result[i]<<"  ";
-	cout<<endl;
-	
-	cout<<"\nresult : Y ";
-	for(int i = 0; i < var; i++)
-		cout << (i ? "," : "(") << char('A'+i);    //print: A,B,C,....
-	for(int i = 0; i < iterate; i++)
-		cout << (i ? " + " : ") = ") << Expression(result[i]);
-	cout<<"\n\n";
-	
+	for(int i = 0; i < iterate; i++){
+		Expression(result[i]);
+		if(i < iterate-1) printf(" + ");
+	}
+	printf("\n\n");
 	return 0;
 }
