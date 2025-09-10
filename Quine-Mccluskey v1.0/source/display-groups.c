@@ -33,7 +33,7 @@ void displayGroups(quine group[] , int variables){
 				offset += written;
             }
 					
-			char *symbol = (group[i].combined[j] == 0) ? "❌" : "✅";  // in conditional the symbols decay to char* type
+			char *symbol = (group[i].combined[j] == 0) ? "   ❌" : "   ✅";  // in conditional the symbols decay to char* type
 			if(j == 0)
 				printf("| %-5d | %-20s | %-15s | %-9s |", i , str , group[i].binary[j] , symbol);
 			else
