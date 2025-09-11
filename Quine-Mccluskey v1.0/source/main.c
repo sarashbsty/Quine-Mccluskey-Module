@@ -39,25 +39,17 @@ int main() {
     // Data input
     printf("Enter no. of variables: ");
     scanf("%d", &var);
+	
+	int c;
+    while ((c = getchar()) != '\n' && c != EOF);
     
-    printf("Enter min terms (-1 to end): ");
-    while (min_count < pow(2, var)) {
-        scanf("%d", &temp);
-        if (temp == -1) break;
-        min_terms[min_count++] = temp;
-    }
-    
-    printf("Enter dont care (-1 to end): ");
-    while ((min_count + dont_care_count) < pow(2, var)) {
-        scanf("%d", &temp);
-        if (temp == -1) break;
-        min_terms[min_count + dont_care_count] = temp;
-        dont_care_count++;
-    }
-    
+    printf("Enter min terms : ");
+	min_count = get_minterms(min_terms , 0 , pow(2, var));
+	
+	printf("Enter dont care : ");
+	dont_care_count = get_minterms(min_terms , min_count , pow(2, var));
+	  
     int n_terms = min_count + dont_care_count;
-    char binary[1000][100];
-    ToBinary(binary, min_terms, n_terms, var);
     
     printf("\n\n%d Min terms: ", min_count); 
     for (int i = 0; i < min_count; i++) 
@@ -69,6 +61,8 @@ int main() {
     
     // Initialize data structures
     static quine group[100], reduced[100], prime;
+	char binary[1000][100];
+    ToBinary(binary, min_terms, n_terms, var);
     
     fill_group_table(group, min_terms, binary, n_terms, var);
     
