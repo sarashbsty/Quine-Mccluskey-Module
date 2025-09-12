@@ -1,18 +1,21 @@
 #include<stdio.h>
 #include<string.h>
 #include "quine.h" // quine struture
+#include "helper.h"
 
 void display_implicants(const quine *prime){
 	
-	int line = 2+7+3+20+2;
-    char str_line[100];	
-	memset(str_line, '=', line);
-    str_line[line] = '\0';
+	int width[2] = {7,20};
+	int n = 2 + width[0] + 3 + width[1] + 2;
+    char line[2][22*3+2];	
 	
+	for(int i=0; i<2; i++) 
+		make_line(line[i] , "─" , width[i]+2 , 3);
+		
 	printf("\nPrime Implicants:\n");
-	printf("%s\n",str_line);
-	printf("%-2s%-7s%-3s%-20s%2s" , "|" , "Binary" , " |" , "minterms" , "|");
-	printf("\n%s\n",str_line);
+	printf("╔%s┬%s╗\n",line[0],line[1]);
+	printf("│ %-7s │ %-20s │\n", "Binary" , "minterms");
+	printf("├%s┼%s┤\n",line[0],line[1]);
 	
 	for(int i = 0; i < prime->count; i++){
 		
@@ -23,9 +26,7 @@ void display_implicants(const quine *prime){
 			int written = snprintf(str+offset , sizeof(str)-offset , (j < size-1) ? "%d," : "%d" , data);
 			offset += written;
 		}
-		
-		printf("%-2s%-7s%-3s%-20s%2s" , "|" , prime->binary[i] , " |" , str , "|");
-		printf("\n");
+		printf("│ %-7s │ %-20s │\n" , prime->binary[i] , str);
 	}
-	printf("%s\n",str_line);
+	printf("╚%s┴%s╝",line[0],line[1]);
 }
