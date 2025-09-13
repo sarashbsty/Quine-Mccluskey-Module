@@ -35,7 +35,7 @@ int main() {
     SetConsoleOutputCP(CP_UTF8);
     #endif
     
-    int var, min_terms[10000], min_count = 0, dont_care_count = 0;
+    int var, minterms[10000];
     
     // Data input
     printf("Enter no. of variables: ");
@@ -44,27 +44,28 @@ int main() {
 	clear_input_buffer();
     
     printf("Enter min terms : ");
-	min_count = get_minterms(min_terms , 0 , pow(2, var));
+	int min_count = get_minterms(minterms , 0 , pow(2, var));
 	
 	printf("Enter dont care : ");
-	dont_care_count = get_minterms(min_terms , min_count , pow(2, var));
+	int dont_care_count = get_minterms(minterms , min_count , pow(2, var));
 	  
     int n_terms = min_count + dont_care_count;
     
     printf("\n\n%d Min terms: ", min_count); 
     for (int i = 0; i < min_count; i++) 
-        printf("%d ", min_terms[i]);
+        printf("%d ", minterms[i]);
     
     printf("\n%d Dont care: ", dont_care_count); 
     for (int i = min_count; i < n_terms; i++) 
-        printf("%d ", min_terms[i]);
+        printf("%d ", minterms[i]);
     
     // Initialize data structures
     static quine group[100], reduced[100], prime;
+	
 	char binary[1000][100];
-    ToBinary(binary, min_terms, n_terms, var);
+    ToBinary(binary, minterms, n_terms, var);
     
-    fill_group_table(group, min_terms, binary, n_terms, var);
+    fill_group_table(group, minterms, binary, n_terms, var);
     
     int CanReduce = reduce_table(group, reduced, var);
     prime_implicants(group, &prime, var);
@@ -88,10 +89,10 @@ int main() {
     char result[1000][100];
     char essential_table[100][100][6];
     
-    int iterate = essential_implicants(&prime, essential_table, min_terms, min_count, result);
+    int iterate = essential_implicants(&prime, essential_table, minterms, min_count, result);
     
     printf("\n\n\nTable to find Essential prime Implicants: \n");
-    display_essential_table(&prime, essential_table, min_terms, min_count);
+    display_essential_table(&prime, essential_table, minterms, min_count);
     
     printf("\n\nEssential Prime Implicants: ");
     for (int i = 0; i < iterate; i++)
