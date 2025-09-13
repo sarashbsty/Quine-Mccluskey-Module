@@ -35,7 +35,7 @@ int main() {
     SetConsoleOutputCP(CP_UTF8);
     #endif
     
-    int var, min_terms[10000], min_count = 0, dont_care_count = 0, temp;
+    int var, min_terms[10000], min_count = 0, dont_care_count = 0;
     
     // Data input
     printf("Enter no. of variables: ");
@@ -78,7 +78,7 @@ int main() {
         CanReduce = reduce_table(group, reduced, var);
         prime_implicants(group, &prime, var);
         
-        printf("\n%dth Reduction: \n", i++);
+        printf("\nReduction #%d:\n", i++);
         displayGroups(group, var);	
     }	
     
