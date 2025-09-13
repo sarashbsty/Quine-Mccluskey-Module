@@ -29,6 +29,7 @@ SOFTWARE.
 #include "quine.h"
 #include "helper.h"
 
+
 int main() {
     #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
@@ -40,8 +41,7 @@ int main() {
     printf("Enter no. of variables: ");
     scanf("%d", &var);
 	
-	int c;
-    while ((c = getchar()) != '\n' && c != EOF);
+	clear_input_buffer();
     
     printf("Enter min terms : ");
 	min_count = get_minterms(min_terms , 0 , pow(2, var));
