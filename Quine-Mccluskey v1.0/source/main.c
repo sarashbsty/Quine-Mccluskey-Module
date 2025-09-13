@@ -94,27 +94,10 @@ int main() {
     printf("\n\n\nTable to find Essential prime Implicants: \n");
     display_essential_table(&prime, essential_table, minterms, min_count);
   
-/*  
-    printf("\n\nEssential Prime Implicants: ");
-    for (int i = 0; i < iterate; i++)
-        printf("%s  ", result[i]);
-    printf("\n");
-*/    
-    printf("\n\nResult: Y (");
-    for (int i = 0; i < var; i++){
-        printf("%c", (char)('A' + i));
-        if (i < var - 1) printf(",");
-        else printf(") = ");
-    }
-    printf("%s",result);
+    printf("\n\nResult: Y(");
+    for (int i = 0; i < var; i++) 
+		printf( i ? ",%c" : "%c", (char)('A' + i));
+    printf(") = %s\n\n",result);
 	
-/*	
-    for (int i = 0; i < iterate; i++){
-        Expression(result[i]);
-        if (i < iterate - 1) printf(" + ");
-    }
-*/
-    printf("\n\n");
- 
     return 0;
 }
