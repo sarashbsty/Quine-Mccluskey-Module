@@ -3,17 +3,13 @@
 #include <string.h>
 #include "helper.h"
 
-int get_minterms(int min_terms[] , int index, int max_terms){
-	
+static char* get_input(){
 	size_t capacity = 100;
 	size_t size = 0;
 	char *buffer = (char*)malloc(capacity);
 	
-	if(buffer == NULL){
-		printf("Memory Allocation Error!\n");
-		return 0;
-	}
-	
+	if(buffer == NULL) return NULL;
+		
 	int ch;
 	while((ch = getchar()) != '\n' && ch != EOF){
 		
@@ -34,16 +30,26 @@ int get_minterms(int min_terms[] , int index, int max_terms){
 		else
 			buffer[size++] = ch;	
 	}
-	
 	buffer[size] = '\0';
+	return buffer;
+}
 	
-	if (buffer[0] == '\0'){  // No change if empty input  note: *ptr == ptr[0]  
-		free(buffer);
+int get_minterms(int min_terms[] , int index, int max_terms){
+	
+	char *input = get_input();
+	
+	if(input == NULL){
+		printf("Memory Allocation Error!\n");
+		return 0;
+	}
+	
+	if (input[0] == '\0'){  // No change if empty input  note: *ptr == ptr[0]  
+		free(input);
 		return 0;
 	}
 	
 	int initial_index = index;    
-    char *ptr = buffer;
+    char *ptr = input;
     int num;
 	
     while (index < max_terms){
@@ -66,7 +72,7 @@ int get_minterms(int min_terms[] , int index, int max_terms){
         else break;      
     }
 	
-	free(buffer);
+	free(input);
 	return index - initial_index;
 } 
 
