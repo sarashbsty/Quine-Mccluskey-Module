@@ -22,13 +22,12 @@ static char* get_input(){
 				printf("Error: no space left\n");
 				printf("       Read %s\n",buffer);
 				clear_input_buffer();
-				break;
+				return buffer;
 			}
-			
 			buffer = temp;
 		}
-		else
-			buffer[size++] = ch;	
+		
+		buffer[size++] = ch;	
 	}
 	buffer[size] = '\0';
 	return buffer;
