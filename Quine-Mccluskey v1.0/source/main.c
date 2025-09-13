@@ -86,31 +86,35 @@ int main() {
     printf("\n");
     display_implicants(&prime);
     
-    char result[1000][100];
-    char essential_table[100][100][6];
+//    char result[1000][100];
+    char essential_table[100][100][6] , result[100];
     
-    int iterate = essential_implicants(&prime, essential_table, minterms, min_count, result);
+    essential_implicants(&prime, essential_table, minterms, min_count, result , sizeof(result));
     
     printf("\n\n\nTable to find Essential prime Implicants: \n");
     display_essential_table(&prime, essential_table, minterms, min_count);
-    
+  
+/*  
     printf("\n\nEssential Prime Implicants: ");
     for (int i = 0; i < iterate; i++)
         printf("%s  ", result[i]);
     printf("\n");
-    
-    printf("\nResult: Y (");
-    for (int i = 0; i < var; i++) {
+*/    
+    printf("\n\nResult: Y (");
+    for (int i = 0; i < var; i++){
         printf("%c", (char)('A' + i));
         if (i < var - 1) printf(",");
         else printf(") = ");
     }
-    
-    for (int i = 0; i < iterate; i++) {
+    printf("%s",result);
+	
+/*	
+    for (int i = 0; i < iterate; i++){
         Expression(result[i]);
         if (i < iterate - 1) printf(" + ");
     }
+*/
     printf("\n\n");
-    
+ 
     return 0;
 }

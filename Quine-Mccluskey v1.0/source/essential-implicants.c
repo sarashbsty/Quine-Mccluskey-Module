@@ -4,7 +4,7 @@
 
 //check for improvemnt
 
-int essential_implicants(const quine *prime , char arr[100][100][6] , int min_terms[] , int min_count, char result[][100]){
+void essential_implicants(const quine *prime , char arr[100][100][6] , int min_terms[] , int min_count, char result[100] ,int size){
 	
 	//all zero initialize
 	for(int i = 0; i < prime->count; i++)
@@ -17,7 +17,7 @@ int essential_implicants(const quine *prime , char arr[100][100][6] , int min_te
 			strcpy(arr[i][prime->minterms[i][j]] , " 1");
 	
 	//Finding the essential implicant by finding column with only one '1' and the prime implecant in that 1's row
-	int count = 0;
+	int count = 0; char str[100][100];
 	for(int j = 0; j < min_count; j++){
 		
 		int index ,ones = 0;
@@ -31,9 +31,15 @@ int essential_implicants(const quine *prime , char arr[100][100][6] , int min_te
 			strcpy(arr[index][min_terms[j]] , "(1)" );
 			
 			// checking ones is only 1 and duplicates
-			if(!is_exist(result, prime->binary[index] , count))
-				strcpy(result[count++] , prime->binary[index]);
+			if(!is_exist(str, prime->binary[index] , count))
+				strcpy(str[count++] , prime->binary[index]);
 		}
 	}
-	return count;
+	
+	int offset = 0;
+	for(int i = 0; i < count; i++){
+		Expression(str[i]);
+		int written = snprintf(result+offset , size-offset , i ? "+ %s" : "%s" , str[i]);
+		offset += written;
+	}
 }
