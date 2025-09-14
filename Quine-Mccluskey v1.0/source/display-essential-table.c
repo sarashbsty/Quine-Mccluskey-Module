@@ -12,9 +12,7 @@ void display_essential_table(const quine *prime , char arr[100][100][6] , int Mi
 	make_line(line1 , "─" , n-2 , 3);
 	make_line(line2[0] , "─" , 3+2 , 3);
 	make_line(line2[1] , "─" , n-7-1, 3);
-	
-	int row = prime->count;
-	
+		
 	printf("╔%s╗\n",line1);
 	
 	printf("│        ");
@@ -22,7 +20,7 @@ void display_essential_table(const quine *prime , char arr[100][100][6] , int Mi
 		printf("%-5d" , Minterms[j]);
 	printf("│\n");
 	
-	for(int i = 0; i < row; i++){
+	for(int i = 0; i < prime->count; i++){
 		
 		if(i == 0) printf("├%s┬%s┤\n",line2[0],line2[1]);
 		else printf("├%s┼%s┤\n",line2[0],line2[1]);
