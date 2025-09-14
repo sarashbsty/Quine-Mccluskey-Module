@@ -20,7 +20,8 @@ int reduce_table(quine group[] , quine reduced[] , int variables){
                         pos = x;
                     }
                 }
-
+				
+				//Only if diff is 1 , those two Binary and its Minterms will be combined and added to Reduce
                 if (diff == 1) {
 					
 					int idx = reduced[i].count;
