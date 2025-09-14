@@ -3,7 +3,6 @@
 #include "helper.h"
 #include "quine.h" // quine struture
 
-//check for improvemnt
 void display_essential_table(const quine *prime , char arr[100][100][6] , int Minterms[] , int min_count){
 	
 	int n = 1+4+3+(5*min_count)+2;
