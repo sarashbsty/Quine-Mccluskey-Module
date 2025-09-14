@@ -1,5 +1,4 @@
 #include<stdio.h>
-#include<string.h>
 #include "quine.h" // quine struture
 #include "helper.h"
 
@@ -26,10 +25,10 @@ void displayGroups(quine group[] , int variables){
 		
         for (int j = 0; j < group[i].count; j++) {
 			
-			char str[100] , No[2]; 
+			char str[100] , No[5]; 
 			
 			//print group No. only at first
-			if(j == 0) snprintf(No,2,"%d",i);       
+			if(j == 0) snprintf(No,5,"%d",i);       
 			else { No[0] = ' '; No[1] = '\0'; }
 			
 			// print all minterms associated with this binary
