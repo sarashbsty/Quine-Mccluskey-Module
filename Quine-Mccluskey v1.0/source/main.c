@@ -75,7 +75,7 @@ int main() {
     
     int i = 1;
     while (CanReduce) {
-        for (int i = 0; i <= var; i++) group[i] = reduced[i];
+        for (int j = 0; j <= var; j++) group[j] = reduced[j];
         CanReduce = reduce_table(group, reduced, var);
         prime_implicants(group, &prime, var);
         
