@@ -86,7 +86,6 @@ int main() {
     printf("\n");
     display_implicants(&prime);
     
-//    char result[1000][100];
     char essential_table[100][100][6] , result[100];
     
     essential_implicants(&prime, essential_table, minterms, min_count, result , sizeof(result));
