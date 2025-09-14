@@ -5,7 +5,7 @@
 
 void displayGroups(quine group[] , int variables){
 	
-	int width[4] = {5,20,15,8};
+	int width[4] = {5,20,15,6};
 	int n = 2 + width[0] + 3 + width[1] + 3 + width[2] + 3 + width[3] + 2;
 	int count = 0;
 	
@@ -15,7 +15,7 @@ void displayGroups(quine group[] , int variables){
 
 	
 	printf("╭%s┬%s┬%s┬%s╮\n",line[0],line[1],line[2],line[3]);
-	printf("│ %-5s │ %-20s │ %-15s │ %-8s │\n", "Group", "MinTerm", "Binary", "Combined");
+	printf("│ %-5s │ %-20s │ %-15s │ %-6s │\n", "GROUP", "MINTERMS", "BINARY", "REDUCE");
 	
     for (int i = 0; i <= variables; i++) {
 		
@@ -40,9 +40,9 @@ void displayGroups(quine group[] , int variables){
 				offset += written;
             }
 			
-			char *symbol = (group[i].combined[j] == 0) ? "   ❌" : "   ✅";  // in conditional the symbols decay to char* type
+			char *symbol = (group[i].combined[j] == 0) ? "  ❌" : "  ✅";  // in conditional the symbols decay to char* type
 		
-			printf("│ %-5s │ %-20s │ %-15s │ %-9s │\n", No , str , group[i].binary[j] , symbol);
+			printf("│ %-5s │ %-20s │ %-15s │ %-7s │\n", No , str , group[i].binary[j] , symbol);
                  
         }
     }

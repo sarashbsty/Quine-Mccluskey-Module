@@ -46,6 +46,11 @@ int main() {
     printf("Enter min terms : ");
 	int min_count = get_minterms(minterms , 0 , pow(2, var));
 	
+	if(min_count == 0){
+		printf("No Minterms Entered!\n");
+		return 0;
+	}
+	
 	printf("Enter dont care : ");
 	int dont_care_count = get_minterms(minterms , min_count , pow(2, var));
 	  
