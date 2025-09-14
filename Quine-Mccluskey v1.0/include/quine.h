@@ -8,7 +8,7 @@ typedef struct {
     int combined[1000];   	
 } quine;
 
-void fill_group_table(quine group[] , int Mid_terms[], char Binary[][100], int n_terms, int variables);
+void fill_group_table(quine group[] , int Mid_terms[], int n_terms, int variables);
 void displayGroups(quine group[] , int variables);
 int reduce_table(quine group[] , quine reduce[] , int variables);
 void prime_implicants(quine group[] , quine *prime , int variables);

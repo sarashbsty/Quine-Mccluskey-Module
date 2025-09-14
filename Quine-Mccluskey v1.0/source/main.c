@@ -29,7 +29,6 @@ SOFTWARE.
 #include "quine.h"
 #include "helper.h"
 
-
 int main() {
     #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
@@ -66,10 +65,8 @@ int main() {
     
     // Initialize data structures
     static quine group[100], reduced[100], prime;
-	char binary[1000][100];
 	
-    ToBinary(binary, minterms, n_terms, var);
-	fill_group_table(group, minterms, binary, n_terms, var);
+	fill_group_table(group, minterms, n_terms, var);
 	
 	int i = 0 , canReduce = 0;
 	do{
