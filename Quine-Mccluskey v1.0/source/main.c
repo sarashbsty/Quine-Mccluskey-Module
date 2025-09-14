@@ -61,27 +61,26 @@ int main() {
     
     // Initialize data structures
     static quine group[100], reduced[100], prime;
-	
 	char binary[1000][100];
+	
     ToBinary(binary, minterms, n_terms, var);
-    
-    fill_group_table(group, minterms, binary, n_terms, var);
-    
-    int CanReduce = reduce_table(group, reduced, var);
-    prime_implicants(group, &prime, var);
-    
-    printf("\n\nInitial Grouping:\n");
-    displayGroups(group, var);
-    
-    int i = 1;
-    while (CanReduce) {
-        for (int j = 0; j <= var; j++) group[j] = reduced[j];
-        CanReduce = reduce_table(group, reduced, var);
-        prime_implicants(group, &prime, var);
-        
-        printf("\nReduction #%d:\n", i++);
-        displayGroups(group, var);	
-    }	
+	fill_group_table(group, minterms, binary, n_terms, var);
+	
+	int i = 0 , canReduce = 0;
+	do{
+		canReduce = reduce_table(group, reduced, var);
+		prime_implicants(group, &prime, var);
+		
+		if(i) printf("\nReduction #%d:\n", i);
+		else  printf("\n\nInitial Grouping:\n");
+		
+        displayGroups(group, var);
+		i++;
+		
+		if(canReduce)
+			for (int j = 0; j <= var; j++) group[j] = reduced[j];
+		
+	} while(canReduce);
     
     printf("\n");
     display_implicants(&prime);
