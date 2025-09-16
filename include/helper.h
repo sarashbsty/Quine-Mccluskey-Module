@@ -7,6 +7,7 @@ void Expression(char binary[]);
 int is_exist(char arr[][100], const char item[] , int);
 int get_minterms(int min_terms[] , int start , int max_terms);
 void make_line(char str[] , const char* c , int n , int byte);
+int digit(int x);
 
 static inline void clear_input_buffer(){
 	int c;
