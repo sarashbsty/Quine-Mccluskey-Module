@@ -5,7 +5,7 @@
 
 void display_implicants(const quine *prime){
 	
-	int width[3] = {3,7,20};
+	int width[3] = {1,7,20};
 	int n = 2 + width[0] + 3 + width[1] + 3 + width[2] + 2;
     char line[3][22*3+2];	
 	
@@ -14,7 +14,7 @@ void display_implicants(const quine *prime){
 		
 	printf("\nPrime Implicants:\n");
 	printf("╔%s┬%s┬%s╗\n",line[0],line[1],line[2]);
-	printf("│     │ %-7s │ %-20s │\n", "Binary" , "Minterms");
+	printf("│ %-*s │ %-*s │ %-*s │\n", width[0], " " ,width[1], "Binary" , width[2], "Minterms");
 	
 	for(int i = 0; i < prime->count; i++){
 		
@@ -26,7 +26,7 @@ void display_implicants(const quine *prime){
 			offset += written;
 		}
 		printf("├%s┼%s┼%s┤\n",line[0],line[1],line[2]);
-		printf("│ [%c] │ %-7s │ %-20s │\n" , (char)('A'+i) , prime->binary[i] , str);
+		printf("│ %-*c │ %-*s │ %-*s │\n", width[0], (char)('A'+i) , width[1], prime->binary[i] , width[2], str);
 	}
 	printf("╚%s┴%s┴%s╝",line[0],line[1],line[2]);
 }
