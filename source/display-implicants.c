@@ -5,8 +5,8 @@
 
 void display_implicants(const quine *prime){
 	
-	int width[3] = {1,7,20};
-	int n = 2 + width[0] + 3 + width[1] + 3 + width[2] + 2;
+	int n = strlen(prime->binary[0]);
+	int width[3] = {1 , (n<6) ? 6 : n+1 , 20};
     char line[3][22*3+2];	
 	
 	for(int i=0; i<3; i++) 

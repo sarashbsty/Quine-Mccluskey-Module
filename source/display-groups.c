@@ -5,7 +5,6 @@
 void displayGroups(quine group[] , int var){
 	
 	int width[4] = {5 , 20 , (var<6) ? 6 : var+1 , 6};
-	int n = 2 + width[0] + 3 + width[1] + 3 + width[2] + 3 + width[3] + 2;
 	int count = 0;
 	
 	char line[4][22*3+1];
