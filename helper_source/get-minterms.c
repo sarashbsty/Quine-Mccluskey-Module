@@ -33,8 +33,8 @@ static char* get_input(){
 	return buffer;
 }
 
-static void clear_whitespace(char **ch){
-	while (**ch == ' ' || **ch == '\t') (*ch)++;
+static void clear_separators(char **ch){
+	while (**ch == ' ' || **ch == '\t' || **ch == ',') (*ch)++;
 }
 	
 int get_minterms(int min_terms[] , int index, int max_terms){
@@ -57,14 +57,14 @@ int get_minterms(int min_terms[] , int index, int max_terms){
 	
     while (index < max_terms){
 		
-		clear_whitespace(&ptr);
+		clear_separators(&ptr);
         if(sscanf(ptr, "%d", &num) == 1){
 				
             if (num < 0) printf("Error: Negative value %d ignored\n", num);
 			else if(num >= max_terms) printf("Error: %d is not a valid minterm of %d variables. Ignored\n", num, (int)log2(max_terms));
             else  min_terms[index++] = num;
                  
-            while (*ptr != ' ' && *ptr != '\t' && *ptr != '\0') ptr++;   // Move pointer past the character
+            while (*ptr != ',' && *ptr != ' ' && *ptr != '\t' && *ptr != '\0') ptr++;   // Move pointer past the character
         } 
 		
 		else if (*ptr != '\n' && *ptr != '\0'){ // Check if there's invalid input
@@ -75,7 +75,7 @@ int get_minterms(int min_terms[] , int index, int max_terms){
         else break;      
     }
 	
-	clear_whitespace(&ptr);
+	clear_separators(&ptr);
 	if(*ptr != '\0')
 		printf("Error: Excess Input: %s\n",ptr);
 	
