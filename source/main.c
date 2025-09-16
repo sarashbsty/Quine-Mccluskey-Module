@@ -40,6 +40,11 @@ int main() {
     printf("Enter no. of variables: ");
     scanf("%d", &var);
 	
+	if(var < 1){
+		printf("%d is Invalid\n" , var);
+		return 0;
+	}
+	
 	clear_input_buffer();
     
     printf("Enter min terms : ");

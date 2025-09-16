@@ -2,9 +2,9 @@
 #include "quine.h" // quine struture
 #include "helper.h"
 
-void displayGroups(quine group[] , int variables){
+void displayGroups(quine group[] , int var){
 	
-	int width[4] = {5,20,15,6};
+	int width[4] = {5 , 20 , (var<6) ? 6 : var+1 , 6};
 	int n = 2 + width[0] + 3 + width[1] + 3 + width[2] + 3 + width[3] + 2;
 	int count = 0;
 	
@@ -14,9 +14,9 @@ void displayGroups(quine group[] , int variables){
 
 	
 	printf("╭%s┬%s┬%s┬%s╮\n",line[0],line[1],line[2],line[3]);
-	printf("│ %-5s │ %-20s │ %-15s │ %-6s │\n", "GROUP", "MINTERMS", "BINARY", "REDUCE");
+	printf("│ %-*s │ %-*s │ %-*s │ %-*s │\n", width[0], "GROUP", width[1], "MINTERMS", width[2], "BINARY", width[3], "REDUCE");
 	
-    for (int i = 0; i <= variables; i++) {
+    for (int i = 0; i <= var; i++) {
 		
         if (group[i].count == 0) continue; // skip empty groups
 		
@@ -41,7 +41,7 @@ void displayGroups(quine group[] , int variables){
 			
 			char *symbol = (group[i].combined[j] == 0) ? "  ❌" : "  ✅";  // in conditional the symbols decay to char* type
 		
-			printf("│ %-5s │ %-20s │ %-15s │ %-7s │\n", No , str , group[i].binary[j] , symbol);
+			printf("│ %-*s │ %-*s │ %-*s │ %-*s │\n", width[0], No, width[1], str, width[2], group[i].binary[j], width[3]+1, symbol);
                  
         }
     }
