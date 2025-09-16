@@ -5,12 +5,13 @@
 
 void display_essential_table(const quine *prime , char arr[100][100][6] , int Minterms[] , int min_count){
 	
-	int n = 1+4+3+(5*min_count)+2;
-    char line1[1000] , line2[2][500];
+	int width[2] = { 3 , 5*min_count };
+	int n = 2 + width[0] + 3 + width[1] + 2;
 	
+    char line1[1000] , line2[2][500];
 	make_line(line1 , "─" , n-2 , 3);
-	make_line(line2[0] , "─" , 3+2 , 3);
-	make_line(line2[1] , "─" , n-7-1, 3);
+	make_line(line2[0] , "─" , width[0]+2 , 3);
+	make_line(line2[1] , "─" , width[1]+2 , 3);
 		
 	printf("╔%s╗\n",line1);
 	
