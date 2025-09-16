@@ -1,13 +1,24 @@
 #include<stdio.h>
 #include<string.h>
+#include<math.h>
 #include "quine.h" // quine struture
 #include "helper.h"
 
+static int digit(int x){
+	int count = 0;
+	while(x > 0){
+		count++;
+		x = x/10;
+	}
+	return count;
+}
+
 void display_implicants(const quine *prime){
 	
-	int n = strlen(prime->binary[0]);
-	int width[3] = {1 , (n<6) ? 6 : n+1 , 20};
-    char line[3][22*3+2];	
+	int n = strlen(prime->binary[0]);                                         // also gives no. of variables
+	int m = (digit(pow(2,n)) + 1) * prime->mintermCount[prime->count-1];      // digit + 1 = no. of digits + comma(,)
+	int width[3] = {1 , (n<6) ? 6 : n+1 , (m<8) ? 8 : m+1};
+    char line[3][1000];	
 	
 	for(int i=0; i<3; i++) 
 		make_line(line[i] , "─" , width[i]+2 , 3);
