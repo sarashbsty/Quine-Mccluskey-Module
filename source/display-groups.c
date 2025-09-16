@@ -1,13 +1,16 @@
 #include<stdio.h>
+#include<math.h>
 #include "quine.h" // quine struture
-#include "helper.h"
+#include "helper.h" // for digit , make_line
 
 void displayGroups(quine group[] , int var){
 	
-	int width[4] = {5 , 20 , (var<6) ? 6 : var+1 , 6};
+	int m = (digit(pow(2,var)) + 1) * group[0].mintermCount[0];      // digit + 1 = no. of digits + comma(,)
+	
+	int width[4] = {5 , (m<8) ? 8 : m+1 , (var<6) ? 6 : var+1 , 6};
 	int count = 0;
 	
-	char line[4][22*3+1];
+	char line[4][1000];
 	for(int i = 0; i < 4; i++)
 		make_line(line[i] ,"─", width[i]+2 ,3);
 
