@@ -6,29 +6,29 @@
 
 void essential_implicants(const quine *prime , char arr[100][100][6] , int min_terms[] , int min_count, char result[100] ,int size){
 	
-	//all zero initialize
+	//all space initialize
 	for(int i = 0; i < prime->count; i++)
 		for(int j = 0; j < min_count; j++)
-			strcpy(arr[i][min_terms[j]] , " 0");
+			strcpy(arr[i][min_terms[j]] , " ");
 	
-	//selective entering one
+	//selective marking X
 	for(int i = 0; i < prime->count; i++)
 		for(int j = 0; j < prime->mintermCount[i]; j++)
-			strcpy(arr[i][prime->minterms[i][j]] , " 1");
+			strcpy(arr[i][prime->minterms[i][j]] , " X");
 	
 	//Finding the essential implicant by finding column with only one '1' and the prime implecant in that 1's row
-	int count = 0; char str[100][100];
+	int count = 0; char str[100][500];
 	for(int j = 0; j < min_count; j++){
 		
 		int index ,ones = 0;
 		for(int i = 0; i < prime->count; i++){
-			if(strcmp(arr[i][min_terms[j]], " 1") == 0){
+			if(strcmp(arr[i][min_terms[j]], " X") == 0){
 				ones++;
 				index = i;
 			}
 		}		
 		if(ones == 1){
-			strcpy(arr[index][min_terms[j]] , "(1)" );
+			strcpy(arr[index][min_terms[j]] , "(X)" );
 			
 			// checking ones is only 1 and duplicates
 			if(!is_exist(str, prime->binary[index] , count))

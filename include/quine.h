@@ -2,10 +2,10 @@
 
 typedef struct {                   
     int count;                       
-    char binary[1000][100];             
-    int minterms[1000][50];          
-    int mintermCount[1000];          
-    int combined[1000];   	
+    char binary[2000][500];             
+    int minterms[2000][100];          
+    int mintermCount[2000];          
+    int combined[2000];   	
 } quine;
 
 void fill_group_table(quine group[] , int Mid_terms[], int n_terms, int variables);

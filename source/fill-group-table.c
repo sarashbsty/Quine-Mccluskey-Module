@@ -4,7 +4,7 @@
 
 void fill_group_table(quine group[] , int minterms[], int n_terms, int variables){
 	
-	char Binary[1000][100];
+	char Binary[1000][500];
     ToBinary(Binary, minterms, n_terms, variables);
 	
 	for(int i = 0; i <= variables; i++){

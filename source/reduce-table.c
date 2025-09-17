@@ -1,20 +1,23 @@
 #include<string.h>
 #include "quine.h" // quine struture
 
-int reduce_table(quine group[] , quine reduced[] , int variables){
+//introduce a function to remove duplicates in the new group itself
+
+int reduce_table(quine group[] , quine reduced[] , int var){
+	
     int newCount = 0;
 	
-    for (int i = 0; i <= variables; i++)
+    for (int i = 0; i <= var; i++)
         reduced[i].count = 0;
 
     // Compare group[i] with group[i+1]
-    for (int i = 0; i < variables; i++) {
+    for (int i = 0; i < var; i++) {
         for (int a = 0; a < group[i].count; a++) {
             for (int b = 0; b < group[i+1].count; b++) {
 
                 // Compare binaries
                 int diff = 0, pos = -1;
-                for (int x = 0; x < variables; x++) {
+                for (int x = 0; x < var; x++) {
                     if (group[i].binary[a][x] != group[i+1].binary[b][x]) {
                         diff++;
                         pos = x;
@@ -23,7 +26,6 @@ int reduce_table(quine group[] , quine reduced[] , int variables){
 				
 				//Only if diff is 1 , those two Binary and its Minterms will be combined and added to Reduce
                 if (diff == 1) {
-					
 					int idx = reduced[i].count;
 					strcpy(reduced[i].binary[idx] , group[i].binary[a]);
 					reduced[i].binary[idx][pos] = '-';
