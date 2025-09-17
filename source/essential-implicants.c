@@ -4,7 +4,7 @@
 
 //check for improvemnt
 
-void essential_implicants(const quine *prime , char arr[100][100][6] , int min_terms[] , int min_count, char result[100] ,int size){
+void essential_implicants(const quine *prime , char arr[][100][6] , int min_terms[] , int min_count, char result[100] ,int size){
 	
 	//all space initialize
 	for(int i = 0; i < prime->count; i++)
