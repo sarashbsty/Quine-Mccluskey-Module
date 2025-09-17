@@ -12,7 +12,7 @@ A terminal-based tool to **simplify Boolean expressions** using the **Quine-McCl
 - Handles up to `n` variables (customizable).  
 - Step-by-step display of:
   - Grouping minterms
-  - Reducting minterms
+  - Reducing minterms
   - Prime implicants
   - Essential prime implicants
   - Final minimized expression
