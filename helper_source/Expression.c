@@ -7,8 +7,8 @@ void Expression(char binary[]){
 		char var = 'A'+i;
 		if(binary[i] == '0') { str[count++] = var; str[count++] = '\''; }
 		else if(binary[i] == '1') str[count++] = var;
-		else
-			continue;
+		else continue;
+			
 	}
 	str[count] = '\0';
 	strcpy(binary,str);
