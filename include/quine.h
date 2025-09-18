@@ -2,7 +2,7 @@
 
 typedef struct {                   
     int count;                       
-    char binary[2000][500];             
+    char binary[2000][100];             
     int minterms[2000][100];          
     int mintermCount[2000];          
     int combined[2000];   	
