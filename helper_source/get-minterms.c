@@ -46,7 +46,7 @@ int get_minterms(int min_terms[] , int index, int max_terms){
 		return 0;
 	}
 	
-	if (input[0] == '\0'){  // No change if empty input  note: *ptr == ptr[0]  
+	if (input[0] == '\0'){  // No change if empty input  
 		free(input);
 		return 0;
 	}
@@ -76,7 +76,7 @@ int get_minterms(int min_terms[] , int index, int max_terms){
     }
 	
 	clear_separators(&ptr);
-	if(*ptr != '\0')
+	if(*ptr != '\0')                            //note: *ptr == ptr[0]  
 		printf("Error: Excess Input: %s\n",ptr);
 	
 	free(input);
