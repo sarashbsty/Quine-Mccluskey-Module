@@ -1,7 +1,7 @@
 #pragma once
 #include<stdio.h>
 
-void ToBinary(char binary[][500] , int minterms[] , int ,int);
+char** ToBinary(int minterms[] , int ,int);
 int count_1s(char binary[]);
 void Expression(char binary[]);
 int is_exist(char arr[][500], const char item[] , int);
