@@ -11,16 +11,6 @@ void prime_implicants(quine group[] , quine *prime , int variables){
 			
 			if(group[i].combined[j] == 0){
 				
-				// to check whether the implicant is already in prime or not
-				int check = 0;
-				for(int x = 0; x < prime->count; x++){
-					if(strcmp(prime->binary[x], group[i].binary[j]) == 0){
-						check = 1;
-						break;
-					}
-				}
-				if(check == 1) continue;	
-				
 				int index = prime->count;
 				strcpy(prime->binary[index] , group[i].binary[j]);
 				

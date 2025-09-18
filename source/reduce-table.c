@@ -1,7 +1,8 @@
+#include<stdio.h>
 #include<string.h>
+#include<stdlib.h>
+#include "helper.h"
 #include "quine.h" // quine struture
-
-//introduce a function to remove duplicates in the new group itself
 
 int reduce_table(quine group[] , quine reduced[] , int var){
 	
@@ -26,9 +27,23 @@ int reduce_table(quine group[] , quine reduced[] , int var){
 				
 				//Only if diff is 1 , those two Binary and its Minterms will be combined and added to Reduce
                 if (diff == 1) {
+					
+					newCount++;
+					group[i].combined[a] = 1;
+                    group[i+1].combined[b] = 1;
+					
 					int idx = reduced[i].count;
-					strcpy(reduced[i].binary[idx] , group[i].binary[a]);
-					reduced[i].binary[idx][pos] = '-';
+					char *temp = malloc((var+1) * sizeof(*temp));
+					if(temp == NULL) { printf("Reduce_table : Memory Allocation failed code: 101"); exit(0); }
+					
+					strcpy(temp , group[i].binary[a]);
+					temp[pos] = '-';
+					
+					int check = is_exist(reduced[i].binary, temp, reduced[i].count);
+					if(check == 1) { free(temp); continue; }
+					
+					strcpy(reduced[i].binary[idx] , temp);
+					free(temp);
                     
                     // Merge minterm
                     int mCount = 0;
@@ -40,11 +55,6 @@ int reduce_table(quine group[] , quine reduced[] , int var){
                     reduced[i].mintermCount[idx] = mCount;
                     reduced[i].combined[idx] = 0;
                     reduced[i].count++;
-
-                    group[i].combined[a] = 1;
-                    group[i+1].combined[b] = 1;
-
-                    newCount++;
                 }
             }
         }
