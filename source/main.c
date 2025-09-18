@@ -49,6 +49,7 @@ int main() {
 	
 	int maxTerms = pow(2, var);
 	int *minterms = malloc(maxTerms * sizeof(*minterms));
+	if(minterms == NULL){ printf("Low Memory : failed allocating for minterms code: 101"); exit(0); }
 	
     printf("Enter min terms : ");
 	int min_count = get_minterms(minterms , 0 , maxTerms);
