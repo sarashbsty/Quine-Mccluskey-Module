@@ -25,6 +25,7 @@ SOFTWARE.
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "quine.h"
 #include "helper.h"
@@ -34,21 +35,23 @@ int main() {
     SetConsoleOutputCP(CP_UTF8);
     #endif
     
-    int var, minterms[10000];
+    int var;
     
     // Data input
     printf("Enter no. of variables: ");
     scanf("%d", &var);
+	clear_input_buffer();
 	
 	if(var < 1){
 		printf("%d is Invalid\n" , var);
 		return 0;
 	}
 	
-	clear_input_buffer();
-    
+	int maxTerms = pow(2, var);
+	int *minterms = malloc(maxTerms * sizeof(*minterms));
+	
     printf("Enter min terms : ");
-	int min_count = get_minterms(minterms , 0 , pow(2, var));
+	int min_count = get_minterms(minterms , 0 , maxTerms);
 	
 	if(min_count == 0){
 		printf("No Minterms Entered!\n");
@@ -56,7 +59,7 @@ int main() {
 	}
 	
 	printf("Enter dont care : ");
-	int dont_care_count = get_minterms(minterms , min_count , pow(2, var));
+	int dont_care_count = get_minterms(minterms , min_count , maxTerms);
 	  
     int n_terms = min_count + dont_care_count;
     
@@ -103,6 +106,8 @@ int main() {
     for (int i = 0; i < var; i++) 
 		printf( i ? ",%c" : "%c", (char)('A' + i));
     printf(") = %s\n\n",result);
+	
+	free(minterms);
 	
     return 0;
 }
