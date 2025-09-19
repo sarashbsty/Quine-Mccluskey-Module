@@ -2,7 +2,7 @@
 #include<string.h>
 #include<math.h>
 #include "quine.h" // quine struture
-#include "helper.h" // for digit , make_line
+#include "helper.h" // for digit , make_line , array_to_string
 
 void displayGroups(quine group[] , int var){
 	
@@ -29,14 +29,9 @@ void displayGroups(quine group[] , int var){
 			
 			//print group No. only at first
 			if(j == 0) snprintf(No,5,"%d",i);       
-		
-			// print all minterms associated with this binary
-			int offset = 0 , size = group[i].mintermCount[j];
-			for (int k = 0; k < size; k++) {
-				int num = group[i].minterms[j][k];
-				int written = snprintf(str+offset , sizeof(str)-offset , (k < size-1) ? "%d," : "%d" , num);
-				offset += written;
-			}
+			
+			// store all minterms associated with this binary to a string var
+			array_to_string(group[i].minterms[j] , group[i].mintermCount[j] , str , sizeof(str));
 			
 			char *symbol = (group[i].combined[j] == 0) ? "  ❌" : "  ✅";  // in conditional the symbols decay to char* type
 		
