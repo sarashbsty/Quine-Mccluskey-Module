@@ -1,6 +1,7 @@
-#include<stdio.h>
-#include<string.h>
-#include<math.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <math.h>
 #include "quine.h" // quine struture
 #include "helper.h" // for digit , make_line , array_to_string
 
@@ -23,20 +24,22 @@ void displayGroups(quine group[] , int var){
 		// separator line before every group
 		printf("├%s┼%s┼%s┼%s┤\n",line[0],line[1],line[2],line[3]);
 		
-        for (int j = 0; j < group[i].count; j++) {
+        for (int j = 0; j < group[i].count; j++){
 			
-			char str[100] = "No terms" , No[5] = " ";   //initialize
+			char *str = malloc((m+1) * sizeof(*str)) , No[5] = " ";
+			if(str == NULL) { printf("display-implicants : Memory Allocation failed code : 101"); exit(0); }
 			
-			//print group No. only at first
-			if(j == 0) snprintf(No,5,"%d",i);       
+			//Print group No. only at first
+			if(j == 0) snprintf(No,5,"%d",i);      
+            
+			//Store all minterms associated with this binary to a string var
+			array_to_string(group[i].minterms[j] , group[i].mintermCount[j] , str , m+1);    
 			
-			// store all minterms associated with this binary to a string var
-			array_to_string(group[i].minterms[j] , group[i].mintermCount[j] , str , sizeof(str));
-			
-			char *symbol = (group[i].combined[j] == 0) ? "  ❌" : "  ✅";  // in conditional the symbols decay to char* type
+			//In conditional the symbols decay to char* type
+			char *symbol = (group[i].combined[j] == 0) ? "  ❌" : "  ✅";                            
 		
 			printf("│ %-*s │ %-*s │ %-*s │ %-*s │\n", width[0], No, width[1], str, width[2], group[i].binary[j], width[3]+1, symbol);
-                 
+			free(str);
         }
     }
 	printf("╰%s┴%s┴%s┴%s╯\n",line[0],line[1],line[2],line[3]);
