@@ -27,11 +27,15 @@ void display_implicants(const quine *prime){
 		char *str = malloc((m+1) * sizeof(*str));
 		if(str == NULL) { printf("display-implicants : Memory Allocation failed code : 102"); exit(0); }
 		
+		//convert to expression
+		strcpy(exp , prime->binary[i]);
+		Expression(exp);
+		
 		// create a string of minterms
 		array_to_string(prime->minterms[i] , prime->mintermCount[i] , str , m+1);
 		
 		printf("├%s┼%s┼%s┤\n",line[0],line[1],line[2]);
-		printf("│ %-*c │ %-*s │ %-*s │\n", width[0], (char)('A'+i) , width[1], prime->binary[i] , width[2], str);
+		printf("│ %-*s │ %-*s │ %-*s │\n", width[0], exp , width[1], prime->binary[i] , width[2], str);
 		
 		free(exp);
 		free(str);
