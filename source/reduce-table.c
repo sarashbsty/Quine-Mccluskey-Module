@@ -28,37 +28,37 @@ int reduce_table(quine group[] , quine reduced[] , int var){
 				//Only if diff is 1 , those two Binary and its Minterms will be combined and added to Reduce
                 if (diff == 1) {
 					
-					newCount++;
-					group[i].combined[a] = 1;
-                    group[i+1].combined[b] = 1;
-					
-					int idx = reduced[i].count;
 					char *temp = malloc((var+1) * sizeof(*temp));
 					if(temp == NULL) { printf("Reduce_table : Memory Allocation failed code: 101"); exit(0); }
 					
 					strcpy(temp , group[i].binary[a]);
 					temp[pos] = '-';
 					
+					// Only if there is no duplicates, then the binary will be added
 					int check = is_exist(reduced[i].binary, temp, reduced[i].count);
-					if(check == 1) { free(temp); continue; }
+					if(check == 0){ 
 					
-					strcpy(reduced[i].binary[idx] , temp);
-					free(temp);
-                    
-                    // Merge minterm
-                    int mCount = 0;
-                    for (int m = 0; m < group[i].mintermCount[a]; m++)
-                        reduced[i].minterms[idx][mCount++] = group[i].minterms[a][m];
-                    for (int m = 0; m < group[i+1].mintermCount[b]; m++)
-                        reduced[i].minterms[idx][mCount++] = group[i+1].minterms[b][m];
+						int idx = reduced[i].count;
+						strcpy(reduced[i].binary[idx] , temp);
+					
+						// Merge minterm
+						int mCount = 0;
+						for (int m = 0; m < group[i].mintermCount[a]; m++)
+							reduced[i].minterms[idx][mCount++] = group[i].minterms[a][m];
+						for (int m = 0; m < group[i+1].mintermCount[b]; m++)
+							reduced[i].minterms[idx][mCount++] = group[i+1].minterms[b][m];
 
-                    reduced[i].mintermCount[idx] = mCount;
-                    reduced[i].combined[idx] = 0;
-                    reduced[i].count++;
+						reduced[i].mintermCount[idx] = mCount;
+						reduced[i].combined[idx] = 0;
+						reduced[i].count++;
+					}
+					group[i].combined[a] = 1;
+					group[i+1].combined[b] = 1;
+					newCount++;
+					free(temp);
                 }
             }
         }
     }
-
     return newCount; // how many min terms combined. 0 -> no min terms combined means no futher reduction
 }
