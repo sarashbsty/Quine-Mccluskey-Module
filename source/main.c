@@ -1,5 +1,5 @@
 /*
-	Copyright (c) 2025 Sarash Basumatary 
+	Copyright (c) 2025 Sarash Basumatary
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,81 +34,81 @@ int main() {
     #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
     #endif
-    
+
     int var;
-    
+
     // Data input
     printf("Enter no. of variables: ");
     scanf("%d", &var);
 	clear_input_buffer();
-	
+
 	if(var < 1){
 		printf("%d is Invalid\n" , var);
 		return 0;
 	}
-	
+
 	int maxTerms = pow(2, var);
 	int *minterms = malloc(maxTerms * sizeof(*minterms));
 	if(minterms == NULL){ printf("Low Memory : failed allocating for minterms code: 101"); exit(0); }
-	
+
     printf("Enter min terms : ");
 	int min_count = get_minterms(minterms , 0 , maxTerms);
-	
+
 	if(min_count == 0){
 		printf("No Minterms Entered!\n");
 		return 0;
 	}
-	
+
 	printf("Enter dont care : ");
 	int dont_care_count = get_minterms(minterms , min_count , maxTerms);
-	  
+
     int n_terms = min_count + dont_care_count;
-    
-    printf("\n\n%d Min terms: ", min_count); 
-    for (int i = 0; i < min_count; i++) 
+
+    printf("\n\n%d Min terms: ", min_count);
+    for (int i = 0; i < min_count; i++)
         printf("%d ", minterms[i]);
-    
-    printf("\n%d Dont care: ", dont_care_count); 
-    for (int i = min_count; i < n_terms; i++) 
+
+    printf("\n%d Dont care: ", dont_care_count);
+    for (int i = min_count; i < n_terms; i++)
         printf("%d ", minterms[i]);
-    
+
     // Initialize data structures
     static quine group[100], reduced[100], prime;
-	
+
 	fill_group_table(group, minterms, n_terms, var);
-	
+
 	int i = 0 , canReduce = 0;
 	do{
 		canReduce = reduce_table(group, reduced, var);
 		prime_implicants(group, &prime, var);
-		
+
 		if(i) printf("\nReduction #%d:\n", i);
 		else  printf("\n\nInitial Grouping:\n");
-		
+
         displayGroups(group, var);
 		i++;
-		
+
 		if(canReduce)
 			for (int j = 0; j <= var; j++) group[j] = reduced[j];
-		
+
 	} while(canReduce);
-    
+
     printf("\n");
     display_implicants(&prime);
-    
+
     char essential_table[100][100][6] , result[100];
-    
+
     essential_implicants(&prime, essential_table, minterms, min_count, result , sizeof(result));
-    
+
     printf("\n\n\nTable to find Essential prime Implicants: \n");
     display_essential_table(&prime, essential_table, minterms, min_count);
-  
+
     printf("\n\nResult: Y(");
-    for (int i = 0; i < var; i++) 
+    for (int i = 0; i < var; i++)
 		printf( i ? ",%c" : "%c", (char)('A' + i));
     printf(") = %s\n\n",result);
-	
+
 	free(minterms);
-	
+
     return 0;
 }

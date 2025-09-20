@@ -1,11 +1,11 @@
 #pragma once
 
-typedef struct {                   
-    int count;                       
-    char binary[2000][100];             
-    int minterms[2000][100];          
-    int mintermCount[2000];          
-    int combined[2000];   	
+typedef struct {
+    int count;
+    char binary[2000][100];
+    int minterms[2000][100];
+    int mintermCount[2000];
+    int combined[2000];
 } quine;
 
 void fill_group_table(quine group[] , int Mid_terms[], int n_terms, int variables);

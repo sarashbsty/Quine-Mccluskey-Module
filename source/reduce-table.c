@@ -5,9 +5,9 @@
 #include "quine.h" // quine struture
 
 int reduce_table(quine group[] , quine reduced[] , int var){
-	
+
     int newCount = 0;
-	
+
     for (int i = 0; i <= var; i++)
         reduced[i].count = 0;
 
@@ -24,23 +24,23 @@ int reduce_table(quine group[] , quine reduced[] , int var){
                         pos = x;
                     }
                 }
-				
+
 				//Only if diff is 1 , those two Binary and its Minterms will be combined and added to Reduce
                 if (diff == 1) {
-					
+
 					char *temp = malloc((var+1) * sizeof(*temp));
 					if(temp == NULL) { printf("Reduce_table : Memory Allocation failed code: 101"); exit(0); }
-					
+
 					strcpy(temp , group[i].binary[a]);
 					temp[pos] = '-';
-					
+
 					// Only if there is no duplicates, then the binary will be added
 					int check = is_exist(reduced[i].binary, temp, reduced[i].count);
-					if(check == 0){ 
-					
+					if(check == 0){
+
 						int idx = reduced[i].count;
 						strcpy(reduced[i].binary[idx] , temp);
-					
+
 						// Merge minterm
 						int mCount = 0;
 						for (int m = 0; m < group[i].mintermCount[a]; m++)
