@@ -30,7 +30,7 @@ int reduce_table(quine group[] , quine reduced[] , int var){
 
 					//Building Reduced Binary
 					char *temp = malloc((var+1) * sizeof(*temp));
-					if(temp == NULL) { printf("ERROR: Building reduced Binary Failed | Reason: Low Memory | loc: reduce-table"); exit(0); }
+					if(temp == NULL) { printf("ERROR: Building reduced Binary Failed | Reason: Low Memory | loc: reduce-table\n"); exit(0); }
 					strcpy(temp , group[i].binary[a]);
 					temp[pos] = '-';
 
