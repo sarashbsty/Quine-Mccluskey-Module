@@ -16,7 +16,7 @@ void display_implicants(const quine *prime){
 	for(int i = 0; i < 3; i++) line_width[i] = width[i]+2;
 
 	char **line = make_line(line_width , 3 , "─" , 3);
-	if(line == NULL) { printf("ERROR: Line creation Failed | Reason: Low Memory | loc: Display-Implicants\n"); exit(0); }
+	if(line == NULL) { printf("\nERROR: Line creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
 
 	printf("\nPrime Implicants:\n");
 	printf("╔%s┬%s┬%s╗\n",line[0],line[1],line[2]);
@@ -26,13 +26,13 @@ void display_implicants(const quine *prime){
 
 		//Binary to expression
 		char *exp = malloc((2*n + 1) * sizeof(*exp));
-		if(exp == NULL) { printf("ERROR: Expression creation Failed | Reason: Low Memory | loc: Display-Implicants\n"); exit(0); }
+		if(exp == NULL) { printf("\nERROR: Expression creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
 		strcpy(exp , prime->binary[i]);
 		Expression(exp);
 
 		// create a string of minterms
 		char *str = malloc((m+1) * sizeof(*str));
-		if(str == NULL) { printf("ERROR: minterms string creation Failed | Reason: Low Memory | loc: Display-Implicants\n"); exit(0); }
+		if(str == NULL) { printf("\nERROR: minterms string creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
 		array_to_string(prime->minterms[i] , prime->mintermCount[i] , str , m+1);
 
 		printf("├%s┼%s┼%s┤\n",line[0],line[1],line[2]);

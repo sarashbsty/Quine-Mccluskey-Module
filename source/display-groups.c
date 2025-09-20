@@ -14,7 +14,7 @@ void displayGroups(quine group[] , int var){
 	for(int i = 0; i < 4; i++) line_width[i] = width[i]+2;
 
 	char **line = make_line(line_width , 4 , "─" , 3);
-	if(line == NULL) { printf("ERROR: Line creation Failed | Reason: Low Memory | Loc: Display-Group\n"); exit(0); }
+	if(line == NULL) { printf("\nERROR: Line creation Failed | Low Memory | Display-Group\n"); exit(0); }
 
 	printf("╭%s┬%s┬%s┬%s╮\n",line[0],line[1],line[2],line[3]);
 	printf("│ %-*s │ %-*s │ %-*s │ %-*s │\n", width[0], "GROUP", width[1], "MINTERMS", width[2], "BINARY", width[3], "REDUCE");
@@ -34,7 +34,7 @@ void displayGroups(quine group[] , int var){
 
 			//Store all minterms associated with this binary to a string var
 			char *str = malloc((m+1) * sizeof(*str));
-			if(str == NULL) { printf("ERROR: minterms string creation Failed | Reason: Low Memory | Loc: Display-Group\n"); exit(0); }
+			if(str == NULL) { printf("\nERROR: minterms string creation Failed | Low Memory | Display-Group\n"); exit(0); }
 			array_to_string(group[i].minterms[j] , group[i].mintermCount[j] , str , m+1);
 
 			//In conditional the symbols decay to char* type

@@ -6,8 +6,8 @@
 
 void fill_group_table(quine group[] , int minterms[], int n_terms, int variables){
 
-    char** Binary = ToBinary(minterms, n_terms, variables);
-	if(Binary == NULL) { printf("ERROR: Binary creation failed | reason: Low memory | loc: fill-group-table\n"); exit(0); }
+	char** Binary = ToBinary(minterms, n_terms, variables);
+	if(Binary == NULL) { printf("\nERROR: Binary creation failed | Low memory | fill-group-table\n"); exit(0); }
 
 	for(int i = 0; i <= variables; i++){
 		group[i].count = 0; // initialize

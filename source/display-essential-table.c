@@ -13,7 +13,7 @@ void display_essential_table(const quine *prime , char arr[][100][6] , int Minte
 	for(int i = 0; i < 2; i++) line_width[i] = width[i]+2;
 
 	char **line = make_line(line_width , 2 , "─" , 3);
-	if(line == NULL) { printf("ERROR: Line creation Failed | Reason: Low Memory | Loc: Display-Essential-Table\n"); exit(0); }
+	if(line == NULL) { printf("\nERROR: Line creation Failed | Low Memory | Display-Essential-Table\n"); exit(0); }
 
 	printf("╔%s┬%s╗\n",line[0] , line[1]);
 
@@ -26,7 +26,7 @@ void display_essential_table(const quine *prime , char arr[][100][6] , int Minte
 
 		//Binary to expression
 		char *exp = malloc((2*strlen(prime->binary[i]))+1 * sizeof(*exp));
-		if(exp == NULL) { printf("ERROR: Expression creation Failed | Reason: Low Memory | Loc: Display-Essential-Table\n"); exit(0); }
+		if(exp == NULL) { printf("\nERROR: Expression creation Failed | Low Memory | Display-Essential-Table\n"); exit(0); }
 		strcpy(exp , prime->binary[i]);
 		Expression(exp);
 
