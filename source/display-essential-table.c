@@ -10,7 +10,7 @@ void display_essential_table(const quine *prime , char arr[][100][6] , int Minte
 	int width[2] = {(n<10) ? 10 : (n*2)+1 , 5*min_count };
 	int total_len = 2 + width[0] + 3 + width[1] + 2;
 	
-    char line1[1000] , line2[3][500];
+    char line1[1000] , line2[2][500];
 	make_line(line1 , "─" , total_len-2 , 3);
 	for(int i = 0; i < 2; i++)
 		make_line(line2[i] ,"─", width[i]+2 ,3);
