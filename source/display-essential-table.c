@@ -8,14 +8,12 @@ void display_essential_table(const quine *prime , char arr[][100][6] , int Minte
 
 	int n = strlen(prime->binary[0]);
 	int width[2] = {(n<10) ? 10 : (n*2)+1 , 5*min_count };
-	int total_len = 2 + width[0] + 3 + width[1] + 2;
 
-    char line1[1000] , line2[2][500];
-	make_line(line1 , "─" , total_len-2 , 3);
+    char line[2][500];
 	for(int i = 0; i < 2; i++)
-		make_line(line2[i] ,"─", width[i]+2 ,3);
+		make_line(line[i] ,"─", width[i]+2 ,3);
 
-	printf("╔%s┬%s╗\n",line2[0] , line2[1]);
+	printf("╔%s┬%s╗\n",line[0] , line[1]);
 
 	printf("│ %-*s │  " , width[0] , "Expression");
 	for(int j = 0; j < min_count; j++)
@@ -31,7 +29,7 @@ void display_essential_table(const quine *prime , char arr[][100][6] , int Minte
 		strcpy(exp , prime->binary[i]);
 		Expression(exp);
 
-		printf("├%s┼%s┤\n",line2[0],line2[1]);
+		printf("├%s┼%s┤\n",line[0],line[1]);
 
 		printf("│ %-*s │ " , width[0] , exp);
 		for(int j = 0; j < min_count; j++)
@@ -40,5 +38,5 @@ void display_essential_table(const quine *prime , char arr[][100][6] , int Minte
 
 		free(exp);
 	}
-	printf("╚%s┴%s╝\n",line2[0],line2[1]);
+	printf("╚%s┴%s╝\n",line[0],line[1]);
 }
