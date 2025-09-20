@@ -15,9 +15,9 @@ void display_essential_table(const quine *prime , char arr[][100][6] , int Minte
 	for(int i = 0; i < 2; i++)
 		make_line(line2[i] ,"─", width[i]+2 ,3);
 
-	printf("╔%s╗\n",line1);
+	printf("╔%s┬%s╗\n",line2[0] , line2[1]);
 
-	printf("│ %-*s    " , width[0] , " ");  // this is made just to match with the lower widths
+	printf("│ %-*s │  " , width[0] , "Expression");
 	for(int j = 0; j < min_count; j++)
 		printf("%-5d" , Minterms[j]);
 	printf("│\n");
@@ -31,8 +31,7 @@ void display_essential_table(const quine *prime , char arr[][100][6] , int Minte
 		strcpy(exp , prime->binary[i]);
 		Expression(exp);
 
-		if(i == 0) printf("├%s┬%s┤\n",line2[0],line2[1]);
-		else printf("├%s┼%s┤\n",line2[0],line2[1]);
+		printf("├%s┼%s┤\n",line2[0],line2[1]);
 
 		printf("│ %-*s │ " , width[0] , exp);
 		for(int j = 0; j < min_count; j++)
