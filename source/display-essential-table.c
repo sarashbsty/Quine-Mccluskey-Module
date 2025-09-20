@@ -25,7 +25,7 @@ void display_essential_table(const quine *prime , char arr[][100][6] , int Minte
 	for(int i = 0; i < prime->count; i++){
 		
 		char *exp = malloc((2*strlen(prime->binary[i]))+1 * sizeof(*exp));
-		if(exp == NULL) { printf("display-essential-table : Memory Allocation failed code : 1021"); exit(0); }
+		if(exp == NULL) { printf("display-essential-table : Memory Allocation failed code : 101"); exit(0); }
 		
 		//convert to expression
 		strcpy(exp , prime->binary[i]);
