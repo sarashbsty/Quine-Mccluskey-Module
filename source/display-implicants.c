@@ -6,39 +6,45 @@
 #include "helper.h"  // for make_line , digit , array_to_string
 
 void display_implicants(const quine *prime){
-	
+
 	int n = strlen(prime->binary[0]);                                         // also gives no. of variables
 	int m = (digit(pow(2,n)) + 1) * prime->mintermCount[prime->count-1];      // digit + 1 = no. of digits + comma(,)
-	
+
 	int width[3] = {((n*2) < 10) ? 10 : (n*2)+1 , (n<6) ? 6 : n+1 , (m<8) ? 8 : m+1};
-    char line[3][1000];	
-	
-	for(int i=0; i<3; i++) 
-		make_line(line[i] , "─" , width[i]+2 , 3);
-		
+
+	int line_width[3];
+	for(int i = 0; i < 3; i++) line_width[i] = width[i]+2;
+
+	char **line = make_line(line_width , 3 , "─" , 3);
+	if(line == NULL) { printf("ERROR: Line creation Failed | Reason: Low Memory | Code: Display-Essential-Implicants"); exit(0); }
+
 	printf("\nPrime Implicants:\n");
 	printf("╔%s┬%s┬%s╗\n",line[0],line[1],line[2]);
 	printf("│ %-*s │ %-*s │ %-*s │\n", width[0], "Expression" ,width[1], "Binary" , width[2], "Minterms");
-	
+
 	for(int i = 0; i < prime->count; i++){
-		
+
 		char *exp = malloc((2*n + 1) * sizeof(*exp));
 		if(exp == NULL) { printf("display-implicants : Memory Allocation failed code : 101"); exit(0); }
 		char *str = malloc((m+1) * sizeof(*str));
 		if(str == NULL) { printf("display-implicants : Memory Allocation failed code : 102"); exit(0); }
-		
+
 		//convert to expression
 		strcpy(exp , prime->binary[i]);
 		Expression(exp);
-		
+
 		// create a string of minterms
 		array_to_string(prime->minterms[i] , prime->mintermCount[i] , str , m+1);
-		
+
 		printf("├%s┼%s┼%s┤\n",line[0],line[1],line[2]);
 		printf("│ %-*s │ %-*s │ %-*s │\n", width[0], exp , width[1], prime->binary[i] , width[2], str);
-		
+
 		free(exp);
 		free(str);
 	}
 	printf("╚%s┴%s┴%s╝",line[0],line[1],line[2]);
+
+	for(int i = 0; i<3; i++)
+		free(line[i]);
+	free(line);
 }

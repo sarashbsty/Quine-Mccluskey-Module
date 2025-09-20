@@ -3,13 +3,12 @@
 
 int digit(int x);
 char** ToBinary(int minterms[] , int ,int);
+char** make_line(int width[] , int , const char* , int);
 int count_1s(char binary[]);
 void Expression(char binary[]);
 int is_exist(char (*arr)[100], const char item[] , int);
 int get_minterms(int min_terms[] , int , int);
-void make_line(char str[] , const char* c , int , int);
 void array_to_string(const int *arr , const int , char *str , int);
-
 
 static inline void clear_input_buffer(){
 	int c;
