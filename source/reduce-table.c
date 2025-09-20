@@ -25,19 +25,18 @@ int reduce_table(quine group[] , quine reduced[] , int var){
                     }
                 }
 
-				//Only if diff is 1 , those two Binary and its Minterms will be combined and added to Reduce
+				//Only if diff is 1 , those two Binary and its Minterms will be combined
                 if (diff == 1) {
 
+					//Building Reduced Binary
 					char *temp = malloc((var+1) * sizeof(*temp));
-					if(temp == NULL) { printf("Reduce_table : Memory Allocation failed code: 101"); exit(0); }
-
+					if(temp == NULL) { printf("ERROR: Building reduced Binary Failed | Reason: Low Memory | loc: reduce-table"); exit(0); }
 					strcpy(temp , group[i].binary[a]);
 					temp[pos] = '-';
 
-					// Only if there is no duplicates, then the binary will be added
+					// To check whether the current reduced binary is redundant
 					int check = is_exist(reduced[i].binary, temp, reduced[i].count);
 					if(check == 0){
-
 						int idx = reduced[i].count;
 						strcpy(reduced[i].binary[idx] , temp);
 
