@@ -14,6 +14,25 @@ static int isexist(char **arr, const char item[], int size) {
     return 0;
 }
 
+static int add_string(char ***str, int *capacity, const char item[], int *count) {
+
+    if (*count >= *capacity) {
+        *capacity += 5;
+        char **temp = realloc(*str, (*capacity) * sizeof(*temp));
+        if (!temp) return 0;
+        *str = temp;
+    }
+
+    size_t len = (2*strlen(item)) + 1;
+    (*str)[*count] = malloc(len);
+    if (!(*str)[*count]) return 0;
+
+    strcpy((*str)[*count], item);
+    (*count)++;
+    return 1;
+}
+
+
 void essential_implicants(quine *prime , char arr[][100][6] , int min_terms[] , int min_count, char result[100] ,int size){
 
 	//all space initialize
@@ -43,18 +62,14 @@ void essential_implicants(quine *prime , char arr[][100][6] , int min_terms[] , 
 			strcpy(arr[index][min_terms[j]] , "(X)" );
 
 			// checking duplicates
-			if(!isexist(str, prime->binary[index] , count)){
-				if(count >= capacity){
-					capacity += 5;
-					char **temp = realloc(str , capacity*sizeof(*str));
-					if(temp == NULL){ printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n"); exit(0); }
-					str = temp;
-				}
+			int check = isexist(str, prime->binary[index] , count);
+			if(check == 1) continue;
 
-				size_t len = (2*strlen(prime->binary[index])) + 1;
-				str[count] = malloc(len * sizeof(char));
-				if(str[count] == NULL){ printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n"); exit(0); }
-				strcpy(str[count++] , prime->binary[index]);
+			int pass = add_string(&str , &capacity , prime->binary[index] , &count);
+			if(pass == 0){
+				printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n");
+				free_pointer_array(str , count);
+				exit(0);
 			}
 		}
 	}

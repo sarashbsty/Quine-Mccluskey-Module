@@ -96,7 +96,7 @@ int main() {
     printf("\n");
     display_implicants(&prime);
 
-    char essential_table[100][100][6] , result[100];
+    char essential_table[100][100][6] , result[100] = "No result";
 
     essential_implicants(&prime, essential_table, minterms, min_count, result , sizeof(result));
 
@@ -107,6 +107,7 @@ int main() {
     for (int i = 0; i < var; i++)
 		printf( i ? ",%c" : "%c", (char)('A' + i));
     printf(") = %s\n\n",result);
+
 
 	free(minterms);
 
