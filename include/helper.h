@@ -1,5 +1,6 @@
 #pragma once
 #include<stdio.h>
+#include<stdlib.h>
 
 int digit(int x);
 char** ToBinary(int minterms[] , int ,int);
@@ -13,4 +14,11 @@ void array_to_string(const int *arr , const int , char *str , int);
 static inline void clear_input_buffer(){
 	int c;
     while ((c = getchar()) != '\n' && c != EOF);  //clear stdin
+}
+
+static inline void free_string_array(char** str, int size){
+	if(str == NULL) return;
+	for(int i = 0; i < size; i++)
+		free(str[i]);
+	free(str);
 }

@@ -41,8 +41,5 @@ void display_implicants(const quine *prime){
 		free(exp); free(str);
 	}
 	printf("╚%s┴%s┴%s╝",line[0],line[1],line[2]);
-
-	for(int i = 0; i<3; i++)
-		free(line[i]);
-	free(line);
+	free_string_array(line , 3);
 }
