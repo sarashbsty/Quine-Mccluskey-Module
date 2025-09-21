@@ -67,6 +67,5 @@ void essential_implicants(quine *prime , char arr[][100][6] , int min_terms[] , 
 	}
 
 	//free memory
-	for(int i = 0; i < count; i++) free(str[i]);
-	free(str);
+	free_pointer_array(str , count);
 }

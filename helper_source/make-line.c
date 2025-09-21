@@ -10,7 +10,7 @@ char** make_line(int width[] , int widthcount , const char* style , int byte){
 		int n = width[i];
 		char *str = malloc(((n*byte)+1) * sizeof(*str));
 		if(str == NULL){
-			free_string_array(line,i);
+			free_pointer_array(line,i);
 			return NULL;
 		}
 

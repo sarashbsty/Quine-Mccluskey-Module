@@ -45,5 +45,5 @@ void displayGroups(quine group[] , int var){
         }
     }
 	printf("╰%s┴%s┴%s┴%s╯\n",line[0],line[1],line[2],line[3]);
-	free_string_array(line , 4);
+	free_pointer_array(line , 4);
 }
