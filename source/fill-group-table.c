@@ -23,7 +23,5 @@ void fill_group_table(quine group[] , int minterms[], int n_terms, int variables
 		}
 	}
 
-	free(Binary[0]); // free big block
-	free(Binary);    // free array of pointer
-
+	free_2d_pointer(Binary , n_terms);
 }
