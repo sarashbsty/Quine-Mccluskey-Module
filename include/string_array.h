@@ -1,4 +1,5 @@
 #pragma once
+#include<stdlib.h>
 
 typedef struct {
 	char **arr;
@@ -7,4 +8,13 @@ typedef struct {
 } string_arr;
 
 int add_string(string_arr *str , const char *item);
-void free_string_array(string_arr *str);
+
+static inline void free_string_array(string_arr *str){
+	for(int i = 0; i < str->size; i++)
+		free(str->arr[i]);
+	free(str->arr);
+
+	str->arr = NULL;
+	str->size = 0;
+	str->capacity = 0;
+}
