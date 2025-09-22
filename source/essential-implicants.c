@@ -64,6 +64,7 @@ void essential_implicants(quine *prime , char arr[][100][6] , int min_terms[] , 
 			strcpy(arr[index][min_terms[j]] , "(X)" );
 
 			// checking duplicates
+<<<<<<< HEAD
 			int check = isexist(essential.arr, prime->binary[index] , essential.size);
 			if(check == 1) continue;
 
@@ -72,6 +73,20 @@ void essential_implicants(quine *prime , char arr[][100][6] , int min_terms[] , 
 				printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n");
 				free_string_array(&essential);
 				exit(0);
+=======
+			if(!isexist(str, prime->binary[index] , count)){
+				if(count >= capacity){
+					capacity += 5;
+					char **temp = realloc(str , capacity*sizeof(*str));
+					if(temp == NULL){ printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n"); exit(0); }
+					str = temp;
+				}
+
+				size_t len = (2*strlen(prime->binary[index])) + 1;
+				str[count] = malloc(len * sizeof(char));
+				if(str[count] == NULL){ printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n"); exit(0); }
+				strcpy(str[count++] , prime->binary[index]);
+>>>>>>> parent of 2c73a79 (updated the essential-impliacants)
 			}
 		}
 	}
