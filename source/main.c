@@ -71,8 +71,8 @@ int main() {
     for (int i = min_count; i < n_terms; i++)
         printf("%d ", minterms[i]);
 
-    // Initialize data structures
-    static quine group[100], reduced[100], prime;
+    // declare data structures
+	static quine group[100], reduced[100], prime;
 
 	fill_group_table(group, minterms, n_terms, var);
 
