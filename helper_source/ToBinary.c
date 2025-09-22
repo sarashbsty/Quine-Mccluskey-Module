@@ -2,6 +2,9 @@
 #include "helper.h"
 
 char** ToBinary(int minterms[] , int n_terms, int var){
+
+	if (n_terms == 0 || var == 0) return NULL;
+
 	char **binary = malloc(n_terms * sizeof(*binary)); // create array of n_terms pointers
 	if(!binary) return NULL;
 
