@@ -41,5 +41,5 @@ void display_implicants(const quine *prime){
 		free(exp); free(str);
 	}
 	printf("╚%s┴%s┴%s╝",line[0],line[1],line[2]);
-	free_pointer_array(line , 3);
+	free_2d_pointer(line , 3);
 }

@@ -98,7 +98,7 @@ int main() {
 
  // create essential_table
 	char ***essential_table = create_table(prime.count , pow(2,var) , 6);
-	if(essential_table == NULL){ printf("ERROR: Table creation failed | Low Memory | main\n"); exit(0)
+	if(essential_table == NULL){ printf("ERROR: Table creation failed | Low Memory | main\n"); exit(0); }
 
     char *result = essential_implicants(&prime, essential_table, minterms, min_count);
 
@@ -111,11 +111,7 @@ int main() {
     printf(") = %s\n\n", (result ? result : "No result"));
 
 	//free table
-	for(int x = 0; x < prime.count ; x++){
-		free(essential_table[x][0]);
-		free(essential_table[x]);
-	}
-	free(essential_table);
+	free_3d_pointer(essential_table , prime.count , pow(2,var));
 
 	free(result);
 	free(minterms);

@@ -40,5 +40,5 @@ void display_essential_table(const quine *prime , char ***arr , int Minterms[] ,
 		free(exp);
 	}
 	printf("╚%s┴%s╝\n",line[0],line[1]);
-	free_pointer_array(line , 2);
+	free_2d_pointer(line , 2);
 }

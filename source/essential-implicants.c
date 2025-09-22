@@ -82,6 +82,6 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 		offset += written;
 	}
 	//free memory
-	free_pointer_array(essential , count);
+	free_2d_pointer(essential , count);
 	return exp;
 }
