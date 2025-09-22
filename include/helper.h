@@ -17,9 +17,17 @@ static inline void clear_input_buffer(){
     while ((c = getchar()) != '\n' && c != EOF);  //clear stdin
 }
 
-static inline void free_pointer_array(char** arr, int size){
+static inline void free_2d_pointer(char **arr, int size){
 	if(arr == NULL) return;
 	for(int i = 0; i < size; i++)
 		free(arr[i]);
 	free(arr);
 }
+
+static inline void free_3d_pointer(char ***arr, int row, int col){
+    if(arr == NULL) return;
+    for(int i = 0; i < row; i++)
+        free_2d_pointer(arr[i], col);
+    free(arr);
+}
+
