@@ -16,9 +16,9 @@ static inline void clear_input_buffer(){
     while ((c = getchar()) != '\n' && c != EOF);  //clear stdin
 }
 
-static inline void free_pointer_array(char** str, int size){
-	if(str == NULL) return;
+static inline void free_pointer_array(char** arr, int size){
+	if(arr == NULL) return;
 	for(int i = 0; i < size; i++)
-		free(str[i]);
-	free(str);
+		free(arr[i]);
+	free(arr);
 }
