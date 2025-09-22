@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include "helper.h"
 
-char** make_line(int width[] , int widthcount , const char* style , int byte){
+char** make_line(int *width , int widthcount , const char* style , int byte){
 	char **line = calloc(widthcount , sizeof(*line));
 	if(line == NULL) return NULL;
 

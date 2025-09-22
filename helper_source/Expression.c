@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include "helper.h"
 
-void Expression(char binary[]){
+void Expression(char *binary){
 	char *str = NULL;
 	int cap = 0 , count = 0;
 
