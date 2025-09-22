@@ -96,7 +96,42 @@ int main() {
     printf("\n");
     display_implicants(&prime);
 
-    char essential_table[100][100][6];
+ // create essential_table
+	char ***essential_table = malloc(prime.count * sizeof(*essential_table));
+	if(!essential_table){ printf("ERROR: Table creation failed | Low Memory | main\n"); exit(0); }
+
+	for(int i = 0; i < prime.count; i++){
+		//create individaul string-array
+		char** temp1 = malloc(pow(2,var) * sizeof(*temp1));
+		if(!temp1){
+			printf("table creation fail\n");
+			for(int x = 0; x < i ; x++){
+				free(essential_table[x][0]);
+				free(essential_table[x]);
+			}
+			free(essential_table);
+			exit(0);
+		}
+		essential_table[i] = temp1;
+
+		//create big block
+		char *block = malloc(6*pow(2,var) * sizeof(*block));
+		if(!block){
+			printf("table creation fail\n");
+			for(int x = 0; x < i ; x++){
+				free(essential_table[x][0]);
+				free(essential_table[x]);
+			}
+			free(essential_table[i]);
+			free(essential_table);
+			exit(0);
+		}
+
+		//assigning segments of bigblock
+		for(int idx = 0; idx < pow(2,var); idx++)
+			essential_table[i][idx] = block + (idx*6);
+	}
+
     char *result = essential_implicants(&prime, essential_table, minterms, min_count);
 
     printf("\n\n\nTable to find Essential prime Implicants: \n");
@@ -109,6 +144,13 @@ int main() {
 
 	free(minterms);
 	free(result);
+	//free table
+	for(int x = 0; x < prime.count ; x++){
+		free(essential_table[x][0]);
+		free(essential_table[x]);
+	}
+	free(essential_table);
+
 
     return 0;
 }

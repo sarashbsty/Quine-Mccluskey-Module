@@ -4,7 +4,7 @@
 #include "helper.h"
 #include "quine.h" // quine struture
 
-void display_essential_table(const quine *prime , char arr[][100][6] , int Minterms[] , int min_count){
+void display_essential_table(const quine *prime , char ***arr , int Minterms[] , int min_count){
 
 	int n = strlen(prime->binary[0]);
 	int width[2] = {(n<10) ? 10 : (n*2)+1 , 5*min_count };

@@ -15,7 +15,7 @@ static int isexist(char **arr, const char item[], int size) {
     return 0;
 }
 
-char* essential_implicants(quine *prime , char arr[][100][6] , int min_terms[] , int min_count){
+char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int min_count){
 
 	//all space initialize
 	for(int i = 0; i < prime->count; i++)
