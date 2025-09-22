@@ -73,7 +73,11 @@ int main() {
 
     // declare data structures
 	quine *group = malloc((var+1) * sizeof(quine));
+	if(!group){ printf("ERROR: Create Group struture failed | low | main\n"); exit(0); }
+
 	quine *reduced = malloc((var+1) * sizeof(quine));
+	if(!reduced){ printf("ERROR: Create reduced struture failed | low | main\n"); exit(0); }
+
 	quine prime;
 
 
