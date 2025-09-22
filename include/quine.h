@@ -13,5 +13,5 @@ void displayGroups(quine group[] , int variables);
 int reduce_table(quine group[] , quine reduce[] , int variables);
 void prime_implicants(quine group[] , quine *prime , int variables);
 void display_implicants(const quine *prime);
-void essential_implicants( quine *prime , char arr[][100][6] , int min_terms[] , int min_count, char result[] , int size);
+char* essential_implicants( quine *prime , char arr[][100][6] , int min_terms[] , int min_count);
 void display_essential_table(const quine *prime , char arr[][100][6] , int min_terms[] , int min_count);

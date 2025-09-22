@@ -7,27 +7,6 @@
 
 //check for improvemnt
 
-int expression(string_arr *binary){
-	for(int index = 0; index < binary->size; index++){
-
-		size_t len = (2*strlen(binary->arr[index])) + 1;
-		char *str = malloc(len);
-		if(!str) return 0;
-
-		int count = 0;
-		for(int i = 0; binary->arr[index][i] != '\0'; i++){
-			char var = 'A'+i;
-			if(binary->arr[index][i] == '0') { str[count++] = var; str[count++] = '\''; }
-			else if(binary->arr[index][i] == '1') str[count++] = var;
-			else continue;
-		}
-		str[count] = '\0';
-		free(binary->arr[index]);
-		binary->arr[index] = str;
-	}
-	return 1;
-}
-
 static int isexist(char **arr, const char item[], int size) {
     for (int i = 0; i < size; i++) {
         if (strcmp(arr[i], item) == 0)
@@ -36,7 +15,7 @@ static int isexist(char **arr, const char item[], int size) {
     return 0;
 }
 
-void essential_implicants(quine *prime , char arr[][100][6] , int min_terms[] , int min_count, char result[100] ,int size){
+char* essential_implicants(quine *prime , char arr[][100][6] , int min_terms[] , int min_count){
 
 	//all space initialize
 	for(int i = 0; i < prime->count; i++)
@@ -49,7 +28,8 @@ void essential_implicants(quine *prime , char arr[][100][6] , int min_terms[] , 
 			strcpy(arr[i][prime->minterms[i][j]] , " X");
 
 	//Finding the essential implicant by finding column(minterm) with only one 'X' and the prime implecant that covers it
-	string_arr essential = {NULL , 0 , 0};
+	char** essential = NULL;
+	int count = 0 , capacity = 0;
 
 	for(int j = 0; j < min_count; j++){
 
@@ -60,49 +40,48 @@ void essential_implicants(quine *prime , char arr[][100][6] , int min_terms[] , 
 				index = i;
 			}
 		}
+
 		if(ones == 1){
+
 			strcpy(arr[index][min_terms[j]] , "(X)" );
 
 			// checking duplicates
-<<<<<<< HEAD
-			int check = isexist(essential.arr, prime->binary[index] , essential.size);
+			int check = isexist(essential, prime->binary[index] , count);
 			if(check == 1) continue;
 
-			int pass = add_string(&essential , prime->binary[index]);
-			if(pass == 0){
-				printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n");
-				free_string_array(&essential);
-				exit(0);
-=======
-			if(!isexist(str, prime->binary[index] , count)){
-				if(count >= capacity){
-					capacity += 5;
-					char **temp = realloc(str , capacity*sizeof(*str));
-					if(temp == NULL){ printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n"); exit(0); }
-					str = temp;
-				}
-
-				size_t len = (2*strlen(prime->binary[index])) + 1;
-				str[count] = malloc(len * sizeof(char));
-				if(str[count] == NULL){ printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n"); exit(0); }
-				strcpy(str[count++] , prime->binary[index]);
->>>>>>> parent of 2c73a79 (updated the essential-impliacants)
+			//Creating Dynamic string to store binary and later on expression
+			if(count >= capacity){
+				capacity += 5;
+				char **temp = realloc(essential , capacity*sizeof(*essential));
+				if(temp == NULL){ printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n"); exit(0); }
+				essential = temp;
 			}
+
+			size_t len = (2*strlen(prime->binary[index])) + 1;
+			essential[count] = malloc(len * sizeof(char));
+			if(essential[count] == NULL){ printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n"); exit(0); }
+			strcpy(essential[count++] , prime->binary[index]);
 		}
 	}
 
-	int check = expression(&essential);
-	if(check == 0){
-		printf("\nERROR: expression transform fail | Low Memory | essential-implicants\n");
-		free_string_array(&essential);
-		exit(0);
-	}
-
+	char *exp = NULL;
 	int offset = 0;
-	for(int i = 0; i < essential.size; i++){
-		int written = snprintf(result+offset , size-offset , i ? " + %s" : "%s" , essential.arr[i]);
+
+	for(int i = 0; i < count; i++){
+		Expression(essential[i]);
+		int needed = snprintf(NULL , 0 , i ? " + %s" : "%s" , essential[i]);
+		int new_capacity = offset+needed+1;
+		char *temp = realloc(exp , new_capacity * sizeof(*temp));
+		if(!temp) {
+			printf("\nERROR: expression string creation fail | Low Memory | essential-implicants\n");
+			free(exp);
+			exit(0);
+		}
+		exp = temp;
+		int written = snprintf(exp+offset , new_capacity-offset , i ? " + %s" : "%s" , essential[i]);
 		offset += written;
 	}
 	//free memory
-	free_string_array(&essential);
+	free_pointer_array(essential , count);
+	return exp;
 }

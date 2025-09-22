@@ -96,9 +96,8 @@ int main() {
     printf("\n");
     display_implicants(&prime);
 
-    char essential_table[100][100][6] , result[100] = "No result";
-
-    essential_implicants(&prime, essential_table, minterms, min_count, result , sizeof(result));
+    char essential_table[100][100][6];
+    char *result = essential_implicants(&prime, essential_table, minterms, min_count);
 
     printf("\n\n\nTable to find Essential prime Implicants: \n");
     display_essential_table(&prime, essential_table, minterms, min_count);
@@ -106,10 +105,10 @@ int main() {
     printf("\n\nResult: Y(");
     for (int i = 0; i < var; i++)
 		printf( i ? ",%c" : "%c", (char)('A' + i));
-    printf(") = %s\n\n",result);
-
+    printf(") = %s\n\n", (result ? result : "No result"));
 
 	free(minterms);
+	free(result);
 
     return 0;
 }
