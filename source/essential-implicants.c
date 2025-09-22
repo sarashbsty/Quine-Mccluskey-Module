@@ -85,7 +85,7 @@ void essential_implicants(quine *prime , char arr[][100][6] , int min_terms[] , 
 
 	int offset = 0;
 	for(int i = 0; i < essential.size; i++){
-		int written = snprintf(result+offset , size-offset , i ? "+ %s" : "%s" , essential.arr[i]);
+		int written = snprintf(result+offset , size-offset , i ? " + %s" : "%s" , essential.arr[i]);
 		offset += written;
 	}
 	//free memory
