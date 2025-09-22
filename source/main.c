@@ -35,10 +35,9 @@ int main() {
     SetConsoleOutputCP(CP_UTF8);
     #endif
 
-    int var;
-
     // Data input
     printf("Enter no. of variables: ");
+	int var;
     scanf("%d", &var);
 	clear_input_buffer();
 
@@ -49,7 +48,7 @@ int main() {
 
 	int maxTerms = pow(2, var);
 	int *minterms = malloc(maxTerms * sizeof(*minterms));
-	if(minterms == NULL){ printf("Low Memory : failed allocating for minterms code: 101"); exit(0); }
+	if(minterms == NULL){ printf("ERROR: failed taking minterm input | low memory | main"); exit(0); }
 
     printf("Enter min terms : ");
 	int min_count = get_minterms(minterms , 0 , maxTerms);
