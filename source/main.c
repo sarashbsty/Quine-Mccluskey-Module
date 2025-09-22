@@ -72,7 +72,10 @@ int main() {
         printf("%d ", minterms[i]);
 
     // declare data structures
-	static quine group[100], reduced[100], prime;
+	quine *group = malloc((var+1) * sizeof(quine));
+	quine *reduced = malloc((var+1) * sizeof(quine));
+	quine prime;
+
 
 	fill_group_table(group, minterms, n_terms, var);
 
@@ -114,6 +117,8 @@ int main() {
 
 	free(result);
 	free(minterms);
+	free(reduced);
+	free(group);
 
     return 0;
 }
