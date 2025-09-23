@@ -5,13 +5,13 @@
 int digit(int x);
 char* get_input();
 char* Expression(const char *binary);
+char* array_to_string(const int *arr , const int arr_size);
 char** ToBinary(int *minterms , int n_terms, int var);
 char** make_line(int *width , int widthcount , const char* style , int byte);
 char ***create_table(int row , int col , int n);
 int count_1s(char *binary);
 int is_exist(char (*arr)[100], const char *item, int size);
 int get_minterms(int *minterms , int index, int max_terms);
-void array_to_string(const int *arr , const int arr_size , char *str ,  int str_size);
 
 static inline void clear_input_buffer(){
 	int c;

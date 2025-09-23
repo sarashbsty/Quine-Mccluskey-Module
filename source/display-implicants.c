@@ -29,9 +29,8 @@ void display_implicants(const quine *prime){
 		if(exp == NULL) { printf("\nERROR: Expression creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
 
 		// create a string of minterms
-		char *str = malloc((m+1) * sizeof(*str));
+		char *str = array_to_string(prime->minterms[i] , prime->mintermCount[i]);
 		if(str == NULL) { printf("\nERROR: minterms string creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
-		array_to_string(prime->minterms[i] , prime->mintermCount[i] , str , m+1);
 
 		printf("├%s┼%s┼%s┤\n",line[0],line[1],line[2]);
 		printf("│ %-*s │ %-*s │ %-*s │\n", width[0], exp , width[1], prime->binary[i] , width[2], str);

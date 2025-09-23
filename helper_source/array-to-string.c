@@ -1,10 +1,31 @@
 #include<stdio.h>
 #include "helper.h"
 
-void array_to_string(const int *arr , const int arr_size , char *str ,  int str_size){
-		int offset = 0;
-		for(int j = 0; j < arr_size; j++){
-			int written = snprintf(str+offset , str_size-offset , (j < arr_size-1) ? "%d," : "%d" , arr[j]);
-			offset += written;
+char* array_to_string(const int *arr , const int arr_size){
+	int capacity = 16;
+	int offset = 0;
+	char *str = malloc(capacity * sizeof(*str));
+	if(!str) return NULL;
+
+	for(int i = 0; i < arr_size; i++){
+
+		// geting required size
+		int needed = snprintf(NULL , 0 , (i==0) ? "%d" : ",%d" , arr[i]);
+		int size = offset + needed + 1;
+
+		//reallocate
+		if(size > capacity){
+			while(capacity < size) capacity *= 2;
+			char *temp = realloc(str , capacity * sizeof(*temp));
+			if(!temp) { free(str); return NULL; }
+			str = temp;
 		}
+
+		//Write
+		int written = snprintf(str+offset , capacity-offset , (i==0) ? "%d" : ",%d" , arr[i]);
+		offset += written;
+	}
+	return str;
 }
+
+
