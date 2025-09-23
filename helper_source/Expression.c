@@ -20,6 +20,8 @@ void Expression(char *binary){
 		else if(binary[i] == '1') str[count++] = var;
 		else continue;
 	}
+	if(count == 0) str[count++] = '1';
+
 	str[count] = '\0';
 	strcpy(binary,str);
 	free(str);
