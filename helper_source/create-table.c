@@ -10,9 +10,7 @@ char ***create_table(int row , int col , int n){
 		//create individaul string-array
 		char** str = malloc(col * sizeof(*str));
 		if(!str){
-			for(int x = 0; x < i ; x++)
-				free_2d_pointer(table[x] , col);
-			free(table);
+			free_3d_pointer(table , i , col);
 			return NULL;
 		}
 
@@ -20,10 +18,8 @@ char ***create_table(int row , int col , int n){
 		for(int idx = 0; idx < col; idx++){
 			str[idx] = malloc(n * sizeof(char));
 			if(!str[idx]){
-				for(int x = 0; x < i ; x++)
-					free_2d_pointer(table[x] , col);
 				free_2d_pointer(str , idx);
-				free(table);
+				free_3d_pointer(table , i , col);
 				return NULL;
 			}
 		}
