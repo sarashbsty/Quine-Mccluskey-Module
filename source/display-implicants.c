@@ -1,35 +1,45 @@
 #include<stdio.h>
+#include<stdlib.h>
 #include<string.h>
 #include<math.h>
 #include "quine.h" // quine struture
-#include "helper.h"  // for make_line , digit
+#include "helper.h"  // for make_line , digit , array_to_string
 
 void display_implicants(const quine *prime){
-	
+
 	int n = strlen(prime->binary[0]);                                         // also gives no. of variables
 	int m = (digit(pow(2,n)) + 1) * prime->mintermCount[prime->count-1];      // digit + 1 = no. of digits + comma(,)
-	
-	int width[3] = {1 , (n<6) ? 6 : n+1 , (m<8) ? 8 : m+1};
-    char line[3][1000];	
-	
-	for(int i=0; i<3; i++) 
-		make_line(line[i] , "─" , width[i]+2 , 3);
-		
+
+	int width[3] = {((n*2) < 10) ? 10 : (n*2)+1 , (n<6) ? 6 : n+1 , (m<8) ? 8 : m+1};
+
+	int line_width[3];
+	for(int i = 0; i < 3; i++) line_width[i] = width[i]+2;
+
+	char **line = make_line(line_width , 3 , "─" , 3);
+	if(line == NULL) { printf("\nERROR: Line creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
+
 	printf("\nPrime Implicants:\n");
 	printf("╔%s┬%s┬%s╗\n",line[0],line[1],line[2]);
-	printf("│ %-*s │ %-*s │ %-*s │\n", width[0], " " ,width[1], "Binary" , width[2], "Minterms");
-	
+	printf("│ %-*s │ %-*s │ %-*s │\n", width[0], "Expression" ,width[1], "Binary" , width[2], "Minterms");
+
 	for(int i = 0; i < prime->count; i++){
-		
+
+		//Binary to expression
+		char *exp = malloc((2*n + 1) * sizeof(*exp));
+		if(exp == NULL) { printf("\nERROR: Expression creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
+		strcpy(exp , prime->binary[i]);
+		Expression(exp);
+
 		// create a string of minterms
-		char str[100]; int offset = 0 , size = prime->mintermCount[i];
-		for(int j = 0; j < size; j++){
-			int data = prime->minterms[i][j];
-			int written = snprintf(str+offset , sizeof(str)-offset , (j < size-1) ? "%d," : "%d" , data);
-			offset += written;
-		}
+		char *str = malloc((m+1) * sizeof(*str));
+		if(str == NULL) { printf("\nERROR: minterms string creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
+		array_to_string(prime->minterms[i] , prime->mintermCount[i] , str , m+1);
+
 		printf("├%s┼%s┼%s┤\n",line[0],line[1],line[2]);
-		printf("│ %-*c │ %-*s │ %-*s │\n", width[0], (char)('A'+i) , width[1], prime->binary[i] , width[2], str);
+		printf("│ %-*s │ %-*s │ %-*s │\n", width[0], exp , width[1], prime->binary[i] , width[2], str);
+
+		free(exp); free(str);
 	}
 	printf("╚%s┴%s┴%s╝",line[0],line[1],line[2]);
+	free_2d_pointer(line , 3);
 }

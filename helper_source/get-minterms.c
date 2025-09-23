@@ -8,17 +8,17 @@ static char* get_input(){
 	size_t capacity = 100;
 	size_t size = 0;
 	char *buffer = (char*)malloc(capacity);
-	
+
 	if(buffer == NULL) return NULL;
-		
+
 	int ch;
 	while((ch = getchar()) != '\n' && ch != EOF){
-		
+
 		if (size >= capacity-1){
 			capacity += 10;
 			char* temp = realloc(buffer,capacity);
-			
-			if(temp == NULL){                        
+
+			if(temp == NULL){
 				buffer[size] = '\0';
 				printf("Error: no space left\n");
 				printf("       Read %s\n",buffer);
@@ -27,7 +27,7 @@ static char* get_input(){
 			}
 			buffer = temp;
 		}
-		buffer[size++] = ch;	
+		buffer[size++] = ch;
 	}
 	buffer[size] = '\0';
 	return buffer;
@@ -36,97 +36,97 @@ static char* get_input(){
 static void clear_separators(char **ch){
 	while (**ch == ' ' || **ch == '\t' || **ch == ',') (*ch)++;
 }
-	
-int get_minterms(int min_terms[] , int index, int max_terms){
-	
+
+int get_minterms(int *minterms , int index, int max_terms){
+
 	char *input = get_input();
-	
+
 	if(input == NULL){
 		printf("Memory Allocation Error!\n");
 		return 0;
 	}
-	
-	if (input[0] == '\0'){  // No change if empty input  note: *ptr == ptr[0]  
+
+	if (input[0] == '\0'){  // No change if empty input
 		free(input);
 		return 0;
 	}
-	
-	int initial_index = index;    
+
+	int initial_index = index;
     char *ptr = input;
     int num;
-	
+
     while (index < max_terms){
-		
+
 		clear_separators(&ptr);
         if(sscanf(ptr, "%d", &num) == 1){
-				
+
             if (num < 0) printf("Error: Negative value %d ignored\n", num);
 			else if(num >= max_terms) printf("Error: %d is not a valid minterm of %d variables. Ignored\n", num, (int)log2(max_terms));
-            else  min_terms[index++] = num;
-                 
+            else  minterms[index++] = num;
+
             while (*ptr != ',' && *ptr != ' ' && *ptr != '\t' && *ptr != '\0') ptr++;   // Move pointer past the character
-        } 
-		
+        }
+
 		else if (*ptr != '\n' && *ptr != '\0'){ // Check if there's invalid input
-		
+
             printf("Error: Invalid input '%c' ignored\n", *ptr);
-            ptr++;   // Move pointer past that character	
-        } 
-        else break;      
+            ptr++;   // Move pointer past that character
+        }
+        else break;
     }
-	
+
 	clear_separators(&ptr);
-	if(*ptr != '\0')
+	if(*ptr != '\0')                            //note: *ptr == ptr[0]
 		printf("Error: Excess Input: %s\n",ptr);
-	
+
 	free(input);
 	return index - initial_index;
-} 
+}
 
 
 /*
-int get_minterms(int min_terms[], int index, int max_terms) {
-	
+int get_minterms(int minterms[], int index, int max_terms) {
+
 	size_t size = max_terms*(3+4) + 2;  // 3 for per minterm and 4 for whitespace (let)
     char* input = (char*)calloc(size , sizeof(char));
-    
+
     if(input == NULL){
 		printf("Memory allocation Error!\n");
 		return 0;
 	}
-   
+
 	int initial_index = index;
     if (fgets(input, size, stdin)){
-        
+
         if (input[0] == '\n')  return 0; // No change if empty input
-		
+
         // check whether Input was truncated - clear the rest from stdin
 		if (strchr(input, '\n') == NULL) {
 			printf("Input was too long! Only read: %s\n", input);
 			clear_input_buffer();
 		}
-        
+
         char *ptr = input;
         int num;
-        
+
         while (index < max_terms){
-			
+
 			while (*ptr == ' ' || *ptr == '\t') ptr++;                          // Skip whitespace
-			
+
             if(sscanf(ptr, "%d", &num) == 1){
-				
+
                 if (num < 0) printf("Error: Negative value %d ignored\n", num);
-                else  min_terms[index++] = num;
-                 
-                while (*ptr && *ptr != ' ' && *ptr != '\t' && *ptr != '\n') ptr++;  // Move pointer past the number                
-            } 
+                else  minterms[index++] = num;
+
+                while (*ptr && *ptr != ' ' && *ptr != '\t' && *ptr != '\n') ptr++;  // Move pointer past the number
+            }
 			else if (*ptr != '\0' && *ptr != '\n'){   // Check if there's invalid input
-                
+
                 printf("Error: Invalid input '%ch' ignored\n", *ptr);
                 ptr++;   // Move pointer past the character
-			} 
-			else 
-				break;                    
+			}
+			else
+				break;
         }
     }
 	free(input);

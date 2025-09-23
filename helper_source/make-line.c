@@ -1,9 +1,25 @@
 #include<string.h>
+#include<stdlib.h>
 #include "helper.h"
 
-void make_line(char str[] , const char* c , int n , int byte){
-	for (int i = 0; i < n; i++) {
-		memcpy(&str[i*byte], c, byte);
+char** make_line(int *width , int widthcount , const char* style , int byte){
+	char **line = calloc(widthcount , sizeof(*line));
+	if(line == NULL) return NULL;
+
+	for(int i = 0; i < widthcount; i++){
+		int n = width[i];
+		char *str = malloc(((n*byte)+1) * sizeof(*str));
+		if(str == NULL){
+			free_2d_pointer(line,i);
+			return NULL;
+		}
+
+		for (int j = 0; j < n; j++) {
+			memcpy(&str[j*byte], style, byte);
+		}
+		str[n*byte] = '\0';
+		line[i] = str;
 	}
-	str[n*byte] = '\0';
+	return line;
 }
+

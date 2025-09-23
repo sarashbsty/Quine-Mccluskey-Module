@@ -1,10 +1,23 @@
+#include<stdlib.h>
 #include "helper.h"
 
-void ToBinary(char binary[][100] , int minterms[] , int count, int var){
-	for(int i = 0; i < count; i++){
-		int j;
-		for(j = 0; j < var; j++)
+char** ToBinary(int *minterms , int n_terms, int var){
+
+	if (n_terms == 0 || var == 0) return NULL;
+
+	char **binary = malloc(n_terms * sizeof(*binary)); // create array of n_terms pointers
+	if(!binary) return NULL;
+
+	for(int i = 0; i < n_terms; i++){
+		binary[i] = malloc((var+1) * sizeof(char));
+		if(binary[i] == NULL){
+			free_2d_pointer(binary , i);
+			return NULL;
+		}
+
+		for(int j = 0; j < var; j++)
 			binary[i][var-1-j] = ((minterms[i] >> j) & 1) ? '1' : '0';
-		binary[i][j] = '\0';
+		binary[i][var] = '\0';
 	}
-}	
+	return binary;
+}

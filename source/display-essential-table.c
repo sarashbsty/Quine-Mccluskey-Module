@@ -1,34 +1,44 @@
 #include<stdio.h>
 #include<string.h>
+#include<stdlib.h>
 #include "helper.h"
 #include "quine.h" // quine struture
 
-void display_essential_table(const quine *prime , char arr[100][100][6] , int Minterms[] , int min_count){
-	
-	int width[3] = { 1 , strlen(prime->binary[0])+1 ,5*min_count };
-	int n = 2 + width[0] + 3 + width[1] + 3 + width[2] + 2;
-	
-    char line1[1000] , line2[3][500];
-	make_line(line1 , "─" , n-2 , 3);
-	for(int i = 0; i < 3; i++)
-		make_line(line2[i] ,"─", width[i]+2 ,3);
-		
-	printf("╔%s╗\n",line1);
-	
-	printf("│ %-*s   %-*s    " , width[0] , " " , width[1] , " ");  // this is made just to match with the lower widths
-	for(int j = 0; j < min_count; j++) 
+void display_essential_table(const quine *prime , char ***arr , int Minterms[] , int min_count){
+
+	int n = strlen(prime->binary[0]);
+	int width[2] = {(n<10) ? 10 : (n*2)+1 , 5*min_count };
+
+	int line_width[2];
+	for(int i = 0; i < 2; i++) line_width[i] = width[i]+2;
+
+	char **line = make_line(line_width , 2 , "─" , 3);
+	if(line == NULL) { printf("\nERROR: Line creation Failed | Low Memory | Display-Essential-Table\n"); exit(0); }
+
+	printf("╔%s┬%s╗\n",line[0] , line[1]);
+
+	printf("│ %-*s │  " , width[0] , "Expression");
+	for(int j = 0; j < min_count; j++)
 		printf("%-5d" , Minterms[j]);
 	printf("│\n");
-	
+
 	for(int i = 0; i < prime->count; i++){
-		
-		if(i == 0) printf("├%s┬%s┬%s┤\n",line2[0],line2[1],line2[2]);
-		else printf("├%s┼%s┼%s┤\n",line2[0],line2[1],line2[2]);
-		
-		printf("│ %-*c │ %-*s │ " , width[0] , (char)('A'+i) , width[1] , prime->binary[i]);
+
+		//Binary to expression
+		char *exp = malloc((2*strlen(prime->binary[i]))+1 * sizeof(*exp));
+		if(exp == NULL) { printf("\nERROR: Expression creation Failed | Low Memory | Display-Essential-Table\n"); exit(0); }
+		strcpy(exp , prime->binary[i]);
+		Expression(exp);
+
+		printf("├%s┼%s┤\n",line[0] , line[1]);
+
+		printf("│ %-*s │ " , width[0] , exp);
 		for(int j = 0; j < min_count; j++)
 			printf("%-5s" , arr[i][Minterms[j]]);
 		printf(" │\n");
+
+		free(exp);
 	}
-	printf("╚%s┴%s┴%s╝\n",line2[0],line2[1],line2[2]);
+	printf("╚%s┴%s╝\n",line[0],line[1]);
+	free_2d_pointer(line , 2);
 }
