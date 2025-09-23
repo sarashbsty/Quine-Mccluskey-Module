@@ -64,24 +64,30 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 		}
 	}
 
-	char *exp = NULL;
+	char *str_exp = NULL;
 	int offset = 0;
 
 	for(int i = 0; i < count; i++){
-		Expression(essential[i]);
-		int needed = snprintf(NULL , 0 , i ? " + %s" : "%s" , essential[i]);
+
+		//Binary to expression
+		char *exp = Expression(essential[i]);
+		if(exp == NULL) { printf("\nERROR: Expression creation Failed | Low Memory | essential-implicants\n"); exit(0); }
+
+		//Creating expression string
+		int needed = snprintf(NULL , 0 , i ? " + %s" : "%s" , exp);
 		int new_capacity = offset+needed+1;
-		char *temp = realloc(exp , new_capacity * sizeof(*temp));
+		char *temp = realloc(str_exp , new_capacity * sizeof(*temp));
 		if(!temp) {
 			printf("\nERROR: expression string creation fail | Low Memory | essential-implicants\n");
-			free(exp);
+			free(str_exp);
 			exit(0);
 		}
-		exp = temp;
-		int written = snprintf(exp+offset , new_capacity-offset , i ? " + %s" : "%s" , essential[i]);
+		str_exp = temp;
+		int written = snprintf(str_exp+offset , new_capacity-offset , i ? " + %s" : "%s" , exp);
 		offset += written;
+		free(exp);
 	}
 	//free memory
 	free_2d_pointer(essential , count);
-	return exp;
+	return str_exp;
 }

@@ -116,9 +116,8 @@ int main() {
 		printf( i ? ",%c" : "%c", (char)('A' + i));
     printf(") = %s\n\n", (result ? result : "No result"));
 
-	//free table
-	free_3d_pointer(essential_table , prime.count , pow(2,var));
 
+	free_3d_pointer(essential_table , prime.count , pow(2,var));
 	free(result);
 	free(minterms);
 	free(reduced);

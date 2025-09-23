@@ -2,16 +2,16 @@
 #include<stdlib.h>
 #include "helper.h"
 
-void Expression(char *binary){
+char* Expression(const char *binary){
 	char *str = NULL;
 	int cap = 0 , count = 0;
 
 	for(int i = 0; binary[i] != '\0'; i++){
 
-		if(count >= cap-2){
+		if(count > cap - (2+1)){
 			cap += 5;
 			char *temp = realloc(str , cap*sizeof(*temp));
-			if(temp == NULL) { printf("ERROR : Low memory   code : Expression\n"); exit(0); }
+			if(temp == NULL){ free(str); return NULL; }
 			str = temp;
 		}
 
@@ -21,10 +21,8 @@ void Expression(char *binary){
 		else continue;
 	}
 	if(count == 0) str[count++] = '1';
-
 	str[count] = '\0';
-	strcpy(binary,str);
-	free(str);
+	return str;
 }
 
 /*

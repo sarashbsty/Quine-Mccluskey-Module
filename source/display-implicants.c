@@ -25,10 +25,8 @@ void display_implicants(const quine *prime){
 	for(int i = 0; i < prime->count; i++){
 
 		//Binary to expression
-		char *exp = malloc((2*n + 1) * sizeof(*exp));
+		char *exp = Expression(prime->binary[i]);
 		if(exp == NULL) { printf("\nERROR: Expression creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
-		strcpy(exp , prime->binary[i]);
-		Expression(exp);
 
 		// create a string of minterms
 		char *str = malloc((m+1) * sizeof(*str));
