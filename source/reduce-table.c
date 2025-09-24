@@ -26,36 +26,35 @@ int reduce_table(quine group[] , quine reduced[] , int var){
                 }
 
 				//Only if diff is 1 , those two Binary and its Minterms will be combined
-                if (diff == 1) {
+                if (diff != 1) continue;
 
-					//Building Reduced Binary
-					char *temp = malloc((var+1) * sizeof(*temp));
-					if(temp == NULL) { printf("\nERROR: Building reduced Binary Failed | Low Memory | reduce-table\n"); exit(0); }
-					strcpy(temp , group[i].binary[a]);
-					temp[pos] = '-';
+				//Building Reduced Binary
+				char *temp = malloc((var+1) * sizeof(*temp));
+				if(temp == NULL) { printf("\nERROR: Building reduced Binary Failed | Low Memory | reduce-table\n"); exit(0); }
+				strcpy(temp , group[i].binary[a]);
+				temp[pos] = '-';
 
-					// To check whether the current reduced binary is redundant
-					int check = is_exist(reduced[i].binary, temp, reduced[i].count);
-					if(check == 0){
-						int idx = reduced[i].count;
-						strcpy(reduced[i].binary[idx] , temp);
+				// To check whether the current reduced binary is redundant
+				int check = is_exist(reduced[i].binary, temp, reduced[i].count);
+				if(check == 0){
+					int idx = reduced[i].count;
+					strcpy(reduced[i].binary[idx] , temp);
 
-						// Merge minterm
-						int mCount = 0;
-						for (int m = 0; m < group[i].mintermCount[a]; m++)
-							reduced[i].minterms[idx][mCount++] = group[i].minterms[a][m];
-						for (int m = 0; m < group[i+1].mintermCount[b]; m++)
-							reduced[i].minterms[idx][mCount++] = group[i+1].minterms[b][m];
+					// Merge minterm
+					int mCount = 0;
+					for (int m = 0; m < group[i].mintermCount[a]; m++)
+						reduced[i].minterms[idx][mCount++] = group[i].minterms[a][m];
+					for (int m = 0; m < group[i+1].mintermCount[b]; m++)
+						reduced[i].minterms[idx][mCount++] = group[i+1].minterms[b][m];
 
-						reduced[i].mintermCount[idx] = mCount;
-						reduced[i].combined[idx] = 0;
-						reduced[i].count++;
-					}
-					group[i].combined[a] = 1;
-					group[i+1].combined[b] = 1;
-					newCount++;
-					free(temp);
-                }
+					reduced[i].mintermCount[idx] = mCount;
+					reduced[i].combined[idx] = 0;
+					reduced[i].count++;
+				}
+				group[i].combined[a] = 1;
+				group[i+1].combined[b] = 1;
+				newCount++;
+				free(temp);
             }
         }
     }
