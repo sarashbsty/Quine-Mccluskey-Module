@@ -27,5 +27,3 @@ char* array_to_string(const int *arr , const int arr_size ,const char *format){
 	}
 	return str;
 }
-
-
