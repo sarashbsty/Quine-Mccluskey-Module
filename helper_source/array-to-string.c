@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include "helper.h"
 
-char* array_to_string(const int *arr , const int arr_size){
+char* array_to_string(const int *arr , const int arr_size ,const char *format){
 	int capacity = 16;
 	int offset = 0;
 	char *str = malloc(capacity * sizeof(*str));
@@ -10,7 +10,7 @@ char* array_to_string(const int *arr , const int arr_size){
 	for(int i = 0; i < arr_size; i++){
 
 		// geting required size
-		int needed = snprintf(NULL , 0 , (i==0) ? "%d" : ",%d" , arr[i]);
+		int needed = snprintf(NULL , 0 , (i==0) ? "%d" : format , arr[i]);
 		int size = offset + needed + 1;
 
 		//reallocate
@@ -22,7 +22,7 @@ char* array_to_string(const int *arr , const int arr_size){
 		}
 
 		//Write
-		int written = snprintf(str+offset , capacity-offset , (i==0) ? "%d" : ",%d" , arr[i]);
+		int written = snprintf(str+offset , capacity-offset , (i==0) ? "%d" : format , arr[i]);
 		offset += written;
 	}
 	return str;

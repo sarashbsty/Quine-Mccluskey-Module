@@ -33,7 +33,7 @@ void displayGroups(quine group[] , int var){
 			if(j == 0) snprintf(No,5,"%d",i);
 
 			//Store all minterms associated with this binary to a string var
-			char *str = array_to_string(group[i].minterms[j] , group[i].mintermCount[j]);
+			char *str = array_to_string(group[i].minterms[j] , group[i].mintermCount[j] , ",%d");
 			if(str == NULL) { printf("\nERROR: minterms string creation Failed | Low Memory | Display-Group\n"); exit(0); }
 
 			//In conditional the symbols decay to char* type
