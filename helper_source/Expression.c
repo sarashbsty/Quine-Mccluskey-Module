@@ -3,24 +3,33 @@
 #include "helper.h"
 
 char* Expression(const char *binary){
-	char *str = NULL;
-	int cap = 0 , count = 0;
 
+	//Finding required size
+	int size = 1; //reserved for '\0'
 	for(int i = 0; binary[i] != '\0'; i++){
+		if(binary[i] == '0') size += 2;
+		else if(binary[i] == '1') size++;
+	}
 
-		if(count > cap - (2+1)){
-			cap += 5;
-			char *temp = realloc(str , cap*sizeof(*temp));
-			if(temp == NULL){ free(str); return NULL; }
-			str = temp;
-		}
+	//Invalid case
+	if(size == 1){
+		char *str = malloc(2);
+		if(str) { str[0] = '1'; str[1] = '\0'; }
+		return str;
+	}
 
+	//Allocate
+	char *str = malloc(size * sizeof(*str));
+	if(!str) return NULL;
+
+	//write
+	int count = 0;
+	for(int i = 0; binary[i] != '\0'; i++){
 		char var = 'A'+i;
 		if(binary[i] == '0') { str[count++] = var; str[count++] = '\''; }
 		else if(binary[i] == '1') str[count++] = var;
 		else continue;
 	}
-	if(count == 0) str[count++] = '1';
 	str[count] = '\0';
 	return str;
 }
