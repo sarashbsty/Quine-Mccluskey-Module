@@ -1,3 +1,5 @@
+#include "memory_tracker.h"
+
 #include<string.h>
 #include "quine.h" // quine struture
 #include "helper.h"

@@ -1,3 +1,5 @@
+#include "memory_tracker.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

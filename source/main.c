@@ -29,6 +29,7 @@ SOFTWARE.
 #include <math.h>
 #include "quine.h"
 #include "helper.h"
+#include "memory_tracker.h"
 
 int main() {
     #ifdef _WIN32
@@ -122,6 +123,8 @@ int main() {
 	free(minterms);
 	free(reduced);
 	free(group);
+
+	mt_report(); // manually prints memory leaks
 
     return 0;
 }
