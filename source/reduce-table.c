@@ -29,16 +29,16 @@ int reduce_table(quine group[] , quine reduced[] , int var){
                 if (diff != 1) continue;
 
 				//Building Reduced Binary
-				char *temp = malloc((var+1) * sizeof(*temp));
-				if(temp == NULL) { printf("\nERROR: Building reduced Binary Failed | Low Memory | reduce-table\n"); exit(0); }
-				strcpy(temp , group[i].binary[a]);
-				temp[pos] = '-';
+				char *str = malloc((var+1) * sizeof(*str));
+				if(!str) { printf("\nERROR: Building reduced Binary Failed | Low Memory | reduce-table\n"); exit(0); }
+				strcpy(str , group[i].binary[a]);
+				str[pos] = '-';
 
 				// To check whether the current reduced binary is redundant
-				int check = is_exist(reduced[i].binary, temp, reduced[i].count);
+				int check = is_exist(reduced[i].binary, str, reduced[i].count);
 				if(check == 0){
 					int idx = reduced[i].count;
-					strcpy(reduced[i].binary[idx] , temp);
+					strcpy(reduced[i].binary[idx] , str);
 
 					// Merge minterm
 					int mCount = 0;
@@ -54,7 +54,7 @@ int reduce_table(quine group[] , quine reduced[] , int var){
 				group[i].combined[a] = 1;
 				group[i+1].combined[b] = 1;
 				newCount++;
-				free(temp);
+				free(str);
             }
         }
     }
