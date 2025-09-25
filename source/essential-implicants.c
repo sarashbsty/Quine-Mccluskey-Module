@@ -49,7 +49,7 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 			int check = isexist(essential, prime->binary[index] , count);
 			if(check == 1) continue;
 
-			//Creating Dynamic string to store binary and later on expression
+			//Creating Dynamic string to store binary
 			if(count >= capacity){
 				capacity += 5;
 				char **temp = realloc(essential , capacity*sizeof(*essential));
@@ -57,7 +57,7 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 				essential = temp;
 			}
 
-			size_t len = (2*strlen(prime->binary[index])) + 1;
+			size_t len = strlen(prime->binary[index]) + 1;
 			essential[count] = malloc(len * sizeof(char));
 			if(essential[count] == NULL){ printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n"); exit(0); }
 			strcpy(essential[count++] , prime->binary[index]);
