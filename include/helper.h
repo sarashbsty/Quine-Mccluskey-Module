@@ -1,4 +1,6 @@
 #pragma once
+#include "memory_tracker.h"
+
 #include<stdio.h>
 #include<stdlib.h>
 
