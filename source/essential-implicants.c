@@ -89,6 +89,7 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 		if(!temp) {
 			printf("\nERROR: expression string creation fail | Low Memory | essential-implicants\n");
 			free(str_exp);
+			free_2d_pointer(essential , count);
 			exit(0);
 		}
 		str_exp = temp;
