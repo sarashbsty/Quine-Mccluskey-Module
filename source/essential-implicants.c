@@ -53,14 +53,23 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 			if(count >= capacity){
 				capacity += 5;
 				char **temp = realloc(essential , capacity*sizeof(*essential));
-				if(temp == NULL){ printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n"); exit(0); }
+				if(temp == NULL){
+					printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n");
+					free_2d_pointer(essential , count);
+					exit(0);
+				}
 				essential = temp;
 			}
 
 			size_t len = strlen(prime->binary[index]) + 1;
-			essential[count] = malloc(len * sizeof(char));
-			if(essential[count] == NULL){ printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n"); exit(0); }
-			strcpy(essential[count++] , prime->binary[index]);
+			char *str = malloc(len * sizeof(*str));
+			if(!str){
+				printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n");
+				free_2d_pointer(essential , count);
+				exit(0);
+			}
+			strcpy(str , prime->binary[index]);
+			essential[count++] = str;
 		}
 	}
 
