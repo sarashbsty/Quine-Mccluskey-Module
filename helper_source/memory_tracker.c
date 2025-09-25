@@ -20,6 +20,15 @@ typedef struct MemRecord {
 
 static MemRecord* head = NULL;
 
+// Forward declaration
+static void report_leaks_at_exit(void);
+
+// Initialize automatic reporting once
+__attribute__((constructor)) // GCC/MinGW specific
+static void init_memory_tracker(void) {
+    atexit(report_leaks_at_exit);
+}
+
 // malloc wrapper
 void* mt_malloc(size_t size, const char* file, int line) {
     void* ptr = REAL_MALLOC(size);
@@ -101,7 +110,7 @@ void mt_free(void* ptr, const char* file, int line) {
     REAL_FREE(ptr);
 }
 
-// manual report
+// manual report (can still call if desired)
 void mt_report(void) {
     MemRecord* cur = head;
     if (!cur) {
@@ -115,4 +124,9 @@ void mt_report(void) {
                cur->size, cur->ptr, cur->file, cur->line);
         cur = cur->next;
     }
+}
+
+// Automatic report at program exit
+static void report_leaks_at_exit(void) {
+    mt_report();
 }

@@ -105,7 +105,7 @@ int main() {
 
  // create essential_table
 	char ***essential_table = create_table(prime.count , pow(2,var) , 6);
-	if(essential_table == NULL){ printf("ERROR: Table creation failed | Low Memory | main\n"); exit(0); }
+	if(essential_table == NULL){ printf("\nERROR: Table creation failed | Low Memory | main\n"); exit(0); }
 
     char *result = essential_implicants(&prime, essential_table, minterms, min_count);
 
@@ -123,8 +123,6 @@ int main() {
 	free(minterms);
 	free(reduced);
 	free(group);
-
-	mt_report(); // manually prints memory leaks
 
     return 0;
 }

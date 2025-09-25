@@ -9,9 +9,9 @@ void* mt_malloc(size_t size, const char* file, int line);
 void* mt_calloc(size_t nmemb, size_t size, const char* file, int line);
 void* mt_realloc(void* ptr, size_t size, const char* file, int line);
 void mt_free(void* ptr, const char* file, int line);
-void mt_report(void);  // manually call at any point to see leaks
+void mt_report(void);  // prints all unfreed allocations
 
-// Macros to automatically track calls
+// Macros to replace standard allocation/free
 #define malloc(s) mt_malloc(s, __FILE__, __LINE__)
 #define calloc(n,s) mt_calloc(n,s,__FILE__, __LINE__)
 #define realloc(p,s) mt_realloc(p,s,__FILE__, __LINE__)
