@@ -1,3 +1,5 @@
+#include "memory_tracker.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -33,9 +35,8 @@ void displayGroups(quine group[] , int var){
 			if(j == 0) snprintf(No,5,"%d",i);
 
 			//Store all minterms associated with this binary to a string var
-			char *str = malloc((m+1) * sizeof(*str));
+			char *str = array_to_string(group[i].minterms[j] , group[i].mintermCount[j] , ",%d");
 			if(str == NULL) { printf("\nERROR: minterms string creation Failed | Low Memory | Display-Group\n"); exit(0); }
-			array_to_string(group[i].minterms[j] , group[i].mintermCount[j] , str , m+1);
 
 			//In conditional the symbols decay to char* type
 			char *symbol = (group[i].combined[j] == 0) ? "  ❌" : "  ✅";

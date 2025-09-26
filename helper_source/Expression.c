@@ -1,28 +1,39 @@
+#include "memory_tracker.h"
+
 #include<string.h>
 #include<stdlib.h>
 #include "helper.h"
 
-void Expression(char *binary){
-	char *str = NULL;
-	int cap = 0 , count = 0;
+char* Expression(const char *binary){
 
+	//Finding required size
+	int size = 1; //reserved for '\0'
 	for(int i = 0; binary[i] != '\0'; i++){
+		if(binary[i] == '0') size += 2;
+		else if(binary[i] == '1') size++;
+	}
 
-		if(count >= cap-2){
-			cap += 5;
-			char *temp = realloc(str , cap*sizeof(*temp));
-			if(temp == NULL) { printf("ERROR : Low memory   code : Expression\n"); exit(0); }
-			str = temp;
-		}
+	//Invalid case
+	if(size == 1){
+		char *str = malloc(2);
+		if(str) { str[0] = '1'; str[1] = '\0'; }
+		return str;
+	}
 
+	//Allocate
+	char *str = malloc(size * sizeof(*str));
+	if(!str) return NULL;
+
+	//write
+	int count = 0;
+	for(int i = 0; binary[i] != '\0'; i++){
 		char var = 'A'+i;
 		if(binary[i] == '0') { str[count++] = var; str[count++] = '\''; }
 		else if(binary[i] == '1') str[count++] = var;
 		else continue;
 	}
 	str[count] = '\0';
-	strcpy(binary,str);
-	free(str);
+	return str;
 }
 
 /*

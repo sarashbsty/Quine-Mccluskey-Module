@@ -1,3 +1,5 @@
+#include "memory_tracker.h"
+
 #include<stdlib.h>
 #include "helper.h"
 
@@ -9,15 +11,16 @@ char** ToBinary(int *minterms , int n_terms, int var){
 	if(!binary) return NULL;
 
 	for(int i = 0; i < n_terms; i++){
-		binary[i] = malloc((var+1) * sizeof(char));
-		if(binary[i] == NULL){
+		char* str = malloc((var+1) * sizeof(*str));
+		if(!str){
 			free_2d_pointer(binary , i);
 			return NULL;
 		}
 
 		for(int j = 0; j < var; j++)
-			binary[i][var-1-j] = ((minterms[i] >> j) & 1) ? '1' : '0';
-		binary[i][var] = '\0';
+			str[var-1-j] = ((minterms[i] >> j) & 1) ? '1' : '0';
+		str[var] = '\0';
+		binary[i] = str;
 	}
 	return binary;
 }

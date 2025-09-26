@@ -1,3 +1,5 @@
+#include "memory_tracker.h"
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -25,15 +27,12 @@ void display_implicants(const quine *prime){
 	for(int i = 0; i < prime->count; i++){
 
 		//Binary to expression
-		char *exp = malloc((2*n + 1) * sizeof(*exp));
+		char *exp = Expression(prime->binary[i]);
 		if(exp == NULL) { printf("\nERROR: Expression creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
-		strcpy(exp , prime->binary[i]);
-		Expression(exp);
 
 		// create a string of minterms
-		char *str = malloc((m+1) * sizeof(*str));
+		char *str = array_to_string(prime->minterms[i] , prime->mintermCount[i] , ",%d");
 		if(str == NULL) { printf("\nERROR: minterms string creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
-		array_to_string(prime->minterms[i] , prime->mintermCount[i] , str , m+1);
 
 		printf("├%s┼%s┼%s┤\n",line[0],line[1],line[2]);
 		printf("│ %-*s │ %-*s │ %-*s │\n", width[0], exp , width[1], prime->binary[i] , width[2], str);

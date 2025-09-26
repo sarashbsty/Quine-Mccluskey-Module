@@ -29,6 +29,7 @@ SOFTWARE.
 #include <math.h>
 #include "quine.h"
 #include "helper.h"
+#include "memory_tracker.h"
 
 int main() {
     #ifdef _WIN32
@@ -104,7 +105,7 @@ int main() {
 
  // create essential_table
 	char ***essential_table = create_table(prime.count , pow(2,var) , 6);
-	if(essential_table == NULL){ printf("ERROR: Table creation failed | Low Memory | main\n"); exit(0); }
+	if(essential_table == NULL){ printf("\nERROR: Table creation failed | Low Memory | main\n"); exit(0); }
 
     char *result = essential_implicants(&prime, essential_table, minterms, min_count);
 
@@ -116,9 +117,8 @@ int main() {
 		printf( i ? ",%c" : "%c", (char)('A' + i));
     printf(") = %s\n\n", (result ? result : "No result"));
 
-	//free table
-	free_3d_pointer(essential_table , prime.count , pow(2,var));
 
+	free_3d_pointer(essential_table , prime.count , pow(2,var));
 	free(result);
 	free(minterms);
 	free(reduced);
