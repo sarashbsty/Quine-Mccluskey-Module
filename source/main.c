@@ -23,13 +23,13 @@ SOFTWARE.
 #ifdef _WIN32
 #include <windows.h>
 #endif
+#include "memory_tracker.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "quine.h"
 #include "helper.h"
-#include "memory_tracker.h"
 
 int main() {
     #ifdef _WIN32
@@ -81,7 +81,6 @@ int main() {
 
 	quine prime;
 
-
 	fill_group_table(group, minterms, n_terms, var);
 
 	int i = 0 , canReduce = 0;
@@ -95,9 +94,10 @@ int main() {
         displayGroups(group, var);
 		i++;
 
-		if(canReduce)
-			for (int j = 0; j <= var; j++) group[j] = reduced[j];
-
+		for (int j = 0; j <= var; j++){
+			clear_quine(&group[j]);
+			group[j] = reduced[j];
+		}
 	} while(canReduce);
 
     printf("\n");
@@ -120,6 +120,7 @@ int main() {
 
 	free_3d_pointer(essential_table , prime.count , pow(2,var));
 	free(result);
+	clear_quine(&prime);
 	free(minterms);
 	free(reduced);
 	free(group);

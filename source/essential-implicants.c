@@ -8,15 +8,6 @@
 #include "helper.h"
 
 //check for improvemnt
-
-static int isexist(char **arr, const char item[], int size) {
-    for (int i = 0; i < size; i++) {
-        if (strcmp(arr[i], item) == 0)
-            return 1;
-    }
-    return 0;
-}
-
 char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int min_count){
 
 	//all space initialize
@@ -48,7 +39,7 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 			strcpy(arr[index][min_terms[j]] , "(X)" );
 
 			// checking duplicates
-			int check = isexist(essential, prime->binary[index] , count);
+			int check = is_exist(essential, prime->binary[index] , count);
 			if(check == 1) continue;
 
 			//Creating Dynamic string to store binary

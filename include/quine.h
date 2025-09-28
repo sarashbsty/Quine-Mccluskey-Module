@@ -21,10 +21,3 @@ inline static void clear_quine(quine *var){
 	if(!var) return;
 	if(var->binary){ free_2d_pointer(var->binary , var->count); var->binary = NULL; }
 }
-
-inline static void free_quine_array(quine *var , int size){
-	if(!var) return;
-	for(int i = 0; i < size; i++)
-		clear_quine(&var[i]);
-	free(var);
-}
