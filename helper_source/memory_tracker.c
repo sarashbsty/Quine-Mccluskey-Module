@@ -114,7 +114,7 @@ void mt_free(void* ptr, const char* file, int line) {
 void mt_report(void) {
     MemRecord* cur = head;
     if (!cur) {
-        printf("No memory leaks detected.\n");
+        printf("\nNo memory leaks detected.\n");
         return;
     }
 
