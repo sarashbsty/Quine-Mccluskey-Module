@@ -118,7 +118,7 @@ void mt_report(void) {
         return;
     }
 
-    printf("Memory leaks detected:\n");
+    printf("\nMemory leaks detected:\n");
     while (cur) {
         printf("Leaked %zu bytes at %p allocated from %s:%d\n",
                cur->size, cur->ptr, cur->file, cur->line);
