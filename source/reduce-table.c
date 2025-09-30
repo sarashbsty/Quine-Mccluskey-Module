@@ -11,10 +11,8 @@ int reduce_table(quine group[] , quine reduced[] , int var){
     int newCount = 0;
 
 	//initialize reduce group
-    for (int i = 0; i <= var; i++){
-        reduced[i].count = 0;
-		reduced[i].binary = NULL;
-	}
+    for (int i = 0; i <= var; i++)
+       init_quine(&reduced[i]);
 
     // Compare group[i] with group[i+1]
     for (int i = 0; i < var; i++) {
@@ -45,20 +43,26 @@ int reduce_table(quine group[] , quine reduced[] , int var){
 					else{
 						int idx = reduced[i].count;
 
-						//allocating memory for new_binary
-						char **temp = realloc(reduced[i].binary , (idx+1)*sizeof(*temp));
-						if(!temp){ printf("\nERROR: reduced binary array allocation failed | Low memory | reduced-table\n"); exit(0); }
-						reduced[i].binary = temp;
+						//allocating quine items
+						int flag = allocate(&reduced[i] , idx+1);
+						if(flag) { printf("\nERROR: quine items allocation failed | Low memory | reduced-table\n"); exit(0); }
 
 						//inserting new_binary to reduce
 						reduced[i].binary[idx] = new_binary;
 
-						// Merge minterm
+						//allocating memory minterm array
+						int size = group[i].mintermCount[a] + group[i+1].mintermCount[b];
+						int *arr = malloc(size * sizeof(*arr));
+						if(!arr) { printf("\nERROR: minterm array creation failed | Low memory | reduced-table\n"); exit(0); }
+
+						//merge minterms
 						int mCount = 0;
 						for (int m = 0; m < group[i].mintermCount[a]; m++)
-							reduced[i].minterms[idx][mCount++] = group[i].minterms[a][m];
+							arr[mCount++] = group[i].minterms[a][m];
 						for (int m = 0; m < group[i+1].mintermCount[b]; m++)
-							reduced[i].minterms[idx][mCount++] = group[i+1].minterms[b][m];
+							arr[mCount++] = group[i+1].minterms[b][m];
+
+						reduced[i].minterms[idx] = arr;
 
 						reduced[i].mintermCount[idx] = mCount;
 						reduced[i].combined[idx] = 0;

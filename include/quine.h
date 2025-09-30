@@ -2,7 +2,7 @@
 typedef struct {
     int count;
     char **binary;
-    int minterms[2000][100];
+    int **minterms;
     int *mintermCount;
     int *combined;
 } quine;

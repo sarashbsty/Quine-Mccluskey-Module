@@ -8,11 +8,12 @@
 #include "helper.h"  // for make_line , digit , array_to_string
 
 void display_implicants(const quine *prime){
+	if(prime->count == 0){ printf("\nEmpty Implicant table\n"); return; }
 
 	int n = strlen(prime->binary[0]);                                         // also gives no. of variables
 	int m = (digit(pow(2,n)) + 1) * prime->mintermCount[prime->count-1];      // digit + 1 = no. of digits + comma(,)
 
-	int width[3] = {((n*2) < 10) ? 10 : (n*2)+1 , (n<6) ? 6 : n+1 , (m<8) ? 8 : m+1};
+	int width[3] = {((n*2) > 10) ? n*2 : 10 , (n > 6) ? n : 6 , (m > 8) ? m : 8};
 
 	int line_width[3];
 	for(int i = 0; i < 3; i++) line_width[i] = width[i]+2;

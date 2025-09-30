@@ -8,43 +8,39 @@
 
 void fill_group_table(quine *group , int *minterms, int n_terms, int var){
 
-	// get Binary equivalents of the minterms
-	char** Binary = ToBinary(minterms, n_terms, var);
-	if(Binary == NULL) { printf("\nERROR: Binary creation failed | Low memory | fill-group-table\n"); exit(0); }
-
 	// initialize
-	for(int i = 0; i <= var; i++){
-		group[i].count = 0;
-		group[i].binary = NULL;
-	}
+	for(int i = 0; i <= var; i++)
+		init_quine(&group[i]);
 
 	for(int j = 0; j < n_terms; j++){
 
+		// get Binary equivalents of the minterms
+		char* bin = ToBinary(minterms[j] , var);
+		if(!bin){ printf("\nERROR: Binary creation failed | Low memory | fill-group-table\n"); exit(0); }
+
 		//find no.s of ones in binary
-		int ones = count_1s(Binary[j]);
+		int ones = count_1s(bin);
 		int index = group[ones].count;
 
-		//Memory Allocation for group items
-		//binary
-		char **temp1 = realloc(group[ones].binary , (index+1)*sizeof(*temp1));
-		if(!temp1){ printf("\nERROR: group binary array allocation failed | Low memory | fill-group-table\n"); exit(0); }
-		group[ones].binary = temp1;
+		int flag = allocate(&group[ones] , index+1);
+		if(flag) { printf("\nERROR: group items allocation failed | Low memory | fill-group-table\n"); exit(0); }
 
 		//inserting the binary , minterm , Count according to no.s of ones
 		//Binary
-		char *str = malloc(var+1);
-		if(!str) { printf("\nERROR: group binary allocation failed | Low memory | fill-group-table\n"); exit(0); }
-		strcpy(str , Binary[j]);
-		group[ones].binary[index] = str;
+		group[ones].binary[index] = bin;
 
 		//minterms
-		group[ones].minterms[index][0] = minterms[j];
+		int *arr = malloc(sizeof(*arr));
+		if(!arr) { printf("\nERROR: mintern array creation failed | Low memory | fill-group-table\n"); exit(0); }
+		arr[0] = minterms[j];
+		group[ones].minterms[index] = arr;
 
 		//mintermCount
 		group[ones].mintermCount[index] = 1;
 
+		//combined
+		group[ones].combined[index] = 0;
+
 		group[ones].count++;
 	}
-
-	free_2d_pointer(Binary , n_terms);
 }

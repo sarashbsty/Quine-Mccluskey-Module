@@ -80,20 +80,25 @@ int main() {
 	if(!reduced){ printf("ERROR: Create reduced struture failed | low Memory | main\n"); exit(0); }
 
 	quine prime;
+	init_quine(&prime);
 
 	fill_group_table(group, minterms, n_terms, var);
 
 	int i = 0 , canReduce = 0;
 	do{
+		//Reduction
 		canReduce = reduce_table(group, reduced, var);
-		prime_implicants(group, &prime, var);
 
+		//display
 		if(i) printf("\nReduction #%d:\n", i);
 		else  printf("\n\nInitial Grouping:\n");
-
-        displayGroups(group, var);
+		displayGroups(group, var);
 		i++;
 
+		//get prime-implicants afer each reduction
+		prime_implicants(group, &prime, var);
+
+		//clear old group and copy new
 		for (int j = 0; j <= var; j++){
 			clear_quine(&group[j]);
 			group[j] = reduced[j];
