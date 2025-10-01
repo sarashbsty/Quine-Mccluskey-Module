@@ -22,8 +22,11 @@ void fill_group_table(quine *group , int *minterms, int n_terms, int var){
 		int ones = count_1s(bin);
 		int index = group[ones].count;
 
-		int flag = allocate(&group[ones] , index+1);
-		if(flag) { printf("\nERROR: group items allocation failed | Low memory | fill-group-table\n"); exit(0); }
+		if(group[ones].count >= group[ones].capacity){
+			int new_cap = group[ones].capacity + 5;
+			int flag = allocate(&group[ones] , new_cap);
+			if(flag) { printf("\nERROR: group items allocation failed | Low memory | fill-group-table\n"); exit(0); }
+		}
 
 		//inserting the binary , minterm , Count according to no.s of ones
 		//Binary

@@ -15,8 +15,11 @@ void prime_implicants(quine *group , quine *prime , int var){
 			int index = prime->count;
 
 			//allocating quine items (This will allocate combined variable , even if its not used)
-			int flag = allocate(prime , index+1);
-			if(flag) { printf("\nERROR: quine items allocation failed | Low memory | prime-implicants\n"); exit(0); }
+			if(prime->count >= prime->capacity){
+				int new_cap = prime->capacity + 5;
+				int flag = allocate(prime , new_cap);
+				if(flag) { printf("\nERROR: quine items allocation failed | Low memory | prime-implicants\n"); exit(0); }
+			}
 
 			//allocating memory for binary_string
 			char *new_binary = malloc((var+1) * sizeof(*new_binary));

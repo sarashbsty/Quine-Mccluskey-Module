@@ -1,6 +1,7 @@
 #pragma once
 typedef struct {
     int count;
+	int capacity;
     char **binary;
     int **minterms;
     int *mintermCount;

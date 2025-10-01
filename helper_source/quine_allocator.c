@@ -36,6 +36,7 @@ int allocate(quine *var , int size){
 	var->minterms = temp2;
 	var->mintermCount = temp3;
 	var->combined = temp4;
+	var->capacity = size;
 
 	return 0;
 }
