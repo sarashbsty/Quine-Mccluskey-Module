@@ -14,21 +14,9 @@ void prime_implicants(quine *group , quine *prime , int var){
 			if(group[i].combined[j] == 1) continue; //skip Combined Binaries
 			int index = prime->count;
 
-			//Memory Allocation for quine items
-			//binary
-			char **temp1 = realloc(prime->binary , (index+1) * sizeof(*temp1));
-			if(!temp1){ printf("\nERROR: quine binary allocation failed | Low memory | prime-implicants\n"); exit(0);}
-			prime->binary = temp1;
-
-			//minterms
-			int **temp2 = realloc(prime->minterms , (index+1) * sizeof(*temp2));
-			if(!temp2){ printf("\nERROR: quine minterms allocation failed | Low memory | prime-implicants\n"); exit(0);}
-			prime->minterms = temp2;
-
-			//mintermCount
-			int *temp3 = realloc(prime->mintermCount , (index+1) * sizeof(*temp3));
-			if(!temp3){ printf("\nERROR: quine minterm allocation failed | Low memory | prime-implicants\n"); exit(0);}
-			prime->mintermCount = temp3;
+			//allocating quine items note: allocating useless combined variable
+			int flag = allocate(prime , index+1);
+			if(flag) { printf("\nERROR: quine items allocation failed | Low memory | prime-implicants\n"); exit(0); }
 
 			//allocating memory for binary_string
 			char *new_binary = malloc((var+1) * sizeof(*new_binary));
