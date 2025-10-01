@@ -14,7 +14,7 @@ void prime_implicants(quine *group , quine *prime , int var){
 			if(group[i].combined[j] == 1) continue; //skip Combined Binaries
 			int index = prime->count;
 
-			//allocating quine items note: allocating useless combined variable
+			//allocating quine items (This will allocate combined variable , even if its not used)
 			int flag = allocate(prime , index+1);
 			if(flag) { printf("\nERROR: quine items allocation failed | Low memory | prime-implicants\n"); exit(0); }
 
