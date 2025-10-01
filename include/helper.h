@@ -29,13 +29,6 @@ static inline void free_2d_pointer(char **arr, int size){
 	free(arr);
 }
 
-static inline void free_2d_int_pointer(int **arr, int size){
-	if(arr == NULL) return;
-	for(int i = 0; i < size; i++)
-		free(arr[i]);
-	free(arr);
-}
-
 static inline void free_3d_pointer(char ***arr, int row, int col){
     if(arr == NULL) return;
     for(int i = 0; i < row; i++)
@@ -46,7 +39,7 @@ static inline void free_3d_pointer(char ***arr, int row, int col){
 static inline void clear_quine(quine *var){
 	if(!var) return;
 	if(var->binary){ free_2d_pointer(var->binary , var->count); var->binary = NULL; }
-	if(var->minterms){ free_2d_int_pointer(var->minterms , var->count); var->minterms = NULL; }
+	if(var->minterms){ free_2d_pointer((char**)var->minterms , var->count); var->minterms = NULL; }
 	if(var->mintermCount){ free(var->mintermCount); var->mintermCount = NULL; }
 	if(var->combined) { free(var->combined); var->combined = NULL; }
 	var->count = 0;
