@@ -42,27 +42,18 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 			int check = is_exist(essential, prime->binary[index] , count);
 			if(check == 1) continue;
 
-			//Creating Dynamic string to store binary
+			//Creating Dynamic array of pointer to store prime binary address
 			if(count >= capacity){
 				capacity += 5;
 				char **temp = realloc(essential , capacity*sizeof(*essential));
 				if(temp == NULL){
 					printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n");
-					free_2d_pointer(essential , count);
+					free(essential);
 					exit(0);
 				}
 				essential = temp;
 			}
-
-			size_t len = strlen(prime->binary[index]) + 1;
-			char *str = malloc(len * sizeof(*str));
-			if(!str){
-				printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n");
-				free_2d_pointer(essential , count);
-				exit(0);
-			}
-			strcpy(str , prime->binary[index]);
-			essential[count++] = str;
+			essential[count++] = prime->binary[index];
 		}
 	}
 
@@ -82,7 +73,7 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 		if(!temp) {
 			printf("\nERROR: expression string creation fail | Low Memory | essential-implicants\n");
 			free(str_exp);
-			free_2d_pointer(essential , count);
+			free(essential);
 			exit(0);
 		}
 		str_exp = temp;
@@ -91,6 +82,6 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 		free(exp);
 	}
 	//free memory
-	free_2d_pointer(essential , count);
+	free(essential);
 	return str_exp;
 }
