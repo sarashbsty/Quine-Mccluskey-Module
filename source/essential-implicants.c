@@ -42,7 +42,7 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 			int check = is_exist(essential, prime->binary[index] , count);
 			if(check == 1) continue;
 
-			//Creating Dynamic array of pointer to store prime binary address
+			//Creating Dynamic array of pointer to store essential binary address
 			if(count >= capacity){
 				capacity += 5;
 				char **temp = realloc(essential , capacity*sizeof(*essential));
