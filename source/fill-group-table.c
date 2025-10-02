@@ -22,8 +22,13 @@ void fill_group_table(quine *group , int *minterms, int n_terms, int var){
 		int ones = count_1s(bin);
 		int index = group[ones].count;
 
-		if(group[ones].count >= group[ones].capacity){
-			int new_cap = group[ones].capacity + 5;
+		//allocating quine items
+		if(group[ones].capacity == 0){
+			int flag = allocate(&group[ones] , 4);
+			if(flag) { printf("\nERROR: group items allocation failed | Low memory | fill-group-table\n"); exit(0); }
+		}
+		else if(group[ones].count >= group[ones].capacity){
+			int new_cap = (group[ones].capacity) * 2;
 			int flag = allocate(&group[ones] , new_cap);
 			if(flag) { printf("\nERROR: group items allocation failed | Low memory | fill-group-table\n"); exit(0); }
 		}

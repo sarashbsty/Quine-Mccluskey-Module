@@ -41,14 +41,19 @@ int reduce_table(quine group[] , quine reduced[] , int var){
 					int check = is_exist(reduced[i].binary, new_binary, reduced[i].count);
 					if(check == 1) free(new_binary);
 					else{
-						int idx = reduced[i].count;
 
 						//allocating quine items
-						if(reduced[i].count >= reduced[i].capacity){
-							int new_cap = reduced[i].capacity + 5;
+						if(reduced[i].capacity == 0){
+							int flag = allocate(&reduced[i] , 4);
+							if(flag) { printf("\nERROR: quine items allocation failed | Low memory | reduced-table\n"); exit(0); }
+						}
+						else if(reduced[i].count >= reduced[i].capacity){
+							int new_cap = (reduced[i].capacity) * 2;
 							int flag = allocate(&reduced[i] , new_cap);
 							if(flag) { printf("\nERROR: quine items allocation failed | Low memory | reduced-table\n"); exit(0); }
 						}
+
+						int idx = reduced[i].count;
 
 						//inserting new_binary to reduce
 						reduced[i].binary[idx] = new_binary;
