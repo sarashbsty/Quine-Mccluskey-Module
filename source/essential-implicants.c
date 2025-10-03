@@ -1,35 +1,45 @@
 #include "memory_tracker.h"
 
 #include<stdio.h>
+#include<math.h>
 #include<string.h>
 #include<stdlib.h>
 #include "quine.h" // quine struture
 #include "helper.h"
 
 //check for improvemnt
-char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int min_count){
+char* essential_implicants(quine *prime , int minterms[] , int min_count , int var){
 
-	//all space initialize
-	for(int i = 0; i < prime->count; i++)
-		for(int j = 0; j < min_count; j++)
-			strcpy(arr[i][min_terms[j]] , " ");
-
-	//selective marking X
-	for(int i = 0; i < prime->count; i++)
-		for(int j = 0; j < prime->mintermCount[i]; j++)
-			strcpy(arr[i][prime->minterms[i][j]] , " X");
+	// create essential_table
+	char ***table = create_table(prime->count , pow(2,var) , 6);
+	if(table == NULL){ printf("\nERROR: Table creation failed | Low Memory | essential_implicants\n"); exit(0); }
 
 	//array to store indexes of essential binary in prime
 	int *essential = malloc(prime->count * sizeof(*essential));
 	if(!essential) { printf("\nEssential array allocation failed | low memory | essential_implicants\n"); exit(0); }
 	int count = 0;
 
+	//array to store covered minterms
+	int *minterm_covered = malloc(pow(2,var) * sizeof(int));
+	if(!minterm_covered) { printf("\nminterm_covered array allocation failed | low memory | essential_implicants\n"); exit(0); }
+	int covered = 0;
+
+	//all space initialize
+	for(int i = 0; i < prime->count; i++)
+		for(int j = 0; j < min_count; j++)
+			strcpy(table[i][minterms[j]] , " ");
+
+	//selective marking X
+	for(int i = 0; i < prime->count; i++)
+		for(int j = 0; j < prime->mintermCount[i]; j++)
+			strcpy(table[i][prime->minterms[i][j]] , " X");
+
 	//Finding the essential implicant by finding column(minterm) with only one 'X' and the prime implecant that covers it
 	for(int j = 0; j < min_count; j++){
 
 		int index ,ones = 0;
 		for(int i = 0; i < prime->count; i++){
-			if(strcmp(arr[i][min_terms[j]], " X") == 0){
+			if(strcmp(table[i][minterms[j]], " X") == 0){
 				ones++;
 				index = i;
 			}
@@ -45,9 +55,12 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 			if(check >= count) essential[count++] = index;
 
 			//marking for visual guide
-			strcpy(arr[index][min_terms[j]] , "(X)" );
+			strcpy(table[index][minterms[j]] , "(X)" );
 		}
 	}
+
+	printf("\n\n\nTable to find Essential prime Implicants: \n");
+    display_essential_table(prime, table, minterms, min_count);
 
 	char *str_exp = NULL;
 	int offset = 0;
@@ -74,7 +87,10 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 		offset += written;
 		free(exp);
 	}
+
 	//free memory
+	free_3d_pointer(table , prime->count , pow(2,var));
+	free(minterm_covered);
 	free(essential);
 	return str_exp;
 }

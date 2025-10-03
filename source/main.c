@@ -108,27 +108,18 @@ int main() {
     printf("\n");
     display_implicants(&prime);
 
- // create essential_table
-	char ***essential_table = create_table(prime.count , pow(2,var) , 6);
-	if(essential_table == NULL){ printf("\nERROR: Table creation failed | Low Memory | main\n"); exit(0); }
-
-    char *result = essential_implicants(&prime, essential_table, minterms, min_count);
-
-    printf("\n\n\nTable to find Essential prime Implicants: \n");
-    display_essential_table(&prime, essential_table, minterms, min_count);
+    char *result = essential_implicants(&prime, minterms, min_count , var);
 
     printf("\n\nResult: Y(");
     for (int i = 0; i < var; i++)
 		printf( i ? ",%c" : "%c", (char)('A' + i));
     printf(") = %s\n\n", (result ? result : "No result"));
 
-
-	free_3d_pointer(essential_table , prime.count , pow(2,var));
 	free(result);
 	clear_quine(&prime);
-	free(minterms);
 	free(reduced);
 	free(group);
+	free(minterms);
 
     return 0;
 }
