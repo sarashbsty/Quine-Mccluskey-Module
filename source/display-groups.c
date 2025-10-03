@@ -7,10 +7,15 @@
 #include "quine.h" // quine struture
 #include "helper.h" // for digit , make_line , array_to_string
 
-void displayGroups(quine group[] , int var){
+void displayGroups(quine *group , int var){
 
-	int m = (digit(pow(2,var)) + 1) * group[0].mintermCount[0];      // digit + 1 = no. of digits + comma(,)
-	int width[4] = {5 , (m<8) ? 8 : m+1 , (var<6) ? 6 : var+1 , 6};
+	//To find group with atleast one count
+	int idx = 0;
+	while(idx < var+1 && group[idx].count == 0) idx++;
+	if(idx == var+1) { printf("\nEMPTY table\n"); return; }
+
+	int m = (digit(pow(2,var)) + 1) * group[idx].mintermCount[0];      // digit + 1 = no. of digits + comma(,)
+	int width[4] = {5 , (m > 8) ? m : 8 , (var > 6) ? var : 6 , 6};
 
 	int line_width[4];
 	for(int i = 0; i < 4; i++) line_width[i] = width[i]+2;
@@ -21,7 +26,7 @@ void displayGroups(quine group[] , int var){
 	printf("╭%s┬%s┬%s┬%s╮\n",line[0],line[1],line[2],line[3]);
 	printf("│ %-*s │ %-*s │ %-*s │ %-*s │\n", width[0], "GROUP", width[1], "MINTERMS", width[2], "BINARY", width[3], "REDUCE");
 
-    for (int i = 0; i <= var; i++) {
+    for (int i = 0; i < var+1; i++) {
 
         if (group[i].count == 0) continue; // skip empty groups
 
