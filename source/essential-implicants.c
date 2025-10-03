@@ -4,7 +4,6 @@
 #include<string.h>
 #include<stdlib.h>
 #include "quine.h" // quine struture
-#include "string_array.h" // string_arr struture
 #include "helper.h"
 
 //check for improvemnt
@@ -20,10 +19,12 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 		for(int j = 0; j < prime->mintermCount[i]; j++)
 			strcpy(arr[i][prime->minterms[i][j]] , " X");
 
-	//Finding the essential implicant by finding column(minterm) with only one 'X' and the prime implecant that covers it
-	char** essential = NULL;
-	int count = 0 , capacity = 0;
+	//array to store indexes of essential binary in prime
+	int *essential = malloc(prime->count * sizeof(*essential));
+	if(!essential) { printf("\nEssential array allocation failed | low memory | essential_implicants\n"); exit(0); }
+	int count = 0;
 
+	//Finding the essential implicant by finding column(minterm) with only one 'X' and the prime implecant that covers it
 	for(int j = 0; j < min_count; j++){
 
 		int index ,ones = 0;
@@ -36,24 +37,15 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 
 		if(ones == 1){
 
-			strcpy(arr[index][min_terms[j]] , "(X)" );
-
 			// checking duplicates
-			int check = is_exist(essential, prime->binary[index] , count);
-			if(check == 1) continue;
+			int check = 0;
+			while(check < count && essential[check] != index) check++;
 
-			//Creating Dynamic array of pointer to store essential binary address
-			if(count >= capacity){
-				capacity += 5;
-				char **temp = realloc(essential , capacity*sizeof(*essential));
-				if(temp == NULL){
-					printf("\nERROR: Binary copying fail | Low Memory | essential-implicants\n");
-					free(essential);
-					exit(0);
-				}
-				essential = temp;
-			}
-			essential[count++] = prime->binary[index];
+			//store if no duplicate
+			if(check >= count) essential[count++] = index;
+
+			//marking for visual guide
+			strcpy(arr[index][min_terms[j]] , "(X)" );
 		}
 	}
 
@@ -63,7 +55,8 @@ char* essential_implicants(quine *prime , char ***arr , int min_terms[] , int mi
 	for(int i = 0; i < count; i++){
 
 		//Binary to expression
-		char *exp = Expression(essential[i]);
+		int idx = essential[i];
+		char *exp = Expression(prime->binary[idx]);
 		if(exp == NULL) { printf("\nERROR: Expression creation Failed | Low Memory | essential-implicants\n"); exit(0); }
 
 		//Creating expression string
