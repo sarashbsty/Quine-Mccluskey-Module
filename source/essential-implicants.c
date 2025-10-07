@@ -92,7 +92,7 @@ char* essential_implicants(quine *prime , int minterms[] , int min_count , int v
 			int pos = -1;
 
 			//determines the prime-implicant which covers most minterms in every iteration
-			for(int i = prime->count-1; i >= 0; i--){
+			for(int i = 0; i < prime->count; i++){
 				int new_covers = 0;
 				for(int j = 0; j < uncovered; j++){
 					if(minterm_uncovered[j] == -1) continue;
