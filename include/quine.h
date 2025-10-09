@@ -6,6 +6,7 @@ typedef struct {
     int **minterms;
     int *mintermCount;
     int *combined;
+	int *minimal;
 } quine;
 
 void fill_group_table(quine *group , int *minterms , int n_terms, int var);

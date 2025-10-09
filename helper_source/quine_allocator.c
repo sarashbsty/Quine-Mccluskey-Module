@@ -32,10 +32,21 @@ int allocate(quine *var , int size){
 		return 1;
 	}
 
+	//minimal
+	int *temp5 = realloc(var->minimal , size * sizeof(*temp5));
+	if(!temp5){
+		free(temp1);
+		free(temp2);
+		free(temp3);
+		free(temp4);
+		return 1;
+	}
+
 	var->binary = temp1;
 	var->minterms = temp2;
 	var->mintermCount = temp3;
 	var->combined = temp4;
+	var->minimal = temp5;
 	var->capacity = size;
 
 	return 0;

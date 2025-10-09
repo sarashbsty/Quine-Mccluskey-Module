@@ -42,6 +42,7 @@ static inline void clear_quine(quine *var){
 	if(var->minterms){ free_2d_pointer((char**)var->minterms , var->count); var->minterms = NULL; }
 	if(var->mintermCount){ free(var->mintermCount); var->mintermCount = NULL; }
 	if(var->combined) { free(var->combined); var->combined = NULL; }
+	if(var->minimal) { free(var->minimal); var->minimal = NULL; }
 	var->capacity = 0;
 	var->count = 0;
 }
@@ -54,5 +55,6 @@ static inline void init_quine(quine *var){
 	var->minterms = NULL;
 	var->mintermCount = NULL;
 	var->combined = NULL;
+	var->minimal = NULL;
 }
 

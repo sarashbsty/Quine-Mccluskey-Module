@@ -20,11 +20,6 @@ char* essential_implicants(quine *prime , int minterms[] , int min_count , int v
 	char ***table = create_table(prime->count , pow(2,var) , 6);
 	if(table == NULL){ printf("\nERROR: Table creation failed | Low Memory | essential_implicants\n"); exit(0); }
 
-	//array to store indexes of binary for minimal cover
-	int *minimal = malloc(prime->count * sizeof(*minimal));
-	if(!minimal) { printf("\nEssential array allocation failed | low memory | essential_implicants\n"); exit(0); }
-	int count = 0;
-
 	//array to store covered minterms
 	int *minterm_uncovered = malloc(pow(2,var) * sizeof(int));
 	if(!minterm_uncovered) { printf("\nminterm_uncovered array allocation failed | low memory | essential_implicants\n"); exit(0); }
@@ -52,16 +47,11 @@ char* essential_implicants(quine *prime , int minterms[] , int min_count , int v
 		}
 
 		if(ones == 1){
-
-			// checking duplicates
-			int check = 0;
-			while(check < count && minimal[check] != index) check++;
-
-			//store if no duplicate
-			if(check >= count) minimal[count++] = index;
-
 			//marking for visual guide
 			strcpy(table[index][minterms[j]] , "(X)" );
+
+			//marked for minimal cover
+			prime->minimal[index] = 1;
 		}
 	}
 
@@ -71,10 +61,11 @@ char* essential_implicants(quine *prime , int minterms[] , int min_count , int v
 	//checking whether the essential implicants suffice and create a array of uncovered minterms
 	for(int i = 0; i < min_count; i++){
 		int check = -1;
-		for(int j = 0; j < count; j++){
-			int idx = minimal[j];
-			check = isexist(prime->minterms[idx] , prime->mintermCount[idx] , minterms[i]);
-			if(check != -1) break;
+		for(int j = 0; j < prime->count; j++){
+			if(prime->minimal[j] == 1){
+				check = isexist(prime->minterms[j] , prime->mintermCount[j] , minterms[i]);
+				if(check != -1) break;
+			}
 		}
 		if(check == -1) minterm_uncovered[uncovered++] = minterms[i];
 	}
@@ -93,6 +84,7 @@ char* essential_implicants(quine *prime , int minterms[] , int min_count , int v
 
 			//determines the prime-implicant which covers most minterms in every iteration
 			for(int i = 0; i < prime->count; i++){
+				if(prime->minimal[i] == 1) continue;
 				int new_covers = 0;
 				for(int j = 0; j < uncovered; j++){
 					if(minterm_uncovered[j] == -1) continue;
@@ -105,7 +97,6 @@ char* essential_implicants(quine *prime , int minterms[] , int min_count , int v
 				}
 			}
 
-			//removes the covered minterm and also print the selected prime-implicant
 			if(pos != -1){
 
 				//Binary to expression
@@ -114,6 +105,7 @@ char* essential_implicants(quine *prime , int minterms[] , int min_count , int v
 				printf("\nSelected %s for minterms : ",exp);
 				free(exp);
 
+				//remove covered minterm
 				for(int j = 0; j < uncovered; j++){
 					if(minterm_uncovered[j] == -1) continue;
 					int check = isexist(prime->minterms[pos] , prime->mintermCount[pos] , minterm_uncovered[j]);
@@ -123,7 +115,8 @@ char* essential_implicants(quine *prime , int minterms[] , int min_count , int v
 						minterm_uncovered[j] = -1;
 					}
 				}
-				minimal[count++] = pos;
+				//marking the prime implicant as minimal cover
+				prime->minimal[pos] = 1;
 			}
 
 		}while(covers != 0);
@@ -135,25 +128,25 @@ char* essential_implicants(quine *prime , int minterms[] , int min_count , int v
 	char *str_exp = NULL;
 	int offset = 0;
 
-	for(int i = 0; i < count; i++){
+	for(int i = 0; i < prime->count; i++){
+
+		if(prime->minimal[i] == 0) continue;
 
 		//Binary to expression
-		int idx = minimal[i];
-		char *exp = Expression(prime->binary[idx]);
+		char *exp = Expression(prime->binary[i]);
 		if(exp == NULL) { printf("\nERROR: Expression creation Failed | Low Memory | essential-implicants\n"); exit(0); }
 
 		//Creating expression string
-		int needed = snprintf(NULL , 0 , i ? " + %s" : "%s" , exp);
+		int needed = snprintf(NULL , 0 , (offset) ? " + %s" : "%s" , exp);
 		int new_capacity = offset+needed+1;
 		char *temp = realloc(str_exp , new_capacity * sizeof(*temp));
 		if(!temp) {
 			printf("\nERROR: expression string creation fail | Low Memory | essential-implicants\n");
 			free(str_exp);
-			free(minimal);
 			exit(0);
 		}
 		str_exp = temp;
-		int written = snprintf(str_exp+offset , new_capacity-offset , i ? " + %s" : "%s" , exp);
+		int written = snprintf(str_exp+offset , new_capacity-offset , (offset) ? " + %s" : "%s" , exp);
 		offset += written;
 		free(exp);
 	}
@@ -161,6 +154,5 @@ char* essential_implicants(quine *prime , int minterms[] , int min_count , int v
 	//free memory
 	free_3d_pointer(table , prime->count , pow(2,var));
 	free(minterm_uncovered);
-	free(minimal);
 	return str_exp;
 }

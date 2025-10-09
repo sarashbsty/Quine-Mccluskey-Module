@@ -36,9 +36,11 @@ void prime_implicants(quine *group , quine *prime , int var){
 
 			//moving minterms
 			prime->minterms[index] = group[i].minterms[j];
+			prime->mintermCount[index] = group[i].mintermCount[j];
 			group[i].minterms[j] = NULL;
 
-			prime->mintermCount[index] = group[i].mintermCount[j];
+			//initialize
+			prime->minimal[index] = 0;
 
 			prime->count++;
         }
