@@ -78,8 +78,8 @@ char* essential_implicants(quine *prime , int minterms[] , int min_count , int v
 		printf("\n");
 
 		//greedy set minimizing algorithm
-		int check = set_minimizer(prime , minterm_uncovered , uncovered);
-		if(check) printf("\nAll minterns now covered\n");
+		int flag = set_minimizer(prime , minterm_uncovered , uncovered);
+		if(flag) printf("\nAll minterns now covered\n");
 		else{
 			printf("\nLeftover uncovered : ");
 			for(int i = 0; i < uncovered; i++)
