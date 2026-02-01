@@ -10,9 +10,9 @@
 #include "helper.h"
 
 int main() {
-	system("cls");
 
     #ifdef _WIN32
+	system("cls");
     SetConsoleOutputCP(CP_UTF8);
     #endif
 
@@ -85,16 +85,32 @@ int main() {
 		}
 	} while(canReduce);
 
-    printf("\n");
-    display_implicants(&prime);
+	free(reduced);
+	free(group);
 
-    essential_implicants(&prime, minterms, min_count , var);
+	// essential_prime_implicant_table
+	char ***table = create_table(prime.count , pow(2,var) , 6);
+	if(table == NULL){ printf("\nERROR: Table creation failed | Low Memory | main\n"); exit(0); }
+
+	//store uncovered_minterms
+	int *uncovered_terms = malloc(min_count * sizeof(int));
+	if(!uncovered_terms) { printf("\nminterm_uncovered array allocation failed | low memory | main\n"); exit(0); }
+
+	display_implicants(&prime);
+	get_essential_implicants(&prime, table, minterms, min_count);
+    display_essential_table(&prime, table, minterms, min_count);
+
+	int uncovered_count = checkCoverage(&prime, uncovered_terms, minterms, min_count);
+	if(uncovered_count > 0)
+		petrick(&prime, table ,uncovered_terms ,uncovered_count);
+	else
+		printf("All Minterms covered by essential-implicants\n");
 
 	printResult(&prime,var);
 
+	free(uncovered_terms);
+	free_3d_pointer(table , prime.count , pow(2,var));
 	clear_quine(&prime);
-	free(reduced);
-	free(group);
 	free(minterms);
 
     return 0;
