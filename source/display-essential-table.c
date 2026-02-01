@@ -6,7 +6,7 @@
 #include "helper.h"
 #include "quine.h" // quine struture
 
-void display_essential_table(const quine *prime , char ***arr , int *minterms , int min_count){
+void display_essential_table(const quine *prime , char ***table , int *minterms , int min_count){
 
 	int n = strlen(prime->binary[0]);
 	int width[2] = {(n<10) ? 10 : (n*2)+1 , 5*min_count };
@@ -26,17 +26,12 @@ void display_essential_table(const quine *prime , char ***arr , int *minterms , 
 
 	for(int i = 0; i < prime->count; i++){
 
-		//Binary to expression
-		char *exp = Expression(prime->binary[i]);
-		if(exp == NULL) { printf("\nERROR: Expression creation Failed | Low Memory | Display-Essential-Table\n"); exit(0); }
-
 		printf("├%s┼%s┤\n",line[0] , line[1]);
-		printf("│ %-*s │ " , width[0] , exp);
+		printf("│ %-*s │ " , width[0] , prime->expression[i]);
 		for(int j = 0; j < min_count; j++)
-			printf("%-5s" , arr[i][minterms[j]]);
+			printf("%-5s" , table[i][minterms[j]]);
 		printf(" │\n");
 
-		free(exp);
 	}
 	printf("╚%s┴%s╝\n",line[0],line[1]);
 	free_2d_pointer(line , 2);

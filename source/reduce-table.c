@@ -32,14 +32,14 @@ int reduce_table(quine group[] , quine reduced[] , int var){
                 if (diff == 1){
 
 					//Building Reduced Binary
-					char *new_binary = malloc((var+1) * sizeof(*new_binary));
-					if(!new_binary) { printf("\nERROR: Building reduced Binary Failed | Low Memory | reduce-table\n"); exit(0); }
-					strcpy(new_binary , group[i].binary[a]);
-					new_binary[pos] = '-';
+					char *reducedBinary = malloc((var+1) * sizeof(*reducedBinary));
+					if(!reducedBinary) { printf("\nERROR: Building reduced Binary Failed | Low Memory | reduce-table\n"); exit(0); }
+					strcpy(reducedBinary , group[i].binary[a]);
+					reducedBinary[pos] = '-';
 
 					// To check whether the current reduced binary is redundant
-					int check = is_exist(reduced[i].binary, new_binary, reduced[i].count);
-					if(check == 1) free(new_binary);
+					int check = find_string(reduced[i].binary, reduced[i].count, reducedBinary);
+					if(check != -1) free(reducedBinary);
 					else{
 
 						//allocating quine items
@@ -53,27 +53,25 @@ int reduce_table(quine group[] , quine reduced[] , int var){
 							if(flag) { printf("\nERROR: quine items allocation failed | Low memory | reduced-table\n"); exit(0); }
 						}
 
-						int idx = reduced[i].count;
-
-						//inserting new_binary to reduce
-						reduced[i].binary[idx] = new_binary;
-
 						//allocating memory minterm array
 						int size = group[i].mintermCount[a] + group[i+1].mintermCount[b];
-						int *arr = malloc(size * sizeof(*arr));
-						if(!arr) { printf("\nERROR: minterm array creation failed | Low memory | reduced-table\n"); exit(0); }
+						int *mergedArray = malloc(size * sizeof(*mergedArray));
+						if(!mergedArray) { printf("\nERROR: minterm array creation failed | Low memory | reduced-table\n"); exit(0); }
 
-						//merge minterms
+						//merge minterms into new merged minterm array
 						int mCount = 0;
 						for (int m = 0; m < group[i].mintermCount[a]; m++)
-							arr[mCount++] = group[i].minterms[a][m];
+							mergedArray[mCount++] = group[i].minterms[a][m];
 						for (int m = 0; m < group[i+1].mintermCount[b]; m++)
-							arr[mCount++] = group[i+1].minterms[b][m];
+							mergedArray[mCount++] = group[i+1].minterms[b][m];
 
-						reduced[i].minterms[idx] = arr;
-
+						//inserting quine items
+						int idx = reduced[i].count;
+						reduced[i].binary[idx] = reducedBinary;
+						reduced[i].minterms[idx] = mergedArray;
 						reduced[i].mintermCount[idx] = mCount;
 						reduced[i].combined[idx] = 0;
+						reduced[i].expression[idx] = NULL;
 						reduced[i].count++;
 					}
 

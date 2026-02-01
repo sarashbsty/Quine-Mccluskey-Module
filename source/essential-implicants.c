@@ -7,14 +7,8 @@
 #include "quine.h" // quine struture
 #include "helper.h"
 
-static int isexist(int *arr , int size, int item){
-	for(int i = 0; i < size; i++)
-		if(item == arr[i]) return i;
-	return -1;
-}
-
 //check for improvemnt
-char* essential_implicants(quine *prime , int minterms[] , int min_count , int var){
+void essential_implicants(quine *prime , int minterms[] , int min_count , int var){
 
 	// create essential_table
 	char ***table = create_table(prime->count , pow(2,var) , 6);
@@ -62,10 +56,9 @@ char* essential_implicants(quine *prime , int minterms[] , int min_count , int v
 	for(int i = 0; i < min_count; i++){
 		int check = -1;
 		for(int j = 0; j < prime->count; j++){
-			if(prime->minimal[j] == 1){
-				check = isexist(prime->minterms[j] , prime->mintermCount[j] , minterms[i]);
-				if(check != -1) break;
-			}
+			if(prime->minimal[j] == 0) continue;
+			check = find_int(prime->minterms[j] , prime->mintermCount[j] , minterms[i]);
+			if(check != -1) break;
 		}
 		if(check == -1) minterm_uncovered[uncovered++] = minterms[i];
 	}
@@ -77,46 +70,19 @@ char* essential_implicants(quine *prime , int minterms[] , int min_count , int v
 			printf("%d ",minterm_uncovered[i]);
 		printf("\n");
 
+		petrick(table ,minterm_uncovered ,uncovered, prime->count);
+
 		//greedy set minimizing algorithm
-		int flag = set_minimizer(prime , minterm_uncovered , uncovered);
-		if(flag) printf("\nAll minterns now covered\n");
-		else{
+		int notAllCovered = set_minimizer(prime , minterm_uncovered , &uncovered);
+		if(notAllCovered){
 			printf("\nLeftover uncovered : ");
 			for(int i = 0; i < uncovered; i++)
-				if(minterm_uncovered[i] != -1)
 					printf("%d ",minterm_uncovered[i]);
-			printf("\n");
 		}
-	}
-
-	char *str_exp = NULL;
-	int offset = 0;
-
-	for(int i = 0; i < prime->count; i++){
-
-		if(prime->minimal[i] == 0) continue;
-
-		//Binary to expression
-		char *exp = Expression(prime->binary[i]);
-		if(exp == NULL) { printf("\nERROR: Expression creation Failed | Low Memory | essential-implicants\n"); exit(0); }
-
-		//Creating expression string
-		int needed = snprintf(NULL , 0 , (offset) ? " + %s" : "%s" , exp);
-		int new_capacity = offset+needed+1;
-		char *temp = realloc(str_exp , new_capacity * sizeof(*temp));
-		if(!temp) {
-			printf("\nERROR: expression string creation fail | Low Memory | essential-implicants\n");
-			free(str_exp);
-			exit(0);
-		}
-		str_exp = temp;
-		int written = snprintf(str_exp+offset , new_capacity-offset , (offset) ? " + %s" : "%s" , exp);
-		offset += written;
-		free(exp);
+		else printf("\nAll minterns now covered\n");
 	}
 
 	//free memory
 	free_3d_pointer(table , prime->count , pow(2,var));
 	free(minterm_uncovered);
-	return str_exp;
 }

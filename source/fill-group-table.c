@@ -49,6 +49,9 @@ void fill_group_table(quine *group , int *minterms, int n_terms, int var){
 		//combined
 		group[ones].combined[index] = 0;
 
+		//expression NULL initialize
+		group[ones].expression[index] = NULL;
+
 		group[ones].count++;
 	}
 }

@@ -27,18 +27,14 @@ void display_implicants(const quine *prime){
 
 	for(int i = 0; i < prime->count; i++){
 
-		//Binary to expression
-		char *exp = Expression(prime->binary[i]);
-		if(exp == NULL) { printf("\nERROR: Expression creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
-
 		// create a string of minterms
 		char *str = array_to_string(prime->minterms[i] , prime->mintermCount[i] , ",%d");
 		if(str == NULL) { printf("\nERROR: minterms string creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
 
 		printf("├%s┼%s┼%s┤\n",line[0],line[1],line[2]);
-		printf("│ %-*s │ %-*s │ %-*s │\n", width[0], exp , width[1], prime->binary[i] , width[2], str);
+		printf("│ %-*s │ %-*s │ %-*s │\n", width[0], prime->expression[i] , width[1], prime->binary[i] , width[2], str);
 
-		free(exp); free(str);
+		free(str);
 	}
 	printf("╚%s┴%s┴%s╝",line[0],line[1],line[2]);
 	free_2d_pointer(line , 3);

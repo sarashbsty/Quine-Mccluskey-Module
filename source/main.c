@@ -10,6 +10,8 @@
 #include "helper.h"
 
 int main() {
+	system("cls");
+
     #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
     #endif
@@ -76,7 +78,7 @@ int main() {
 		//get prime-implicants afer each reduction
 		prime_implicants(group, &prime, var);
 
-		//clear old group and copy new
+		//clear old group and copy new reduced group
 		for (int j = 0; j <= var; j++){
 			clear_quine(&group[j]);
 			group[j] = reduced[j];
@@ -86,14 +88,10 @@ int main() {
     printf("\n");
     display_implicants(&prime);
 
-    char *result = essential_implicants(&prime, minterms, min_count , var);
+    essential_implicants(&prime, minterms, min_count , var);
 
-    printf("\n\nResult: Y(");
-    for (int i = 0; i < var; i++)
-		printf( i ? ",%c" : "%c", (char)('A' + i));
-    printf(") = %s\n\n", (result ? result : "No result"));
+	printResult(&prime,var);
 
-	free(result);
 	clear_quine(&prime);
 	free(reduced);
 	free(group);
