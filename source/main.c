@@ -115,4 +115,5 @@ int main() {
 	free(minterms);
 
     return 0;
+	//test comit
 }
