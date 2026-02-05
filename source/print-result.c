@@ -13,5 +13,5 @@ void printResult(const quine *prime, int var){
 		if(prime->minimal[i] == 0) continue;
 		printf((i == 0) ? "%s" : " + %s" , prime->expression[i]);
 	}
-	printf("\n");
+	printf("\n\n");
 }
