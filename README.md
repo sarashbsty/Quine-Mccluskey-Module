@@ -15,4 +15,5 @@ A terminal-based tool to **simplify Boolean expressions** using the **Quine-McCl
   - Reducing minterms
   - Prime implicants
   - Essential prime implicants
+  - Petrick Algorithm process
   - Final minimized expression
