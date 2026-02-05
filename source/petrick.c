@@ -1,5 +1,3 @@
-#include "memory_tracker.h"
-
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
@@ -213,43 +211,3 @@ void petrick(quine *prime , char ***table , int *uncovered_terms , int uncovered
 	free_2d_pointer(POS_terms , POS_count);
 	free_2d_pointer(SOP_terms, SOP_count);
 }
-
-/*
-static int isSubset(char* A, char* B){
-	int count = 0;
-	int sizeA = strlen(A);
-	int sizeB = strlen(B);
-
-	if(sizeA < sizeB){
-		for(int a = 0; a < sizeA; a++){
-			char x = A[a];
-			if(strchr(B, x)) count++;
-		}
-		if(count == sizeA) return 1; // thus, A is subset of B
-		else return 0;
-	}
-
-	else if(sizeB < sizeA){
-		for(int b = 0; b < sizeB; b++){
-			char x = B[b];
-			if(strchr(A, x)) count++;
-		}
-		if(count == sizeB) return 2; //thus, B is subset of A
-		else return 0;
-	}
-
-	else{
-		int count[256] = {0};
-
-		while(*A){ count[(unsigned char)*A]++; A++; }
-		while(*B){ count[(unsigned char)*B]--; B++; }
-
-		for(int i = 0; i < 256; i++)
-			if(count[i] != 0)
-				return 0; // means they are different set
-
-		return 1; // means they are same set
-	}
-}
-
-*/

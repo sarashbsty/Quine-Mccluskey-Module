@@ -1,7 +1,6 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
-#include "memory_tracker.h"
 
 #include <stdio.h>
 #include <stdlib.h>

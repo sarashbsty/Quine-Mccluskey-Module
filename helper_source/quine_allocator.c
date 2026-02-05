@@ -1,4 +1,3 @@
-#include "memory_tracker.h"
 #include "helper.h"
 #include "quine.h"
 
