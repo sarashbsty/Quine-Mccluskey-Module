@@ -36,6 +36,7 @@ int main() {
 
 	if(min_count == 0){
 		printf("No Minterms Entered!\n");
+		free(minterms);
 		return 0;
 	}
 
