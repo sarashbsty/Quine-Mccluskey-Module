@@ -7,40 +7,25 @@
 #include "helper.h"
 
 static int isSubset(char* A, char* B){
-	int count = 0;
-	int sizeA = strlen(A);
-	int sizeB = strlen(B);
+	int A_in_B = 1;
+    int B_in_A = 1;
 
-	if(sizeA < sizeB){
-		for(int a = 0; a < sizeA; a++){
-			char x = A[a];
-			if(strchr(B, x)) count++;
+    for (int i = 0; A[i]; i++){
+        if (!strchr(B, A[i])){
+			A_in_B = 0; break;
 		}
-		if(count == sizeA) return 1; // thus, A is subset of B
-		else return 0;
 	}
 
-	else if(sizeB < sizeA){
-		for(int b = 0; b < sizeB; b++){
-			char x = B[b];
-			if(strchr(A, x)) count++;
+    for (int i = 0; B[i]; i++){
+        if (!strchr(A, B[i])){
+			B_in_A = 0; break;
 		}
-		if(count == sizeB) return 2; //thus, B is subset of A
-		else return 0;
 	}
 
-	else{
-		int count[256] = {0};
-
-		while(*A){ count[(unsigned char)*A]++; A++; }
-		while(*B){ count[(unsigned char)*B]--; B++; }
-
-		for(int i = 0; i < 256; i++)
-			if(count[i] != 0)
-				return 0; // means they are different set
-
-		return 1; // means they are same set
-	}
+    if (A_in_B && !B_in_A) return 1;   // A ⊆ B
+    if (B_in_A && !A_in_B) return 2;   // B ⊆ A
+    if (A_in_B && B_in_A)  return 1;   // equal
+    return 0;
 }
 
 static int absorbTerms(char **SOP_terms, int SOP_count){
@@ -230,20 +215,41 @@ void petrick(quine *prime , char ***table , int *uncovered_terms , int uncovered
 }
 
 /*
-static int isSubset(const char *A, const char *B){
-    int A_in_B = 1;
-    int B_in_A = 1;
+static int isSubset(char* A, char* B){
+	int count = 0;
+	int sizeA = strlen(A);
+	int sizeB = strlen(B);
 
-    for (int i = 0; A[i]; i++)
-        if (!strchr(B, A[i])) A_in_B = 0;
+	if(sizeA < sizeB){
+		for(int a = 0; a < sizeA; a++){
+			char x = A[a];
+			if(strchr(B, x)) count++;
+		}
+		if(count == sizeA) return 1; // thus, A is subset of B
+		else return 0;
+	}
 
-    for (int i = 0; B[i]; i++)
-        if (!strchr(A, B[i])) B_in_A = 0;
+	else if(sizeB < sizeA){
+		for(int b = 0; b < sizeB; b++){
+			char x = B[b];
+			if(strchr(A, x)) count++;
+		}
+		if(count == sizeB) return 2; //thus, B is subset of A
+		else return 0;
+	}
 
-    if (A_in_B && !B_in_A) return 1;   // A ⊆ B
-    if (B_in_A && !A_in_B) return 2;   // B ⊆ A
-    if (A_in_B && B_in_A)  return 1;   // equal → delete B only
-    return 0;
+	else{
+		int count[256] = {0};
+
+		while(*A){ count[(unsigned char)*A]++; A++; }
+		while(*B){ count[(unsigned char)*B]--; B++; }
+
+		for(int i = 0; i < 256; i++)
+			if(count[i] != 0)
+				return 0; // means they are different set
+
+		return 1; // means they are same set
+	}
 }
 
 */
