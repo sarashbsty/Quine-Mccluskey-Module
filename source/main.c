@@ -114,5 +114,6 @@ int main() {
 	clear_quine(&prime);
 	free(minterms);
 
+	//Test comit
     return 0;
 }
