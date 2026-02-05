@@ -13,7 +13,8 @@ char* ToBinary(int minterm , int var);
 char** make_line(int *width , int widthcount , const char* style , int byte);
 char ***create_table(int row , int col , int n);
 int count_1s(char *binary);
-int is_exist(char **arr, const char item[], int size);
+int find_string(char **arr, int size, const char item[]);
+int find_int(int *arr, int size, int item);
 int get_minterms(int *minterms , int index, int max_terms);
 int allocate(quine *var , int size);
 
@@ -25,7 +26,7 @@ static inline void clear_input_buffer(){
 static inline void free_2d_pointer(char **arr, int size){
 	if(arr == NULL) return;
 	for(int i = 0; i < size; i++)
-		free(arr[i]);
+		if(arr[i]) free(arr[i]);
 	free(arr);
 }
 
@@ -42,6 +43,8 @@ static inline void clear_quine(quine *var){
 	if(var->minterms){ free_2d_pointer((char**)var->minterms , var->count); var->minterms = NULL; }
 	if(var->mintermCount){ free(var->mintermCount); var->mintermCount = NULL; }
 	if(var->combined) { free(var->combined); var->combined = NULL; }
+	if(var->minimal) { free(var->minimal); var->minimal = NULL; }
+	if(var->expression){ free_2d_pointer(var->expression, var->count); var->expression = NULL; }
 	var->capacity = 0;
 	var->count = 0;
 }
@@ -54,5 +57,7 @@ static inline void init_quine(quine *var){
 	var->minterms = NULL;
 	var->mintermCount = NULL;
 	var->combined = NULL;
+	var->minimal = NULL;
+	var->expression = NULL;
 }
 

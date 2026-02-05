@@ -13,7 +13,7 @@ void prime_implicants(quine *group , quine *prime , int var){
 
 			if(group[i].combined[j] == 1) continue; //skip Combined Binaries
 
-			//allocating quine items (This will allocate combined variable , even if its not used)
+			//allocating quine items
 			if(prime->capacity == 0){
 				int flag = allocate(prime , 4);
 				if(flag) { printf("\nERROR: quine items allocation failed | Low memory | prime-implicants\n"); exit(0); }
@@ -24,23 +24,22 @@ void prime_implicants(quine *group , quine *prime , int var){
 				if(flag) { printf("\nERROR: quine items allocation failed | Low memory | prime-implicants\n"); exit(0); }
 			}
 
-			//allocating memory for binary_string
-			char *new_binary = malloc((var+1) * sizeof(*new_binary));
-			if(!new_binary) { printf("\nERROR: Binary string allocation Failed | Low Memory | prime-implicants\n"); exit(0); }
+			//get expression string from binary
+			char *expres = Expression(group[i].binary[j]);
+			if(!expres) { printf("\nERROR: expression string allocation Failed | Low Memory | prime-implicants\n"); exit(0); }
 
+			//Inserting quine items
 			int index = prime->count;
-
-			//Inserting new_binary
-			strcpy(new_binary , group[i].binary[j]);
-			prime->binary[index] = new_binary;
-
-			//moving minterms
+			prime->binary[index] = group[i].binary[j];
+			prime->expression[index] = expres;
 			prime->minterms[index] = group[i].minterms[j];
-			group[i].minterms[j] = NULL;
-
 			prime->mintermCount[index] = group[i].mintermCount[j];
-
+			prime->minimal[index] = 0;
 			prime->count++;
+
+			//deattach quine items from group
+			group[i].binary[j] = NULL;
+			group[i].minterms[j] = NULL;
         }
 	}
 }

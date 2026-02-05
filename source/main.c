@@ -1,25 +1,3 @@
-/*
-	Copyright (c) 2025 Sarash Basumatary
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -32,7 +10,9 @@ SOFTWARE.
 #include "helper.h"
 
 int main() {
+
     #ifdef _WIN32
+	system("cls");
     SetConsoleOutputCP(CP_UTF8);
     #endif
 
@@ -56,6 +36,7 @@ int main() {
 
 	if(min_count == 0){
 		printf("No Minterms Entered!\n");
+		free(minterms);
 		return 0;
 	}
 
@@ -98,37 +79,40 @@ int main() {
 		//get prime-implicants afer each reduction
 		prime_implicants(group, &prime, var);
 
-		//clear old group and copy new
+		//clear old group and copy new reduced group
 		for (int j = 0; j <= var; j++){
 			clear_quine(&group[j]);
 			group[j] = reduced[j];
 		}
 	} while(canReduce);
 
-    printf("\n");
-    display_implicants(&prime);
-
- // create essential_table
-	char ***essential_table = create_table(prime.count , pow(2,var) , 6);
-	if(essential_table == NULL){ printf("\nERROR: Table creation failed | Low Memory | main\n"); exit(0); }
-
-    char *result = essential_implicants(&prime, essential_table, minterms, min_count);
-
-    printf("\n\n\nTable to find Essential prime Implicants: \n");
-    display_essential_table(&prime, essential_table, minterms, min_count);
-
-    printf("\n\nResult: Y(");
-    for (int i = 0; i < var; i++)
-		printf( i ? ",%c" : "%c", (char)('A' + i));
-    printf(") = %s\n\n", (result ? result : "No result"));
-
-
-	free_3d_pointer(essential_table , prime.count , pow(2,var));
-	free(result);
-	clear_quine(&prime);
-	free(minterms);
 	free(reduced);
 	free(group);
+
+	// essential_prime_implicant_table
+	char ***table = create_table(prime.count , pow(2,var) , 6);
+	if(table == NULL){ printf("\nERROR: Table creation failed | Low Memory | main\n"); exit(0); }
+
+	//store uncovered_minterms
+	int *uncovered_terms = malloc(min_count * sizeof(int));
+	if(!uncovered_terms) { printf("\nminterm_uncovered array allocation failed | low memory | main\n"); exit(0); }
+
+	display_implicants(&prime);
+	get_essential_implicants(&prime, table, minterms, min_count);
+    display_essential_table(&prime, table, minterms, min_count);
+
+	int uncovered_count = checkCoverage(&prime, uncovered_terms, minterms, min_count);
+	if(uncovered_count > 0)
+		petrick(&prime, table ,uncovered_terms ,uncovered_count);
+	else
+		printf("All Minterms covered by essential-implicants\n");
+
+	printResult(&prime,var);
+
+	free(uncovered_terms);
+	free_3d_pointer(table , prime.count , pow(2,var));
+	clear_quine(&prime);
+	free(minterms);
 
     return 0;
 }
