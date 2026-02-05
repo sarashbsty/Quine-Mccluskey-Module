@@ -112,7 +112,5 @@ int main() {
 	free_3d_pointer(table , prime.count , pow(2,var));
 	clear_quine(&prime);
 	free(minterms);
-
-	//Test comit
     return 0;
 }
