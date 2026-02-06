@@ -111,6 +111,15 @@ int main() {
 			printf("\nUncovered Minterms PI Chart:\n");
 			displayPiChart(&prime, table, uncovered_terms, uncovered_count);
 		}
+
+		int new_uncovered_count = column_domination(&prime, table, uncovered_terms, uncovered_count);
+
+		if(new_uncovered_count < uncovered_count){
+			uncovered_count = new_uncovered_count;
+			printf("\nColumn Reduced Uncovered Minterms PI Chart:\n");
+			displayPiChart(&prime, table, uncovered_terms, uncovered_count);
+		}
+
 		petrick(&prime, table ,uncovered_terms ,uncovered_count);
 
 	}
