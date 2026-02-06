@@ -4,7 +4,7 @@
 #include "helper.h"
 #include "quine.h" // quine struture
 
-void display_essential_table(const quine *prime , char ***table , int *minterms , int min_count){
+void displayPiChart(const quine *prime , char ***table , int *minterms , int min_count){
 
 	int n = strlen(prime->binary[0]);
 	int width[2] = {(n<10) ? 10 : (n*2)+1 , 5*min_count };
@@ -15,7 +15,7 @@ void display_essential_table(const quine *prime , char ***table , int *minterms 
 	char **line = make_line(line_width , 2 , "─" , 3);
 	if(line == NULL) { printf("\nERROR: Line creation Failed | Low Memory | Display-Essential-Table\n"); exit(0); }
 
-	printf("\n\nEssential prime Implicants Table: \n");
+	printf("\n\nPrime Implicants Chart: \n");
 
 	printf("╔%s┬%s╗\n",line[0] , line[1]);
 

@@ -5,7 +5,7 @@
 #include "quine.h" // quine struture
 #include "helper.h"
 
-void get_essential_implicants(quine *prime , char ***table, int minterms[] , int min_count){
+void createPiChart(quine *prime , char ***table, int minterms[] , int min_count){
 
 	//all space initialize
 	for(int i = 0; i < prime->count; i++)

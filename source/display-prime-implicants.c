@@ -5,7 +5,7 @@
 #include "quine.h" // quine struture
 #include "helper.h"  // for make_line , digit , array_to_string
 
-void display_implicants(const quine *prime){
+void displayPi(const quine *prime){
 	if(prime->count == 0){ printf("\nEmpty Implicant table\n"); return; }
 
 	int n = strlen(prime->binary[0]);                                         // also gives no. of variables
