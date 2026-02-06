@@ -19,5 +19,6 @@ void createPiChart(quine *prime , char ***table, int minterms[] , int min_count)
 void displayPiChart(const quine *prime , char ***table , int *minterms , int min_count);
 int checkCoverage(quine *prime , int *uncovered_terms, int minterms[] , int min_count);
 int set_minimizer(quine *prime , int *uncovered_terms , int *uncovered_count);
+int column_domination(quine *prime, char ***table ,int *uncovered_terms ,int uncovered_count);
 void petrick(quine *prime , char ***table , int *uncovered_terms , int uncovered_count);
 void printResult(const quine *prime, int var);
