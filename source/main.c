@@ -107,11 +107,13 @@ int main() {
 
 	int uncovered_count = checkCoverage(&prime, uncovered_terms, minterms, min_count);
 	if(uncovered_count > 0){
-		printf("Minterms not covered : ");
-		for(int i = 0; i < uncovered_count; i++)
-			printf("%d ",uncovered_terms[i]);
-
+		if(uncovered_count == min_count) printf("No Essential Prime-Implicants");
+		else{
+			printf("\nUncovered Minterms PI Chart:\n");
+			displayPiChart(&prime, table, uncovered_terms, uncovered_count);
+		}
 		petrick(&prime, table ,uncovered_terms ,uncovered_count);
+
 	}
 	else{
 		printf("All Minterms covered by essential-implicants:");
