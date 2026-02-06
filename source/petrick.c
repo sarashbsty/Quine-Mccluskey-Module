@@ -80,7 +80,7 @@ static int distributive(char** new_SOP_terms, char **A , int A_count , char *B ,
 
 static int getMinLiterals(char **SOP_terms, int SOP_count, int max_literals){
 	int min_literal = max_literals; //initialize maximum possible literal
-	for(int i = 0; i < SOP_count-1; i++){
+	for(int i = 0; i < SOP_count; i++){
 		int size = strlen(SOP_terms[i]);
 		if(size < min_literal) min_literal = size;
 	}
@@ -178,7 +178,7 @@ void petrick(quine *prime , char ***table , int *uncovered_terms , int uncovered
 	int min_literal = getMinLiterals(SOP_terms, SOP_count, max_literals);
 	SOP_count = removeNonMinimalTerms(SOP_terms, SOP_count, min_literal);
 
-	printf("\n\nMinimal Terms: ");
+	printf("\n\nMinimal Terms with %d literals: ",min_literal);
 	for(int i = 0; i < SOP_count; i++){
 		for(char *ch = SOP_terms[i]; *ch; ch++)
 			printf("P%d", 1+(*ch - 'A'));
