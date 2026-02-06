@@ -93,11 +93,14 @@ static int removeNonMinimalTerms(char **SOP_terms, int SOP_count, int min_litera
 			free(SOP_terms[i]);
 			SOP_terms[i] = NULL;
 		}
-		else{
+		else
 			SOP_terms[new_SOP_count++] = SOP_terms[i];
-			SOP_terms[i] = NULL;
-		}
 	}
+
+	//NULL all other redundant
+	for(int i = new_SOP_count; i < SOP_count; i++)
+		SOP_terms[i] = NULL;
+
 	return new_SOP_count;
 }
 
@@ -173,23 +176,21 @@ void petrick(quine *prime , char ***table , int *uncovered_terms , int uncovered
 	int min_literal = getMinLiterals(SOP_terms, SOP_count, max_literals);
 	SOP_count = removeNonMinimalTerms(SOP_terms, SOP_count, min_literal);
 
-	char** ptr = SOP_terms;
 	printf("\n\nMinimal Terms: ");
-	while(*ptr){
-		char* str = *ptr++;
-		while(*str){ printf("P%d", 1+(*str-'A') ); str++; }
+	for(int i = 0; i < SOP_count; i++){
+		for(char *ch = SOP_terms[i]; *ch; ch++)
+			printf("P%d", 1+(*ch - 'A'));
 		printf(" ");
 	}
 
-	printf("\n\nPosible Combinations: \n");
+	printf("\n\nPosible Combinations:");
 	for(int i = 0; i < SOP_count; i++){
-		printf("%d. ",i+1);
+		printf("\n%d. ",i+1);
 
 		//print essential implicants(if exist)
-		for(int j = 0; j < prime->count; j++){
-			if(prime->minimal[j] == 0) continue;
-			printf("%s + ", prime->expression[j]);
-		}
+		for(int j = 0; j < prime->count; j++)
+			if(prime->minimal[j] == 1)
+				printf("%s + ", prime->expression[j]);
 
 		//print petrick SOP term's expression
 		term = SOP_terms[i];
@@ -197,7 +198,6 @@ void petrick(quine *prime , char ***table , int *uncovered_terms , int uncovered
 			int idx = term[j] - 'A';
 			printf((j == 0) ? "%s" : " + %s" ,prime->expression[idx]);
 		}
-		printf("\n");
 	}
 
 	//Choosing first combination for our main Results
