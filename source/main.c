@@ -96,15 +96,30 @@ int main() {
 	int *uncovered_terms = malloc(min_count * sizeof(int));
 	if(!uncovered_terms) { printf("\nminterm_uncovered array allocation failed | low memory | main\n"); exit(0); }
 
+	printf("\nPrime Implicants:\n");
 	displayPi(&prime);
+
 	createPiChart(&prime, table, minterms, min_count);
+
+	printf("\nPrime Implicants Chart:\n");
     displayPiChart(&prime, table, minterms, min_count);
 
 	int uncovered_count = checkCoverage(&prime, uncovered_terms, minterms, min_count);
-	if(uncovered_count > 0)
+	if(uncovered_count > 0){
+		if(uncovered_count == min_count) printf("No Essential Prime-Implicants");
+		else{
+			printf("\nUncovered Minterms PI Chart:\n");
+			displayPiChart(&prime, table, uncovered_terms, uncovered_count);
+		}
 		petrick(&prime, table ,uncovered_terms ,uncovered_count);
-	else
-		printf("All Minterms covered by essential-implicants\n");
+
+	}
+	else{
+		printf("All Minterms covered by essential-implicants:");
+		for(int i = 0; i < prime.count; i++)
+			if(prime.minimal[i] == 1)
+				printf(" %s",prime.expression[i]);
+	}
 
 	printResult(&prime,var);
 

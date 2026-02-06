@@ -18,11 +18,5 @@ int checkCoverage(quine *prime , int *uncovered_terms, int minterms[] , int min_
 		}
 		if(check == -1) uncovered_terms[count++] = minterms[i];
 	}
-
-	if(count > 0){
-		printf("Minterms not covered : ");
-		for(int i = 0; i < count; i++)
-			printf("%d ",uncovered_terms[i]);
-	}
 	return count;
 }

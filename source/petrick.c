@@ -4,28 +4,6 @@
 #include "quine.h" // quine struture
 #include "helper.h"
 
-static int isSubset(char* A, char* B){
-	int A_in_B = 1;
-    int B_in_A = 1;
-
-    for (int i = 0; A[i]; i++){
-        if (!strchr(B, A[i])){
-			A_in_B = 0; break;
-		}
-	}
-
-    for (int i = 0; B[i]; i++){
-        if (!strchr(A, B[i])){
-			B_in_A = 0; break;
-		}
-	}
-
-    if (A_in_B && !B_in_A) return 1;   // A ⊆ B
-    if (B_in_A && !A_in_B) return 2;   // B ⊆ A
-    if (A_in_B && B_in_A)  return 1;   // equal
-    return 0;
-}
-
 static int absorbTerms(char **SOP_terms, int SOP_count){
 	for(int a = 0; a < SOP_count-1; a++){
 		char* A = SOP_terms[a];
