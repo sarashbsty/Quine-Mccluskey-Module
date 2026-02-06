@@ -17,8 +17,6 @@ void displayPiChart(const quine *prime , char ***table , int *minterms , int min
 	char **line = make_line(line_width , 2 , "─" , 3);
 	if(line == NULL) { printf("\nERROR: Line creation Failed | Low Memory | Display-Essential-Table\n"); exit(0); }
 
-	printf("\n\nPrime Implicants Chart: \n");
-
 	printf("╔%s┬%s╗\n",line[0] , line[1]);
 
 	printf("│ %-*s │  " , width[0] , "Expression");

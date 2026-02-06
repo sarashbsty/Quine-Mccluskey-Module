@@ -21,7 +21,6 @@ void displayPi(const quine *prime){
 	char **line = make_line(line_width , 3 , "─" , 3);
 	if(line == NULL) { printf("\nERROR: Line creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
 
-	printf("\nPrime Implicants:\n");
 	printf("╔%s┬%s┬%s╗\n",line[0],line[1],line[2]);
 	printf("│ %-*s │ %-*s │ %-*s │\n", width[0], "Expression" ,width[1], "Binary" , width[2], "Minterms");
 
@@ -36,6 +35,6 @@ void displayPi(const quine *prime){
 
 		free(str);
 	}
-	printf("╚%s┴%s┴%s╝",line[0],line[1],line[2]);
+	printf("╚%s┴%s┴%s╝\n",line[0],line[1],line[2]);
 	free_2d_pointer(line , 3);
 }
