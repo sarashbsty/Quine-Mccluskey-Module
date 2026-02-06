@@ -9,9 +9,11 @@ void printResult(const quine *prime, int var){
 		printf((i == var) ? "%c" : "%c,", 'A' + i-1);
     printf(") = ");
 
+	int first = 1;
 	for(int i = 0; i < prime->count; i++){
 		if(prime->minimal[i] == 0) continue;
-		printf((i == 0) ? "%s" : " + %s" , prime->expression[i]);
+		printf((first) ? "%s" : " + %s" , prime->expression[i]);
+		first = 0;
 	}
 	printf("\n\n");
 }
