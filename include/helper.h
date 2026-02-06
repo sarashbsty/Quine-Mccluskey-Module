@@ -17,6 +17,7 @@ int find_string(char **arr, int size, const char item[]);
 int find_int(int *arr, int size, int item);
 int get_minterms(int *minterms , int index, int max_terms);
 int allocate(quine *var , int size);
+int isSubset(char* A, char* B);
 
 static inline void clear_input_buffer(){
 	int c;
