@@ -6,36 +6,6 @@
 #include "quine.h" // quine struture
 #include "helper.h"
 
-static int absorbTerms(char **SOP_terms, int SOP_count){
-	for(int a = 0; a < SOP_count-1; a++){
-		char* A = SOP_terms[a];
-
-		for(int b = a+1; b < SOP_count && A != NULL; b++){
-
-			char* B = SOP_terms[b];
-			if(B == NULL) continue;
-			int subset = isSubset(A, B);
-
-			if(subset == 1){   //if A ⊆ B or A = B
-				free(B);
-				SOP_terms[b] = NULL;
-			}
-			else if(subset == 2){  //if B ⊆ A
-				free(A);
-				SOP_terms[a] = NULL;
-				break;
-			}
-		}
-	}
-
-	int new_SOP_count = 0;
-	for(int i = 0; i < SOP_count; i++){
-		if(SOP_terms[i] == NULL) continue;
-		SOP_terms[new_SOP_count++] = SOP_terms[i];
-	}
-	return new_SOP_count;
-}
-
 static int distributive(char** new_SOP_terms, char **A , int A_count , char *B , int term_size){
 	int new_SOP_count = 0;
 	for(int a = 0; a < A_count; a++){
@@ -144,7 +114,7 @@ void petrick(quine *prime , char ***table , int *uncovered_terms , int uncovered
 		if(!new_SOP_terms){ printf("\nERROR: Memory Allocation Failed | petrick"); exit(0); }
 
 		int new_SOP_count = distributive(new_SOP_terms, SOP_terms, SOP_count, POS_terms[i], max_literals+1);
-		new_SOP_count = absorbTerms(new_SOP_terms,new_SOP_count);
+		new_SOP_count = absorp(new_SOP_terms,new_SOP_count);
 
 		free_2d_pointer(SOP_terms,SOP_count);
 		SOP_terms = new_SOP_terms;

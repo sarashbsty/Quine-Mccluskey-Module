@@ -18,6 +18,7 @@ int find_int(int *arr, int size, int item);
 int get_minterms(int *minterms , int index, int max_terms);
 int allocate(quine *var , int size);
 int isSubset(char* A, char* B);
+int absorp(char **terms, int count);
 
 static inline void clear_input_buffer(){
 	int c;
