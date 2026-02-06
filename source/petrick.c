@@ -6,26 +6,6 @@
 #include "quine.h" // quine struture
 #include "helper.h"
 
-static int distributive(char** new_SOP_terms, char **A , int A_count , char *B , int term_size){
-	int new_SOP_count = 0;
-	for(int a = 0; a < A_count; a++){
-
-		char *term = A[a];
-		for(int b = 0; B[b] != '\0'; b++){
-			char *new_term = malloc(sizeof(*new_term) * term_size);
-			if(!new_term){ printf("\nERROR: memory allocation failed | distributive | pretrick"); exit(0); }
-
-			//if literal already exist in the term, then just copy the term and continue to next
-			char ch = B[b];
-			if(strchr(term, ch)) strcpy(new_term, term);
-			else snprintf(new_term, term_size, "%s%c" , term, ch);
-
-			new_SOP_terms[new_SOP_count++] = new_term;
-		}
-	}
-	return new_SOP_count;
-}
-
 static int getMinLiterals(char **SOP_terms, int SOP_count, int max_literals){
 	int min_literal = max_literals; //initialize maximum possible literal
 	for(int i = 0; i < SOP_count; i++){

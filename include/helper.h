@@ -18,7 +18,8 @@ int find_int(int *arr, int size, int item);
 int get_minterms(int *minterms , int index, int max_terms);
 int allocate(quine *var , int size);
 int isSubset(char* A, char* B);
-int absorp(char **terms, int count);
+int absorp(char **termsArr, int count);
+int distributive(char** newTermsArr, char **TermsArr , int count , char *term , int term_size);
 
 static inline void clear_input_buffer(){
 	int c;
