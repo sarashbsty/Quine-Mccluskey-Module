@@ -97,9 +97,9 @@ int main() {
 	int *uncovered_terms = malloc(min_count * sizeof(int));
 	if(!uncovered_terms) { printf("\nminterm_uncovered array allocation failed | low memory | main\n"); exit(0); }
 
-	display_implicants(&prime);
-	get_essential_implicants(&prime, table, minterms, min_count);
-    display_essential_table(&prime, table, minterms, min_count);
+	displayPi(&prime);
+	createPiChart(&prime, table, minterms, min_count);
+    displayPiChart(&prime, table, minterms, min_count);
 
 	int uncovered_count = checkCoverage(&prime, uncovered_terms, minterms, min_count);
 	if(uncovered_count > 0)
