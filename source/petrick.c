@@ -98,7 +98,7 @@ void petrick(quine *prime , char **POS_terms, int POS_count, int var){
 
 	//Printing possible combinaion and also cost calculation
 
-	int min_cost = var * min_literal , minCostIdx = 0;
+	int min_cost = (var*2) * min_literal , minCostIdx = 0;
 	printf("\n\n\n#Posible Combinations with Cost (complement's cost also adds):");
 	for(int i = 0; i < SOP_count; i++){
 		int new_cost = 0;
