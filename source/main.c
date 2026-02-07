@@ -89,7 +89,7 @@ int main() {
 	free(reduced);
 	free(group);
 
-	// essential_prime_implicant_table
+	// prime_implicant_chart_table
 	char ***table = create_table(prime.count , pow(2,var) , 6);
 	if(table == NULL){ printf("\nERROR: Table creation failed | Low Memory | main\n"); exit(0); }
 
@@ -111,7 +111,12 @@ int main() {
 
 		if(uncovered_count == min_count) printf("No Essential Prime-Implicants\n");
 		else{
-			printf("\nUncovered Minterms PI Chart:\n");
+			printf("Essential-implicants:");
+			for(int i = 0; i < prime.count; i++)
+				if(prime.minimal[i] == 1)
+					printf(" %s",prime.expression[i]);
+
+			printf("\n\nUncovered Minterms PI Chart:\n");
 			displayPiChart(&prime, table, uncovered_terms, uncovered_count);
 		}
 
