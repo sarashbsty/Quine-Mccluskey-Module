@@ -96,7 +96,6 @@ int main() {
 	int *uncovered_terms = malloc(min_count * sizeof(int));
 	if(!uncovered_terms) { printf("\nminterm_uncovered array allocation failed | low memory | main\n"); exit(0); }
 
-
 	printf("\nPrime Implicants:\n");
 	displayPi(&prime);
 
@@ -119,7 +118,7 @@ int main() {
 		if(!setArr) { printf("\nset coverage array allocation failed | low memory | main\n"); exit(0); }
 
 		printf("\nSet Coverage (column):\n\n");
-		int setArrCount = getSetCoverage(setArr, &prime,table ,uncovered_terms ,uncovered_count);
+		int setArrCount = getSetCoverage(setArr, &prime, table, uncovered_terms, uncovered_count);
 
 		int new_uncovered_count = column_domination(setArr, &setArrCount, uncovered_terms, uncovered_count);
 
@@ -129,7 +128,8 @@ int main() {
 			displayPiChart(&prime, table, uncovered_terms, uncovered_count);
 		}
 
-		petrick(&prime,setArr,setArrCount);
+		//Petrick Algorithm
+		petrick(&prime,setArr,setArrCount,var);
 		free_2d_pointer(setArr,setArrCount);
 
 	}

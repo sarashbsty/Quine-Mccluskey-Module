@@ -33,6 +33,7 @@ void prime_implicants(quine *group , quine *prime , int var){
 			prime->minterms[index] = group[i].minterms[j];
 			prime->mintermCount[index] = group[i].mintermCount[j];
 			prime->minimal[index] = 0;
+			prime->cost[index] = strlen(expres);
 			prime->count++;
 
 			//deattach quine items from group
