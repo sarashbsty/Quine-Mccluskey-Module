@@ -119,7 +119,7 @@ void petrick(quine *prime , char **POS_terms, int POS_count, int var){
 			new_cost += prime->cost[idx];
 		}
 
-		printf("\tcost = %d",new_cost);
+		printf(" \tcost = %d",new_cost);
 
 		if(new_cost < min_cost){
 			min_cost = new_cost;
