@@ -53,12 +53,24 @@ int allocate(quine *var , int size){
 		return 1;
 	}
 
+	int *temp7 = realloc(var->cost , size * sizeof(*temp7));
+	if(!temp7){
+		free(temp1);
+		free(temp2);
+		free(temp3);
+		free(temp4);
+		free(temp5);
+		free(temp6);
+		return 1;
+	}
+
 	var->binary = temp1;
 	var->minterms = temp2;
 	var->mintermCount = temp3;
 	var->combined = temp4;
 	var->minimal = temp5;
 	var->expression = temp6;
+	var->cost = temp7;
 	var->capacity = size;
 	return 0;
 }

@@ -43,11 +43,12 @@ static inline void free_3d_pointer(char ***arr, int row, int col){
 static inline void clear_quine(quine *var){
 	if(!var) return;
 	if(var->binary){ free_2d_pointer(var->binary , var->count); var->binary = NULL; }
+	if(var->expression){ free_2d_pointer(var->expression, var->count); var->expression = NULL; }
 	if(var->minterms){ free_2d_pointer((char**)var->minterms , var->count); var->minterms = NULL; }
 	if(var->mintermCount){ free(var->mintermCount); var->mintermCount = NULL; }
 	if(var->combined) { free(var->combined); var->combined = NULL; }
 	if(var->minimal) { free(var->minimal); var->minimal = NULL; }
-	if(var->expression){ free_2d_pointer(var->expression, var->count); var->expression = NULL; }
+	if(var->cost) { free(var->cost); var->cost = NULL; }
 	var->capacity = 0;
 	var->count = 0;
 }
@@ -62,5 +63,6 @@ static inline void init_quine(quine *var){
 	var->combined = NULL;
 	var->minimal = NULL;
 	var->expression = NULL;
+	var->cost = NULL;
 }
 
