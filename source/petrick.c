@@ -53,16 +53,14 @@ static void displayProcess(char **SOP_terms, int SOP_count, char **POS_terms, in
 	}
 }
 
-void petrick(quine *prime , char ***table , int *uncovered_terms , int uncovered_count){
-
-	char **POS_terms = malloc(sizeof(*POS_terms) * uncovered_count);
-	if(!POS_terms) { printf("\nERROR: Memory Allocation Failed | petrick"); exit(0); }
+void petrick(quine *prime , char **POS_terms, int POS_count){
 
 	char **SOP_terms = malloc(sizeof(*SOP_terms) * 1);
 	if(!SOP_terms) { printf("\nERROR: Memory Allocation Failed | petrick"); exit(0); }
 
-	int POS_count = 0, SOP_count = 0, max_literals = prime->count;;
+	int SOP_count = 0, max_literals = prime->count;;
 
+	/*
 	//Gathering data
 	for(int i = 0; i < uncovered_count; i++){
 		char *term = malloc(sizeof(*term) * (max_literals+1));
@@ -76,6 +74,8 @@ void petrick(quine *prime , char ***table , int *uncovered_terms , int uncovered
 		term[offset] = '\0';
 		POS_terms[POS_count++] = term;
 	}
+	*/
+
 
 	printf("\n\nPetrick Algorithm!");
 	printf("\n\nLet,\n");
@@ -138,7 +138,6 @@ void petrick(quine *prime , char ***table , int *uncovered_terms , int uncovered
 	}
 
 	//Clear memory
-	free_2d_pointer(POS_terms , POS_count);
 	free_2d_pointer(SOP_terms, SOP_count);
 }
 

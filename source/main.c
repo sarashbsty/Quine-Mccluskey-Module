@@ -97,6 +97,7 @@ int main() {
 	int *uncovered_terms = malloc(min_count * sizeof(int));
 	if(!uncovered_terms) { printf("\nminterm_uncovered array allocation failed | low memory | main\n"); exit(0); }
 
+
 	printf("\nPrime Implicants:\n");
 	displayPi(&prime);
 
@@ -106,14 +107,22 @@ int main() {
     displayPiChart(&prime, table, minterms, min_count);
 
 	int uncovered_count = checkCoverage(&prime, uncovered_terms, minterms, min_count);
+
 	if(uncovered_count > 0){
-		if(uncovered_count == min_count) printf("No Essential Prime-Implicants");
+
+		if(uncovered_count == min_count) printf("No Essential Prime-Implicants\n");
 		else{
 			printf("\nUncovered Minterms PI Chart:\n");
 			displayPiChart(&prime, table, uncovered_terms, uncovered_count);
 		}
 
-		int new_uncovered_count = column_domination(&prime, table, uncovered_terms, uncovered_count);
+		char **setArr = malloc(uncovered_count * sizeof(*setArr));
+		if(!setArr) { printf("\nset coverage array allocation failed | low memory | main\n"); exit(0); }
+
+		printf("\nSet Coverage (column):\n\n");
+		int setArrCount = getSetCoverage(setArr, &prime,table ,uncovered_terms ,uncovered_count);
+
+		int new_uncovered_count = column_domination(setArr, &setArrCount, uncovered_terms, uncovered_count);
 
 		if(new_uncovered_count < uncovered_count){
 			uncovered_count = new_uncovered_count;
@@ -121,7 +130,8 @@ int main() {
 			displayPiChart(&prime, table, uncovered_terms, uncovered_count);
 		}
 
-		petrick(&prime, table ,uncovered_terms ,uncovered_count);
+		petrick(&prime,setArr,setArrCount);
+		free_2d_pointer(setArr,setArrCount);
 
 	}
 	else{
