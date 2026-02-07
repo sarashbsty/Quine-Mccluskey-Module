@@ -123,9 +123,10 @@ int main() {
 		char **setArr = malloc(uncovered_count * sizeof(*setArr));
 		if(!setArr) { printf("\nset coverage array allocation failed | low memory | main\n"); exit(0); }
 
-		printf("\nSet Coverage (column):\n\n");
+		printf("\n#Set Coverage (column):\n");
 		int setArrCount = getSetCoverage(setArr, &prime, table, uncovered_terms, uncovered_count);
 
+		printf("\n#Column Domination by eliminating equal and Supersets:\n");
 		int new_uncovered_count = column_domination(setArr, &setArrCount, uncovered_terms, uncovered_count);
 
 		if(new_uncovered_count < uncovered_count){

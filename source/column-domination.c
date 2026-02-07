@@ -19,11 +19,13 @@ int column_domination(char** setArr, int* setArrCount,int *uncovered_terms ,int 
 			int subset = isSubset(A, B);
 
 			if(subset == 1){   //if A ⊆ B or A = B
+				printf("PI(%d) ⊆ PI(%d); PI(%d) removed\n", uncovered_terms[a], uncovered_terms[b], uncovered_terms[b]);
 				free(B);
 				setArr[b] = NULL;
 				uncovered_terms[b] = -1;
 			}
-			else if(subset == 2){  //if B ⊆ A
+			else if(subset == 2){  //if B ⊂ A
+				printf("PI(%d) ⊂ PI(%d); PI(%d) removed\n", uncovered_terms[b], uncovered_terms[a], uncovered_terms[a]);
 				free(A);
 				setArr[a] = NULL;
 				uncovered_terms[a] = -1;
