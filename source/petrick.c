@@ -60,23 +60,6 @@ void petrick(quine *prime , char **POS_terms, int POS_count){
 
 	int SOP_count = 0, max_literals = prime->count;;
 
-	/*
-	//Gathering data
-	for(int i = 0; i < uncovered_count; i++){
-		char *term = malloc(sizeof(*term) * (max_literals+1));
-		if(!term) { printf("\nERROR: Memory Allocation Failed | petrick"); exit(0); }
-
-		int offset = 0;
-		for(int j = 0; j < prime->count; j++){
-			if(strcmp(table[j][uncovered_terms[i]], " ") != 0)
-				term[offset++] = 'A'+j;
-		}
-		term[offset] = '\0';
-		POS_terms[POS_count++] = term;
-	}
-	*/
-
-
 	printf("\n\nPetrick Algorithm!");
 	printf("\n\nLet,\n");
 	for(int i = 0; i < prime->count; i++)
