@@ -18,4 +18,15 @@ A terminal-based tool to **simplify Boolean expressions** using the **Quine-McCl
   - Column reduction
   - Petrick Algorithm process
   - Final minimized expression
- 
+
+ ## Build Guide
+ - Open a terminal and change to the project’s source directory.
+  Example: "C:\Users\user123\Desktop\GitHub\Glyphix"
+
+ - Configure the project with CMake:
+   Run "cmake -S . -B build"
+
+ - Build the project:
+   Run "cmake --build build"
+
+ - After the build completes, quine.exe will be generated in the project directory.
