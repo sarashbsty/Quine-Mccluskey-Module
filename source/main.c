@@ -89,21 +89,19 @@ int main() {
 	free(reduced);
 	free(group);
 
+	printf("\nPrime Implicants:\n");
+	displayPi(&prime);
+
 	// prime_implicant_chart_table
-	char ***table = create_table(prime.count , pow(2,var) , 6);
-	if(table == NULL){ printf("\nERROR: Table creation failed | Low Memory | main\n"); exit(0); }
+	char ***table = createPiChart(&prime, minterms, min_count, var);
+	if(!table){ printf("\nERROR: Table creation failed | Low Memory | main\n"); exit(0); }
+
+	printf("\nPrime Implicants Chart:\n");
+    displayPiChart(&prime, table, minterms, min_count);
 
 	//store uncovered_minterms
 	int *uncovered_terms = malloc(min_count * sizeof(int));
 	if(!uncovered_terms) { printf("\nminterm_uncovered array allocation failed | low memory | main\n"); exit(0); }
-
-	printf("\nPrime Implicants:\n");
-	displayPi(&prime);
-
-	createPiChart(&prime, table, minterms, min_count);
-
-	printf("\nPrime Implicants Chart:\n");
-    displayPiChart(&prime, table, minterms, min_count);
 
 	int uncovered_count = checkCoverage(&prime, uncovered_terms, minterms, min_count);
 
