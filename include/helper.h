@@ -10,7 +10,6 @@ char* Expression(const char *binary);
 char* array_to_string(const int *arr , const int arr_size , const char *format);
 char* ToBinary(int minterm , int var);
 char** make_line(int *width , int widthcount , const char* style , int byte);
-int **create_table(int row , int col);
 int count_1s(char *binary);
 int find_string(char **arr, int size, const char item[]);
 int find_int(int *arr, int size, int item);
@@ -30,13 +29,6 @@ static inline void free_2d_pointer(char **arr, int size){
 	for(int i = 0; i < size; i++)
 		if(arr[i]) free(arr[i]);
 	free(arr);
-}
-
-static inline void free_3d_pointer(char ***arr, int row, int col){
-    if(arr == NULL) return;
-    for(int i = 0; i < row; i++)
-        free_2d_pointer((char**)arr[i], col);
-    free(arr);
 }
 
 static inline void clear_quine(quine *var){
