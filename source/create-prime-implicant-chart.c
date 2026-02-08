@@ -5,7 +5,10 @@
 #include "quine.h" // quine struture
 #include "helper.h"
 
-void createPiChart(quine *prime , char ***table, int minterms[] , int min_count){
+char*** createPiChart(quine *prime , int minterms[] , int min_count, int var){
+
+	char ***table = create_table(prime->count , pow(2,var) , 6);
+	if(table == NULL){ return NULL; }
 
 	//all space initialize
 	for(int i = 0; i < prime->count; i++)
@@ -34,4 +37,6 @@ void createPiChart(quine *prime , char ***table, int minterms[] , int min_count)
 			prime->minimal[index] = 1;
 		}
 	}
+
+	return table;
 }

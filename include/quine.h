@@ -16,7 +16,7 @@ void displayGroups(quine *group , int var);
 int reduce_table(quine *group , quine *reduce , int var);
 void prime_implicants(quine *group , quine *prime , int var);
 void displayPi(const quine *prime);
-void createPiChart(quine *prime , char ***table, int minterms[] , int min_count);
+char*** createPiChart(quine *prime , int minterms[] , int min_count, int var);
 void displayPiChart(const quine *prime , char ***table , int *minterms , int min_count);
 int checkCoverage(quine *prime , int *uncovered_terms, int minterms[] , int min_count);
 int getSetCoverage(char** setArr, quine *prime,char ***table ,int *uncovered_terms ,int uncovered_count);
