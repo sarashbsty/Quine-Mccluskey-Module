@@ -11,7 +11,7 @@ char* Expression(const char *binary);
 char* array_to_string(const int *arr , const int arr_size , const char *format);
 char* ToBinary(int minterm , int var);
 char** make_line(int *width , int widthcount , const char* style , int byte);
-char ***create_table(int row , int col , int n);
+int **create_table(int row , int col);
 int count_1s(char *binary);
 int find_string(char **arr, int size, const char item[]);
 int find_int(int *arr, int size, int item);
