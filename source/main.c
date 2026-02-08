@@ -88,7 +88,7 @@ int main() {
 	free(reduced);
 	free(group);
 
-	// essential_prime_implicant_table
+	// prime_implicant_chart_table
 	char ***table = create_table(prime.count , pow(2,var) , 6);
 	if(table == NULL){ printf("\nERROR: Table creation failed | Low Memory | main\n"); exit(0); }
 
@@ -110,16 +110,22 @@ int main() {
 
 		if(uncovered_count == min_count) printf("No Essential Prime-Implicants\n");
 		else{
-			printf("\nUncovered Minterms PI Chart:\n");
+			printf("Essential-implicants:");
+			for(int i = 0; i < prime.count; i++)
+				if(prime.minimal[i] == 1)
+					printf(" %s",prime.expression[i]);
+
+			printf("\n\nUncovered Minterms PI Chart:\n");
 			displayPiChart(&prime, table, uncovered_terms, uncovered_count);
 		}
 
 		char **setArr = malloc(uncovered_count * sizeof(*setArr));
 		if(!setArr) { printf("\nset coverage array allocation failed | low memory | main\n"); exit(0); }
 
-		printf("\nSet Coverage (column):\n\n");
+		printf("\n#Set Coverage (column):\n");
 		int setArrCount = getSetCoverage(setArr, &prime, table, uncovered_terms, uncovered_count);
 
+		printf("\n#Column Domination by eliminating equal and Supersets:\n");
 		int new_uncovered_count = column_domination(setArr, &setArrCount, uncovered_terms, uncovered_count);
 
 		if(new_uncovered_count < uncovered_count){
