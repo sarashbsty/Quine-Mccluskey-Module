@@ -30,3 +30,14 @@ A terminal-based tool to **simplify Boolean expressions** using the **Quine-McCl
    Run "cmake --build build"
 
  - After the build completes, quine.exe will be generated in the project directory.
+
+## Sample Images
+<img width="1918" height="1021" alt="image" src="https://github.com/user-attachments/assets/5578748d-bb35-4fff-a3d4-63b6d63c419a" />
+<img width="1918" height="1022" alt="image" src="https://github.com/user-attachments/assets/8248f96b-5c47-4fc5-8a14-0a8e03424fc9" />
+<img width="1918" height="1018" alt="image" src="https://github.com/user-attachments/assets/cee9347d-4558-4bb9-a717-66afb12f04ae" />
+<img width="1918" height="936" alt="image" src="https://github.com/user-attachments/assets/01cff14c-a209-4cce-81ed-a4fc34b2dcb1" />
+<img width="1918" height="1012" alt="image" src="https://github.com/user-attachments/assets/a830a735-3dac-4d73-8c5a-aced20c83f6f" />
+<img width="1917" height="1010" alt="image" src="https://github.com/user-attachments/assets/7dc3fe53-c14f-4fcf-a7ca-f922f5755c6a" />
+<img width="1912" height="802" alt="image" src="https://github.com/user-attachments/assets/6356adb4-7567-43b8-9694-90cd6fe7c3ff" />
+
+
