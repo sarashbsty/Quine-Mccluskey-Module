@@ -7,33 +7,40 @@
 #include "quine.h" // quine struture
 #include "helper.h"
 
-char*** createPiChart(quine *prime , int minterms[] , int min_count, int var){
+int** createPiChart(quine *prime , int minterms[] , int min_count, int var){
 
-	char ***table = create_table(prime->count , pow(2,var) , 6);
+	int **table = malloc(prime->count * sizeof(*table));
 	if(table == NULL){ return NULL; }
 
-	//all space initialize
-	for(int i = 0; i < prime->count; i++)
-		for(int j = 0; j < min_count; j++)
-			strcpy(table[i][minterms[j]] , " ");
+	//create an array of size pow(2,var) and Assign 1 to respective column
+	for(int i = 0; i < prime->count; i++){
 
-	//Assigning X to respective cells
-	for(int i = 0; i < prime->count; i++)
-		for(int j = 0; j < prime->mintermCount[i]; j++)
-			strcpy(table[i][prime->minterms[i][j]] , " X");
+		int *arr = calloc(pow(2,var) , sizeof(*arr));
+		if(!arr){
+			free_2d_pointer((char**)table, i);
+			return NULL;
+		}
 
-	//Finding the essential implicant by finding column(minterm) with only one 'X' and the prime implecant that covers it
+		for(int j = 0; j < prime->mintermCount[i]; j++){
+			int idx = prime->minterms[i][j];
+			arr[idx] = 1;
+		}
+
+		table[i] = arr;
+	}
+
+	//Finding the essential implicant by finding column(minterm) with only one '1' and the prime implicant that covers it
 	for(int j = 0; j < min_count; j++){
 		int index ,count = 0;
 		for(int i = 0; i < prime->count && count <= 1; i++){
-			if(strcmp(table[i][minterms[j]], " X") == 0){
+			if(table[i][minterms[j]] != 0){
 				count++;
 				index = i;
 			}
 		}
 		if(count == 1){
 			//marking for visual guide
-			strcpy(table[index][minterms[j]] , "(X)" );
+			table[index][minterms[j]] = 2;
 
 			//marked for minimal cover
 			prime->minimal[index] = 1;
