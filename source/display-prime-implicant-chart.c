@@ -4,7 +4,7 @@
 #include "helper.h"
 #include "quine.h" // quine struture
 
-void displayPiChart(const quine *prime , char ***table , int *minterms , int min_count){
+void displayPiChart(const quine *prime , int **table , int *minterms , int min_count){
 
 	int n = strlen(prime->binary[0]);
 	int width[2] = {(n<10) ? 10 : (n*2)+1 , 5*min_count };
@@ -26,8 +26,11 @@ void displayPiChart(const quine *prime , char ***table , int *minterms , int min
 
 		printf("├%s┼%s┤\n",line[0] , line[1]);
 		printf("│ %-*s │ " , width[0] , prime->expression[i]);
-		for(int j = 0; j < min_count; j++)
-			printf("%-5s" , table[i][minterms[j]]);
+		for(int j = 0; j < min_count; j++){
+			if(table[i][minterms[j]] == 2) printf("%-5s" , "(X)");
+			else if(table[i][minterms[j]] == 1) printf("%-5s" , " X");
+			else printf("%-5s" , "");
+		}
 		printf(" │\n");
 
 	}

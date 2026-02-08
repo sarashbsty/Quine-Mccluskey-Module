@@ -4,7 +4,7 @@
 #include "quine.h" // quine struture
 #include "helper.h"
 
-int getSetCoverage(char** setArr, quine *prime,char ***table ,int *uncovered_terms ,int uncovered_count){
+int getSetCoverage(char** setArr, quine *prime,int **table ,int *uncovered_terms ,int uncovered_count){
 
 	int max_literals = prime->count , count = 0;
 
@@ -14,7 +14,7 @@ int getSetCoverage(char** setArr, quine *prime,char ***table ,int *uncovered_ter
 
 		int offset = 0;
 		for(int j = 0; j < prime->count; j++){
-			if(strcmp(table[j][uncovered_terms[i]], " ") != 0)
+			if(table[j][uncovered_terms[i]] != 0)
 				term[offset++] = 'A'+j;
 		}
 		term[offset] = '\0';
