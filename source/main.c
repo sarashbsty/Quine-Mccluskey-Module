@@ -141,12 +141,11 @@ int main() {
 		printf("\n#Set Coverage (column):\n");
 		int setArrCount = getSetCoverage(setArr, &prime, table, uncoveredTerms, uncoveredCount);
 
-		printf("\n#Column Domination by eliminating equal and Supersets:\n");
 		int new_uncovered_count = column_domination(setArr, &setArrCount, uncoveredTerms, uncoveredCount);
 
 		if(new_uncovered_count < uncoveredCount){
 			uncoveredCount = new_uncovered_count;
-			printf("\nColumn Reduced Uncovered Minterms PI Chart:\n");
+			printf("\n\nColumn Reduced Uncovered Minterms PI Chart:\n");
 			displayPiChart(&prime, table, uncoveredTerms, uncoveredCount);
 		}
 
