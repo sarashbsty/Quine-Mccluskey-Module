@@ -1,10 +1,9 @@
-#include "memory_tracker.h"
-
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
-#include "helper.h"
+#include "memory.h"
 #include "quine.h" // quine struture
+#include "display_tools.h" //make_line
 
 void displayPiChart(const quine *prime , int **table , int *minterms , int min_count){
 

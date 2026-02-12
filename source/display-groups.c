@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include "quine.h" // quine struture
-#include "helper.h" // for digit , make_line , array_to_string
+#include "memory.h" //
+#include "display_tools.h" //for make_line
 
 void displayGroups(quine *group , int var){
 

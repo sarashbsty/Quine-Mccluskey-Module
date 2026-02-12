@@ -1,11 +1,7 @@
-#include "memory_tracker.h"
-
-#include<stdio.h>
 #include<math.h>
-#include<string.h>
 #include<stdlib.h>
-#include "quine.h" // quine struture
-#include "helper.h"
+#include "quine.h"
+#include "memory.h"
 
 int** createPiChart(quine *prime , int minterms[] , int min_count, int var){
 

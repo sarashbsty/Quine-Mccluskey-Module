@@ -1,6 +1,5 @@
-#include "memory_tracker.h"
-#include "helper.h"
 #include "quine.h"
+#include "memory.h"
 
 int allocate(quine *var , int size){
 	//Memory Allocation for quine items

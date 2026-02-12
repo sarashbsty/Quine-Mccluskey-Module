@@ -1,11 +1,10 @@
-#include "memory_tracker.h"
-
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
 #include<math.h>
 #include "quine.h" // quine struture
-#include "helper.h"  // for make_line , digit , array_to_string
+#include "memory.h"
+#include "display_tools.h" // for make_line , array_to_string , digit
 
 void displayPi(const quine *prime){
 	if(prime->count == 0){ printf("\nEmpty Implicant table\n"); return; }
