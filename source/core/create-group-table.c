@@ -5,16 +5,13 @@
 static int count_1s(char *binary);
 static char* ToBinary(int minterm , int var);
 
-quine* createGroupTable(int *minterms, int n_terms, int var){
-
-	quine *group = calloc(var+1 , sizeof(*group));
-	if(!group) return NULL;
+int createGroupTable(quine *group , int *minterms, int n_terms, int var){
 
 	for(int i = 0; i < n_terms; i++){
 
 		// get Binary equivalents of the minterms
 		char* bin = ToBinary(minterms[i] , var);
-		if(!bin) return NULL;
+		if(!bin) return 1;
 
 		//find no.s of ones in binary
 		int ones = count_1s(bin);
@@ -23,12 +20,12 @@ quine* createGroupTable(int *minterms, int n_terms, int var){
 		//allocating quine items
 		if(group[ones].capacity == 0){
 			if(allocate(&group[ones] , 4))
-				return NULL;
+				return 1;
 		}
 		else if(group[ones].count >= group[ones].capacity){
 			int new_cap = (group[ones].capacity) * 2;
 			if(allocate(&group[ones] , new_cap))
-				return NULL;
+				return 1;
 		}
 
 		//inserting the binary , minterm , Count according to no.s of ones
@@ -37,7 +34,8 @@ quine* createGroupTable(int *minterms, int n_terms, int var){
 
 		//minterms
 		int *arr = malloc(sizeof(*arr));
-		if(!arr) return NULL;
+		if(!arr)
+			return 1;
 
 		arr[0] = minterms[i];
 		group[ones].minterms[index] = arr;
@@ -53,7 +51,7 @@ quine* createGroupTable(int *minterms, int n_terms, int var){
 
 		group[ones].count++;
 	}
-	return group;
+	return 0;
 }
 
 static int count_1s(char *binary){

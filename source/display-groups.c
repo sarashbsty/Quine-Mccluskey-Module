@@ -24,7 +24,7 @@ void displayGroups(quine *group , int var){
 	char **line = make_line(line_width , 4 , "─" , 3);
 	if(line == NULL) { printf("\nERROR: Line creation Failed | Low Memory | Display-Group\n"); exit(0); }
 
-	printf("╭%s┬%s┬%s┬%s╮\n",line[0],line[1],line[2],line[3]);
+	printf("\n╭%s┬%s┬%s┬%s╮\n",line[0],line[1],line[2],line[3]);
 	printf("│ %-*s │ %-*s │ %-*s │ %-*s │\n", width[0], "GROUP", width[1], "MINTERMS", width[2], "BINARY", width[3], "REDUCE");
 
     for (int i = 0; i < var+1; i++) {

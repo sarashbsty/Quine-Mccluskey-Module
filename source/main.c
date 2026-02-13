@@ -38,42 +38,93 @@ int main() {
 	if(minterms == NULL){ printf("ERROR: failed creating minterm array for input | low memory | main"); exit(0); }
 
     printf("Enter min terms : ");
-	int min_count = get_minterms(minterms , 0 , maxTerms);
+	int minCount = get_minterms(minterms , 0 , maxTerms);
 
-	if(min_count == 0){
+	if(minCount == 0){
 		printf("No Minterms Entered!\n");
 		free(minterms);
 		return 0;
 	}
 
 	printf("Enter dont care : ");
-	int dont_care_count = get_minterms(minterms , min_count , maxTerms);
+	int dont_care_count = get_minterms(minterms , minCount , maxTerms);
 
-    int n_terms = min_count + dont_care_count;
+    int n_terms = minCount + dont_care_count;
 
-    printf("\n\n%d Min terms: ", min_count);
-    for (int i = 0; i < min_count; i++)
+    printf("\n\n%d Min terms: ", minCount);
+    for (int i = 0; i < minCount; i++)
         printf("%d ", minterms[i]);
 
     printf("\n%d Dont care: ", dont_care_count);
-    for (int i = min_count; i < n_terms; i++)
+    for (int i = minCount; i < n_terms; i++)
         printf("%d ", minterms[i]);
+	printf("\n");
 
-    qmData data = qmMinimizer(minterms, n_terms, min_count, var);
+    qmData data = qmMinimizer(minterms, n_terms, minCount, var);
 
-	if(data.error) printf("%s\n",data.errorMgs);
-	else{
-		printf("\n");
-
-		for(int i = 0 ; i < data.tableCount; i++){
-			displayGroups(data.groupTables[i], data.groupCount[i] - 1);
-		}
-		printf("\n\n");
-		printf("%s",data.result);
+	if(data.error){
+		printf("%s\n",data.errorMgs);
+		destroyQmData(&data);
+		free(minterms);
+		return 1;
 	}
 
-	destroyQmGroupTables(&data);
-	free(data.result);
+	for(int i = 0 ; i < data.tableCount; i++){
+		printf("\nTABLE #%d",i+1);
+		displayGroups(data.groupTables[i], data.groupCount[i] - 1);
+	}
+
+	printf("\nPrime Implicants:");
+	displayPi(&data.PI);
+
+	printf("\nPrime Implicant Chart:");
+	displayPiChart(&data.PI, data.piChart, minterms, minCount);
+
+	if(data.essentialCount){
+		printf("Essential Implicants: ");
+		for(int i = 0; i < data.essentialCount; i++) printf("%s ",data.essentialPi[i]);
+		printf("\n");
+	}
+
+	if(data.uncoveredCount){
+		printf("\nUncovered minterms Prime Implicant Chart:");
+		displayPiChart(&data.PI, data.piChart, data.uncoveredTerms, data.uncoveredCount);
+
+		if(data.newUncoveredCount){
+			printf("\nAfter Column Domination:");
+			displayPiChart(&data.PI, data.piChart, data.newUncoveredTerms, data.newUncoveredCount);
+		}
+
+		printf("\nPretrick Algorithm:\n\n");
+
+		printf("let,\n");
+		for(int i = 0; i < data.PI.count; i++)
+			printf("  P%d = %s\n", i+1, data.PI.expression[i]);
+
+		for(int i = 0; i < data.logCount; i++)
+			printf("\n%s\n",data.petrickLog[i]);
+
+		printf("\nMinimum literal SOP Terms: ");
+		for(int i = 0; i < data.SOP_count; i++)
+			printf("%s ",data.SOP_terms[i]);
+
+		printf("\n\nPossible Combinations and Cost:\n\n");
+		for(int i = 0; i < data.SOP_count; i++){
+			char *ch = data.combinations[i];
+			while(*ch){
+				printf((*ch == ',') ? " + " : "%c" , *ch);
+				ch++;
+			}
+			printf(" \t\t (%d)\n\n", data.cost[i]);
+		}
+	}
+	else printf("\nAll Minterms Covered By Essential Implicants.\n");
+
+	printf("\n%s\n",data.result);
+
+	destroyQmData(&data);
+
+	free(minterms);
 
     return 0;
 }

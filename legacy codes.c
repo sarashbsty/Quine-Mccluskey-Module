@@ -73,7 +73,20 @@ for (int i = 1; i <= var; i++){
 	printf((i == var) ? "%c" : "%c,", 'A' + i);
 printf(") = %s\n\n", (result ? result : "No result"));
 free(result);
-	
+
+static inline void init_quine(quine *var){
+	if(!var) return;
+	var->count = 0;
+	var->capacity = 0;
+	var->binary = NULL;
+	var->minterms = NULL;
+	var->mintermCount = NULL;
+	var->combined = NULL;
+	var->minimal = NULL;
+	var->expression = NULL;
+	var->cost = NULL;
+}
+
 
 
 /*
@@ -116,4 +129,23 @@ static int isSubset(char* A, char* B){
 	}
 }
 
-*/	
+*/
+
+static void displayProcess(char **SOP_terms, int SOP_count, char **POS_terms, int POS_count, int i){
+	printf("\n\nP = (");
+	for(int j = 0; j < SOP_count; j++){
+		char *str = SOP_terms[j];
+		if(j > 0) printf(" + ");
+		while(*str){ printf("P%d" , 1+(*str-'A') ); str++; }
+	}
+	printf(")");
+
+	for(int k = i+1; k < POS_count; k++){
+		printf("·(");
+		for(int x = 0; POS_terms[k][x] != '\0'; x++){
+			char ch = POS_terms[k][x];
+			printf((x == 0) ? "P%d" : " + P%d", 1+(ch-'A') );
+		}
+		printf(")");
+	}
+}

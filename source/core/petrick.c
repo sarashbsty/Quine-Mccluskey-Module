@@ -2,14 +2,29 @@
 #include<string.h>
 #include<stdlib.h>
 #include "quine.h" // quine struture
+#include "qmMinimizer.h"
 #include "boolean_algebra.h"
 #include "memory.h"
 
 static int getMinLiterals(char **SOP_terms, int SOP_count, int max_literals);
 static int removeNonMinimalTerms(char **SOP_terms, int SOP_count, int min_literal);
-static void displayProcess(char **SOP_terms, int SOP_count, char **POS_terms, int POS_count, int i);
+static int logger(char** returnPtr, char **SOP_terms, int SOP_count, char **POS_terms, int POS_count, int i);
+static int convertStyle(char **ptr);
 
-int petrick(quine *prime , char **POS_terms, int POS_count, int var){
+int petrick(qmData *data, quine *prime , char **POS_terms, int POS_count, int var){
+
+	#define LOG_ALLOCATE \
+        do { \
+            if (logCount + 1 >= logCap) { \
+                    logCap *= 2; \
+                char **tmp = realloc(logArr, logCap); \
+                if (!tmp) { free_2d_pointer(logArr,logCount); return 1; } \
+                logArr = tmp; \
+            } \
+        } while (0);
+
+	char **logArr = malloc(10 * sizeof(*logArr));
+	int logCount = 0 , logCap = 10;
 
 	//initialization
 	char **SOP_terms = malloc(sizeof(*SOP_terms) * 1);
@@ -34,20 +49,36 @@ int petrick(quine *prime , char **POS_terms, int POS_count, int var){
 		free_2d_pointer(SOP_terms,SOP_count);
 		SOP_terms = new_SOP_terms;
 		SOP_count = new_SOP_count;
+
+		LOG_ALLOCATE;
+		if(logger(&logArr[logCount++], SOP_terms, SOP_count, POS_terms, POS_count, i)) return 1;
 	}
 
 	int min_literal = getMinLiterals(SOP_terms, SOP_count, max_literals);
 	SOP_count = removeNonMinimalTerms(SOP_terms, SOP_count, min_literal);
 
+	char** combinations = malloc(SOP_count * sizeof(*combinations));
+	if(!combinations) return 1;
+
+	int *costArr = malloc(SOP_count * sizeof(*costArr));
+	if(!costArr) return 1;
+
 	int min_cost = (var*2) * min_literal , minCostIdx = 0;
 	for(int i = 0; i < SOP_count; i++){
-		int new_cost = 0;
+
+		int new_cost = 0 , offset = 0 , cap = (var*2 + 1) * min_literal + 1;
 		char* term = SOP_terms[i];
+		char* str = malloc(cap * sizeof(*str)); //A'B'C', = 7
+		if(!str) return 1;
 
 		for(int j = 0; term[j] != '\0'; j++){
 			int idx = term[j] - 'A';
+			offset += snprintf(str+offset, cap-offset, "%s,", prime->expression[j]);
 			new_cost += prime->cost[idx];
 		}
+		str[offset-1] = '\0';
+		combinations[i] = str;
+		costArr[i] = new_cost;
 
 		if(new_cost < min_cost){
 			min_cost = new_cost;
@@ -61,8 +92,35 @@ int petrick(quine *prime , char **POS_terms, int POS_count, int var){
 		prime->minimal[idx] = 1;
 	}
 
+	for(int i = 0; i < SOP_count; i++)
+		convertStyle(&SOP_terms[i]);  // convert ABC to P1P2P3
+
 	//Clear memory
-	free_2d_pointer(SOP_terms, SOP_count);
+	data->petrickLog = logArr;
+	data->logCount = logCount;
+	data->SOP_terms = SOP_terms;
+	data->SOP_count = SOP_count;
+	data->combinations = combinations;
+	data->cost = costArr;
+
+	return 0;
+}
+
+static int convertStyle(char **ptr){
+	char *str = *ptr;
+	int N = 0;
+	for(char *ch = str; *ch; ch++)
+		N += snprintf(NULL, 0, "P%d" , 1+(*ch)-'A');
+
+	char *newStr = malloc(N+1 * sizeof(*newStr));
+	if(!newStr) return 1;
+
+	int offset = 0;
+	for(char *ch = str; *ch; ch++)
+		offset += snprintf(newStr+offset, (N+1)-offset, "P%d" , 1+(*ch)-'A');
+
+	free(str);
+	*ptr = newStr;
 	return 0;
 }
 
@@ -94,21 +152,56 @@ static int removeNonMinimalTerms(char **SOP_terms, int SOP_count, int min_litera
 	return new_SOP_count;
 }
 
-static void displayProcess(char **SOP_terms, int SOP_count, char **POS_terms, int POS_count, int i){
-	printf("\n\nP = (");
+static int logger(char** returnPtr, char **SOP_terms, int SOP_count, char **POS_terms, int POS_count, int i){
+	//two pass method
+	int needed = 0;
+
+	needed += snprintf(NULL, 0, "P = (");
 	for(int j = 0; j < SOP_count; j++){
 		char *str = SOP_terms[j];
-		if(j > 0) printf(" + ");
-		while(*str){ printf("P%d" , 1+(*str-'A') ); str++; }
+		if(j > 0) needed += snprintf(NULL, 0," + ");
+		while(*str){
+			needed += snprintf(NULL, 0,"P%d" , 1+(*str-'A') );
+			str++;
+		}
 	}
-	printf(")");
+	needed += snprintf(NULL, 0, ")");
 
 	for(int k = i+1; k < POS_count; k++){
-		printf("·(");
+		needed += snprintf(NULL, 0,"·(");
 		for(int x = 0; POS_terms[k][x] != '\0'; x++){
 			char ch = POS_terms[k][x];
-			printf((x == 0) ? "P%d" : " + P%d", 1+(ch-'A') );
+			needed += snprintf(NULL, 0,(x == 0) ? "P%d" : " + P%d", 1+(ch-'A') );
 		}
-		printf(")");
+		needed += snprintf(NULL, 0,")");
 	}
+
+
+	int cap = needed+1;
+	char *log = malloc(cap * sizeof(*log));
+	if(!log) return 1;
+	int offset = 0;
+
+	offset += snprintf(log+offset, cap-offset, "P = (");
+	for(int j = 0; j < SOP_count; j++){
+		char *str = SOP_terms[j];
+		if(j > 0) offset += snprintf(log+offset, cap-offset, " + ");
+		while(*str){
+			offset += snprintf(log+offset, cap-offset, "P%d" , 1+(*str-'A') );
+			str++;
+		}
+	}
+	offset += snprintf(log+offset, cap-offset, ")");
+
+	for(int k = i+1; k < POS_count; k++){
+		offset += snprintf(log+offset, cap-offset, "·(");
+		for(int x = 0; POS_terms[k][x] != '\0'; x++){
+			char ch = POS_terms[k][x];
+			offset += snprintf(log+offset, cap-offset, (x == 0) ? "P%d" : " + P%d", 1+(ch-'A') );
+		}
+		offset += snprintf(log+offset, cap-offset, ")");
+	}
+
+	*returnPtr = log;
+	return 0;
 }

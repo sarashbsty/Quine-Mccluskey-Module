@@ -3,8 +3,9 @@
 #include "quine.h"
 #include "qmMinimizer.h"
 #include "memory.h"
+#include "int_array_dup.h"
 
-qmData qmMinimizer(int *minterms, int n_terms, int min_count, int var){
+qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 	qmData data = {0};
 
@@ -15,9 +16,14 @@ qmData qmMinimizer(int *minterms, int n_terms, int min_count, int var){
 		return data;
 	}
 
-	//create initial Table
-	quine *group = createGroupTable(minterms, n_terms, var);
+	quine *group = calloc(var+1, sizeof(quine));
 	if(!group){
+		data.error = 1;
+		data.errorMgs = "Memory Allocation failed var: Group";
+		return data;
+	}
+
+	if(createGroupTable(group, minterms, n_terms, var)){
 		data.error = 1;
 		data.errorMgs = "createGroupTable failed";
 		return data;
@@ -25,6 +31,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int min_count, int var){
 
 	quine prime = {0};
 
+	//Table Reduction Process
 	int canReduce = 0;
 	do{
 		quine *newGroup = calloc(var+1, sizeof(quine));
@@ -50,77 +57,82 @@ qmData qmMinimizer(int *minterms, int n_terms, int min_count, int var){
 			return data;
 		}
 
-		quine *temp = group;
-		group = newGroup;
-
+		//store each group Table
 		int idx = data.tableCount;
-		data.groupTables[idx] = temp;
+		data.groupTables[idx] = group;
 		data.groupCount[idx] = var+1;
 		data.tableCount++;
 
+		group = newGroup;
+
 	} while(canReduce);
 
+	data.PI = prime;
+
 	// prime_implicant_chart_table
-	int **piChart = createPiChart(&prime, minterms, min_count, var);
+	int **piChart = createPiChart(&prime, minterms, minCount, var);
 	if(!piChart){
 		data.error = 1;
 		data.errorMgs = "Memory Allocation failed var: piChart";
 		return data;
 	}
+	data.piChart = piChart;
 
-	int *uncoveredTerms = malloc(min_count * sizeof(int));
-	if(!uncoveredTerms){
+	//store Essential Implicants
+	data.essentialCount = getEssentialPi(&data.essentialPi, &prime);
+	if(data.essentialCount == -1){
 		data.error = 1;
-		data.errorMgs = "Memory Allocation failed var: uncoveredTerms";
+		data.errorMgs = "getEssentialPi failed";
 		return data;
 	}
 
-	//Gather Uncovered Minterms if exist
-	int uncoveredCount = 0;
-	for(int i = 0; i < min_count; i++){
-		int exist = 0;
-		for(int j = 0; j < prime.count; j++){
-			if(prime.minimal[j] == 0) continue;
-			if(piChart[j][minterms[i]] != 0){
-			 	exist = 1; break;
-			}
-		}
-		if(!exist) uncoveredTerms[uncoveredCount++] = minterms[i];
+	//Get uncovered Minterms if exist
+	int *uncoveredTerms = NULL;
+	int uncoveredCount = getUncovered(&uncoveredTerms, &prime, piChart, minterms, minCount);
+	if(uncoveredCount == -1){
+		data.error = 1;
+		data.errorMgs = "getUncovered failed";
+		return data;
 	}
 
-	if(uncoveredCount > 0)
-	{
+	if(uncoveredCount > 0){
 
-		char **setArr = malloc(uncoveredCount * sizeof(*setArr));
-		if(!setArr){
+		//Store Uncovered minterms
+		data.uncoveredTerms = intDupArr(uncoveredTerms, uncoveredCount);
+		if(!data.uncoveredTerms){
 			data.error = 1;
-			data.errorMgs = "Memory Allocation failed var: setArr";
+			data.errorMgs = "intDupArr failed";
 			return data;
 		}
+		data.uncoveredCount = uncoveredCount;
 
-		int setArrCount = getSetCoverage(setArr, &prime, piChart, uncoveredTerms, uncoveredCount);
+		//Create a string array where each string is the indexes of all prime-implicants that cover ith uncovered term
+		char **setArr = NULL;
+		int setArrCount = getSetCoverage(&setArr, &prime, piChart, uncoveredTerms, uncoveredCount);
 		if(setArrCount == -1){
 			data.error = 1;
 			data.errorMgs = "getSetCoverage failed";
 			return data;
 		}
 
-		uncoveredCount = column_domination(setArr, &setArrCount, uncoveredTerms, uncoveredCount);
+		//Apply Column Reduction
+		int newUncoveredCount = column_domination(setArr, &setArrCount, uncoveredTerms, uncoveredCount);
+		if(newUncoveredCount <  uncoveredCount){
+			uncoveredCount = newUncoveredCount;
+			data.newUncoveredTerms = uncoveredTerms;
+			data.newUncoveredCount = uncoveredCount;
+		}
+		else free(uncoveredTerms);
 
-		if(petrick(&prime,setArr,setArrCount,var)){
+		//Apply Petrick Algorithm
+		if(petrick(&data, &prime, setArr, setArrCount, var)){
 			data.error = 1;
 			data.errorMgs = "petrick failed";
 			return data;
 		}
-
-		free_2d_pointer(setArr,setArrCount);
+		free_2d_pointer(setArr, setArrCount);
 	}
 
 	data.result = storeResult(&prime, var);
-
-	free(uncoveredTerms);
-	free_2d_pointer((char**)piChart , prime.count);
-	clear_quine(&prime);
-	free(minterms);
     return data;
 }

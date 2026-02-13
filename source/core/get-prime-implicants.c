@@ -1,9 +1,9 @@
 #include<stdlib.h>
 #include<string.h>
 #include "quine.h" // quine struture
+#include "int_array_dup.h"
 
 static char* Expression(const char *binary);
-static int *intDupArr(const int *src, size_t n);
 
 int getPrimeImplicants(quine *group , quine *prime , int var){
 
@@ -82,16 +82,4 @@ static char* Expression(const char *binary){
 	}
 	str[count] = '\0';
 	return str;
-}
-
-static int *intDupArr(const int *src, size_t n){
-    if (src == NULL || n == 0)
-        return NULL;
-
-    int *copy = malloc(n * sizeof *copy);
-    if (!copy)
-        return NULL;
-
-    memcpy(copy, src, n * sizeof *copy);
-    return copy;
 }

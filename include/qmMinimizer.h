@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include "quine.h"
 
-typedef struct{
+typedef struct qmData{
 	int error; // handles error boolean
 	char *errorMgs;
 
@@ -11,10 +11,26 @@ typedef struct{
 	int tableCount;
 	int tableCapacity;
 
+	quine PI;
 	int **piChart;
+
+	char **essentialPi;
+	int essentialCount;
 
 	int *uncoveredTerms;
 	int uncoveredCount;
+
+	int *newUncoveredTerms;
+	int newUncoveredCount;
+
+	char **petrickLog;
+	int logCount;
+
+	char** SOP_terms;
+	int SOP_count;
+
+	char** combinations;
+	int *cost;
 
 	char *result;
 } qmData;
@@ -32,6 +48,20 @@ static void destroyQmGroupTables(qmData *var){
 	free(var->groupCount); var->groupCount = NULL;
 	var->tableCapacity = 0;
 	var->tableCount = 0;
+}
+
+static void destroyQmData(qmData *var){
+	destroyQmGroupTables(var);
+	free_2d_pointer((char**)var->piChart , var->PI.count);
+	free_2d_pointer(var->essentialPi , var->essentialCount);
+	free_2d_pointer(var->petrickLog, var->logCount);
+	free_2d_pointer(var->SOP_terms, var->SOP_count);
+	free_2d_pointer(var->combinations, var->SOP_count);
+	clear_quine(&var->PI);
+	free(var->uncoveredTerms);
+	free(var->newUncoveredTerms);
+	free(var->result);
+	free(var->cost);
 }
 
 static int qmDataGroupAllocate(qmData *var, int size){

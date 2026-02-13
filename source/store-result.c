@@ -7,7 +7,7 @@ char* storeResult(const quine *prime, int var){
 	int cap = ((2*var)+3) * prime->count + 1;
 	char *data = malloc(cap * sizeof(*data));
 
-    offset += snprintf(data+offset, cap-offset, "\n\nResult: Y(");
+    offset += snprintf(data+offset, cap-offset, "Result: Y(");
     for (int i = 1; i <= var; i++)
 		offset += snprintf(data+offset, cap-offset, (i == var) ? "%c" : "%c,", 'A' + i-1);
     offset += snprintf(data+offset, cap-offset, ") = ");
@@ -18,6 +18,5 @@ char* storeResult(const quine *prime, int var){
 		offset += snprintf(data+offset, cap-offset, (first) ? "%s" : " + %s" , prime->expression[i]);
 		first = 0;
 	}
-	offset += snprintf(data+offset, cap-offset, "\n");
 	return data;
 }
