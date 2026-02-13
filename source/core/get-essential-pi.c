@@ -11,7 +11,7 @@ int getEssentialPi(char ***returnPtr, quine *prime){
 	for(int i = 0; i < prime->count; i++){
 		if(prime->minimal[i] == 0) continue;
 		char *exp = strdup(prime->expression[i]);
-		if(!exp) return -1;
+		if(!exp){ free_2d_pointer(essentialPi,count); return -1; }
 		essentialPi[count++] = exp;
 	}
 
