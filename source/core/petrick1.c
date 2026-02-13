@@ -2,16 +2,18 @@
 #include<string.h>
 #include<stdlib.h>
 #include "quine.h" // quine struture
-#include "qmMinimizer.h"
 #include "boolean_algebra.h"
 #include "memory.h"
+#include "petrick.h"
 
 static int getMinLiterals(char **SOP_terms, int SOP_count, int max_literals);
 static int removeNonMinimalTerms(char **SOP_terms, int SOP_count, int min_literal);
 static int logger(char** returnPtr, char **SOP_terms, int SOP_count, char **POS_terms, int POS_count, int i);
 static int convertStyle(char **ptr);
 
-int petrick(qmData *data, quine *prime , char **POS_terms, int POS_count, int var){
+ petrick(quine *prime , char **POS_terms, int POS_count, int var){
+
+	petrickData P = {0};
 
 	#define LOG_ALLOCATE \
         do { \
@@ -24,14 +26,15 @@ int petrick(qmData *data, quine *prime , char **POS_terms, int POS_count, int va
         } while (0);
 
 	char **logArr = malloc(10 * sizeof(*logArr));
+	if(!logArr){ P.error = 1; return P; }
 	int logCount = 0 , logCap = 10;
 
 	//initialization
 	char **SOP_terms = malloc(sizeof(*SOP_terms) * 1);
-	if(!SOP_terms) return 1;
+	if(!SOP_terms) { P.error = 1; return P; }
 
 	SOP_terms[0] = strdup("");
-	if(!SOP_terms[0]) return 1;
+	if(!SOP_terms[0]) { P.error = 1; return P; }
 
 	int SOP_count = 1, max_literals = prime->count;
 
@@ -40,7 +43,7 @@ int petrick(qmData *data, quine *prime , char **POS_terms, int POS_count, int va
 		char **new_SOP_terms = malloc(sizeof(*new_SOP_terms) * SOP_count * strlen(POS_terms[i]));
 		if(!new_SOP_terms){
 			free_2d_pointer(SOP_terms,SOP_count);
-			return 1;
+			P.error = 1; return P;
 		}
 
 		int new_SOP_count = distributive(new_SOP_terms, SOP_terms, SOP_count, POS_terms[i], max_literals+1);
@@ -51,26 +54,26 @@ int petrick(qmData *data, quine *prime , char **POS_terms, int POS_count, int va
 		SOP_count = new_SOP_count;
 
 		LOG_ALLOCATE;
-		if(logger(&logArr[logCount++], SOP_terms, SOP_count, POS_terms, POS_count, i)) return 1;
+		if(logger(&logArr[logCount++], SOP_terms, SOP_count, POS_terms, POS_count, i)) { P.error = 1; return P; }
 	}
 
 	int min_literal = getMinLiterals(SOP_terms, SOP_count, max_literals);
 	SOP_count = removeNonMinimalTerms(SOP_terms, SOP_count, min_literal);
 
 	char** combinations = malloc(SOP_count * sizeof(*combinations));
-	if(!combinations) return 1;
+	if(!combinations) { P.error = 1; return P; }
 
 	int *costArr = malloc(SOP_count * sizeof(*costArr));
-	if(!costArr) return 1;
+	if(!costArr) { P.error = 1; return P; }
 
 	int min_cost = (var*2) * min_literal , minCostIdx = 0;
 	for(int i = 0; i < SOP_count; i++){
 
 		int new_cost = 0 , offset = 0 , cap = (var*2 + 1) * min_literal + 1;
-		char* term = SOP_terms[i];
 		char* str = malloc(cap * sizeof(*str)); //A'B'C', = 7
-		if(!str) return 1;
+		if(!str) { P.error = 1; return P; }
 
+		char* term = SOP_terms[i];
 		for(int j = 0; term[j] != '\0'; j++){
 			int idx = term[j] - 'A';
 			offset += snprintf(str+offset, cap-offset, "%s,", prime->expression[j]);
@@ -95,15 +98,14 @@ int petrick(qmData *data, quine *prime , char **POS_terms, int POS_count, int va
 	for(int i = 0; i < SOP_count; i++)
 		convertStyle(&SOP_terms[i]);  // convert ABC to P1P2P3
 
+	P.process = logArr;
+	P.processCount = logCount;
+	P.SOP_terms = SOP_terms;
+	P.SOP_count = SOP_count;
+	P.combinations = combinations;
+	P.cost = costArr;
 
-	data->petrickLog = logArr;
-	data->logCount = logCount;
-	data->SOP_terms = SOP_terms;
-	data->SOP_count = SOP_count;
-	data->combinations = combinations;
-	data->cost = costArr;
-
-	return 0;
+	return P;
 }
 
 static int convertStyle(char **ptr){

@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include "boolean_algebra.h"
 
-int column_domination(char** setArr, int* setArrCount,int *uncovered_terms ,int uncovered_count){
+int column_domination(char** setArr, int* setArrCount,int *uncoveredTerms ,int uncoveredCount){
 
 	int count = *setArrCount;
 	for(int a = 0; a < count-1; a++){
@@ -17,12 +17,12 @@ int column_domination(char** setArr, int* setArrCount,int *uncovered_terms ,int 
 			if(subset == 1){   //if A ⊆ B or A = B
 				free(B);
 				setArr[b] = NULL;
-				uncovered_terms[b] = -1;
+				uncoveredTerms[b] = -1;
 			}
 			else if(subset == 2){  //if B ⊂ A
 				free(A);
 				setArr[a] = NULL;
-				uncovered_terms[a] = -1;
+				uncoveredTerms[a] = -1;
 				break;
 			}
 		}
@@ -36,9 +36,9 @@ int column_domination(char** setArr, int* setArrCount,int *uncovered_terms ,int 
 	*setArrCount = new_count;
 
 	int newUncoveredCount = 0;
-	for(int i = 0; i < uncovered_count; i++){
-		if(uncovered_terms[i] == -1) continue;
-		uncovered_terms[newUncoveredCount++] = uncovered_terms[i];
+	for(int i = 0; i < uncoveredCount; i++){
+		if(uncoveredTerms[i] == -1) continue;
+		uncoveredTerms[newUncoveredCount++] = uncoveredTerms[i];
 	}
 
 	return newUncoveredCount;

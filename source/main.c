@@ -91,7 +91,17 @@ int main() {
 		displayPiChart(&data.PI, data.piChart, data.uncoveredTerms, data.uncoveredCount);
 
 		if(data.newUncoveredCount){
-			printf("\nAfter Column Domination:");
+			printf("\nMinterm : ");
+			for(int i = 0; i < data.uncoveredCount; i++){
+				int exist = 0;
+				for(int j = 0; j < data.newUncoveredCount; j++){
+					if(data.uncoveredTerms[i] == data.newUncoveredTerms[j])
+					{ exist = 1; break; }
+				}
+				if(exist == 0) printf("%d ",data.uncoveredTerms[i]);
+			}
+			printf("Removed through Column Domination");
+
 			displayPiChart(&data.PI, data.piChart, data.newUncoveredTerms, data.newUncoveredCount);
 		}
 
