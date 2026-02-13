@@ -22,26 +22,27 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	int error = qmDataGroupAllocate(&data, var+1);
 	if(error) FAIL("qmDataGroupAllocate Failed");
 
-//	quine *group = calloc(var+1, sizeof(quine));
-//	if(!group) FAIL("Memory Allocation failed var: Group");
-
 	quine *group = createGroupTable(minterms, n_terms, var);
 	if(!group) FAIL("createGroupTable failed");
+
+	quine *newGroup = NULL;
 
 	quine prime = {0};
 
 	//Table Reduction Process
-	int canReduce = 0;
-	do{
-		quine *newGroup = calloc(var+1, sizeof(quine));
-		if(!newGroup) FAIL("Memory Allocation failed var: newGroup");
+	while(group != newGroup){
 
 		//Reduction
-		canReduce = reduce_table(group, newGroup, var);
+		newGroup = getReducedTable(group, var); //returns 'group' if no reduction happened.
 
-		if(canReduce == -1) FAIL("Reduce_table failed");
-		else if(canReduce == 0)
-		{ free(newGroup); newGroup == NULL; }
+		if(newGroup == group) newGroup = NULL;
+		else if (!newGroup){
+			int idx = data.tableCount;
+			data.groupTables[idx] = group; group = NULL;
+			data.groupCount[idx] = var+1;
+			data.tableCount++;
+			FAIL("Memory Allocation failed var: newGroup");
+		}
 
 		//get prime-implicants afer each reduction
 		error = getPrimeImplicants(group, &prime, var);
@@ -49,13 +50,12 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 		//store each group Table
 		int idx = data.tableCount;
-		data.groupTables[idx] = group;
+		data.groupTables[idx] = group; group = NULL;
 		data.groupCount[idx] = var+1;
 		data.tableCount++;
 
-		group = newGroup;
-
-	} while(canReduce);
+		group = newGroup; newGroup = NULL;
+	}
 
 	data.PI = prime;
 

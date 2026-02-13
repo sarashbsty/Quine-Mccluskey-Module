@@ -4,10 +4,16 @@
 
 static int find_string(char **arr, int size, const char item[]);
 
-int reduce_table(quine *group , quine *newGroup, int var){
+//memory safe
+quine* getReducedTable(quine *group , int var){
 
-    int anyReduce = 0;
+    quine *newGroup = calloc(var+1 , sizeof(*newGroup));
+	if(!newGroup) return NULL;
 
+	int *mergedArray = NULL;
+	char *reducedBinary = NULL;
+
+	int anyReduce = 0;
     // Compare group[i] with group[i+1]
     for (int i = 0; i < var; i++) {
         for (int a = 0; a < group[i].count; a++) {
@@ -26,8 +32,8 @@ int reduce_table(quine *group , quine *newGroup, int var){
                 if (diff == 1){
 
 					//Building Reduced Binary
-					char *reducedBinary = strdup(group[i].binary[a]);
-					if(!reducedBinary) return -1;
+					reducedBinary = strdup(group[i].binary[a]);
+					if(!reducedBinary) goto FAIL;
 					reducedBinary[pos] = '-';
 
 					// To check whether the current newGroup binary is redundant
@@ -38,18 +44,18 @@ int reduce_table(quine *group , quine *newGroup, int var){
 						//allocating quine items
 						if(newGroup[i].capacity == 0){
 							if(allocate(&newGroup[i] , 4))
-								return -1;
+								goto FAIL;
 						}
 						else if(newGroup[i].count >= newGroup[i].capacity){
 							int new_cap = (newGroup[i].capacity) * 2;
 							if(allocate(&newGroup[i] , new_cap))
-								return -1;
+								goto FAIL;
 						}
 
 						//allocating memory minterm array
 						int size = group[i].mintermCount[a] + group[i+1].mintermCount[b];
-						int *mergedArray = malloc(size * sizeof(*mergedArray));
-						if(!mergedArray) return -1;
+						mergedArray = malloc(size * sizeof(*mergedArray));
+						if(!mergedArray) goto FAIL;
 
 						//merge minterms into new merged minterm array
 						int mCount = 0;
@@ -60,8 +66,8 @@ int reduce_table(quine *group , quine *newGroup, int var){
 
 						//inserting quine items
 						int idx = newGroup[i].count;
-						newGroup[i].binary[idx] = reducedBinary;
-						newGroup[i].minterms[idx] = mergedArray;
+						newGroup[i].binary[idx] = reducedBinary; reducedBinary = NULL;
+						newGroup[i].minterms[idx] = mergedArray; mergedArray = NULL;
 						newGroup[i].mintermCount[idx] = mCount;
 						newGroup[i].combined[idx] = 0;
 						newGroup[i].expression[idx] = NULL;
@@ -75,7 +81,22 @@ int reduce_table(quine *group , quine *newGroup, int var){
             }
         }
     }
-    return anyReduce; // how many min terms combined. 0 -> no min terms combined means no futher reduction
+
+	if(!anyReduce){     // if no new reduction, return old group
+		free(newGroup);
+		return group;
+	}
+    else return newGroup;
+
+	FAIL:
+		free(reducedBinary);
+		free(mergedArray);
+		for(int i = 0; i < var+1; i++)
+			clear_quine(&newGroup[i]);
+		free(newGroup);
+
+		return NULL;
+
 }
 
 static int find_string(char **arr, int size, const char item[]) {
