@@ -4,7 +4,6 @@
 
 static int find_string(char **arr, int size, const char item[]);
 
-//memory safe
 quine* getReducedTable(quine *group , int var){
 
     quine *newGroup = calloc(var+1 , sizeof(*newGroup));

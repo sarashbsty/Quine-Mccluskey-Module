@@ -6,7 +6,7 @@
 int** createPiChart(quine *prime , int minterms[] , int min_count, int var){
 
 	int **table = malloc(prime->count * sizeof(*table));
-	if(table == NULL){ return NULL; }
+	if(!table) return NULL;
 
 	//create an array of size pow(2,var) and Assign 1 to respective column
 	for(int i = 0; i < prime->count; i++){

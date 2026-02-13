@@ -5,7 +5,6 @@
 
 static char* Expression(const char *binary);
 
-//memory safe
 int getPrimeImplicants(quine *group , quine *prime , int var){
 
 	char *bin = NULL;

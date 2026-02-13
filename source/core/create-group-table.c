@@ -5,7 +5,6 @@
 static int count_1s(char *binary);
 static char* ToBinary(int minterm , int var);
 
-//memory safe
 quine* createGroupTable(int *minterms, int n_terms, int var){
 
 	quine *group = calloc(var+1, sizeof(*group));

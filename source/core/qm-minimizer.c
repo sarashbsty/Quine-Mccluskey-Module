@@ -6,6 +6,7 @@
 #include "int_array_dup.h"
 #include "petrick.h"
 
+//memory safe
 qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 	qmData data = {0};
@@ -22,7 +23,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	int error = qmDataGroupAllocate(&data, var+1);
 	if(error) FAIL("qmDataGroupAllocate Failed");
 
-	quine *group = createGroupTable(minterms, n_terms, var);
+	quine *group = createGroupTable(minterms, n_terms, var); //memory safe
 	if(!group) FAIL("createGroupTable failed");
 
 	quine *newGroup = NULL;
@@ -32,8 +33,8 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	//Table Reduction Process
 	while(group != newGroup){
 
-		//Reduction
-		newGroup = getReducedTable(group, var); //returns 'group' if no reduction happened.
+		//Reduction : returns 'group' if no reduction happened.
+		newGroup = getReducedTable(group, var); //memory safe
 
 		if(newGroup == group) newGroup = NULL;
 		else if (!newGroup){
@@ -43,7 +44,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		}
 
 		//get prime-implicants afer each reduction
-		error = getPrimeImplicants(group, &prime, var);
+		error = getPrimeImplicants(group, &prime, var);  //memory safe
 		if(error){
 			for(int i = 0; i < var+1; i++){
 				clear_quine(&group[i]);
@@ -67,13 +68,13 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	data.PI = prime;
 
 	// prime_implicant_chart_table
-	int **piChart = createPiChart(&prime, minterms, minCount, var);
+	int **piChart = createPiChart(&prime, minterms, minCount, var);  //memory safe
 	if(!piChart) FAIL("Memory Allocation failed var: piChart");
 
 	data.piChart = piChart;
 
 	//store Essential Implicants
-	data.essentialCount = getEssentialPi(&data.essentialPi, &prime);
+	data.essentialCount = getEssentialPi(&data.essentialPi, &prime);   //memory safe
 	if(data.essentialCount == -1) FAIL("getEssentialPi failed");
 
 	//Get uncovered Minterms if exist
@@ -85,19 +86,20 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 		//Store Uncovered minterms
 		data.uncoveredTerms = intDupArr(uncoveredTerms, uncoveredCount);
-		if(!data.uncoveredTerms) FAIL("intDupArr failed");
+		if(!data.uncoveredTerms){ free(uncoveredTerms); FAIL("intDupArr failed"); }
 		data.uncoveredCount = uncoveredCount;
 
 		//Create a string array where each string is the indexes of all prime-implicants that cover ith uncovered term
 		char **setArr = NULL;
 		int setArrCount = getSetCoverage(&setArr, &prime, piChart, uncoveredTerms, uncoveredCount);
-		if(setArrCount == -1) FAIL("getSetCoverage failed");
+		if(setArrCount == -1){ free(uncoveredTerms); FAIL("getSetCoverage failed"); }
 
 		//Apply Column Reduction
 		int newUncoveredCount = column_domination(setArr, &setArrCount, uncoveredTerms, uncoveredCount);
 		if(newUncoveredCount <  uncoveredCount){
 			uncoveredCount = newUncoveredCount;
 			data.newUncoveredTerms = uncoveredTerms;
+			uncoveredTerms = NULL;
 			data.newUncoveredCount = uncoveredCount;
 		}
 		else free(uncoveredTerms);
@@ -109,6 +111,10 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		free_2d_pointer(setArr, setArrCount);
 	}
 
-	data.result = storeResult(&prime, var);
+	char *result = storeResult(&prime, var);
+	if(!result) FAIL("storeResult Failed");
+	data.result = result;
+	result = NULL;
+
     return data;
 }
