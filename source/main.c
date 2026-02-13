@@ -111,21 +111,21 @@ int main() {
 		for(int i = 0; i < data.PI.count; i++)
 			printf("  P%d = %s\n", i+1, data.PI.expression[i]);
 
-		for(int i = 0; i < data.logCount; i++)
-			printf("\n%s\n",data.petrickLog[i]);
+		for(int i = 0; i < data.petrick.processCount; i++)
+			printf("\n%s\n",data.petrick.process[i]);
 
 		printf("\nMinimum literal SOP Terms: ");
-		for(int i = 0; i < data.SOP_count; i++)
-			printf("%s ",data.SOP_terms[i]);
+		for(int i = 0; i < data.petrick.SOP_count; i++)
+			printf("%s ",data.petrick.SOP_terms[i]);
 
 		printf("\n\nPossible Combinations and Cost:\n\n");
-		for(int i = 0; i < data.SOP_count; i++){
-			char *ch = data.combinations[i];
+		for(int i = 0; i < data.petrick.SOP_count; i++){
+			char *ch = data.petrick.combinations[i];
 			while(*ch){
 				printf((*ch == ',') ? " + " : "%c" , *ch);
 				ch++;
 			}
-			printf(" \t\t (%d)\n\n", data.cost[i]);
+			printf(" \t\t (%d)\n\n", data.petrick.cost[i]);
 		}
 	}
 	else printf("\nAll Minterms Covered By Essential Implicants.\n");

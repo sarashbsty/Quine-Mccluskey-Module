@@ -13,6 +13,7 @@ typedef struct{
 
 	char** combinations;
 	int *cost;
+
 } petrickData;
 
 petrickData petrick(quine *prime , char **POS_terms, int POS_count, int var);

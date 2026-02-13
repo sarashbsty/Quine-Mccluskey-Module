@@ -25,7 +25,6 @@ int getEssentialPi(char ***returnPtr, quine *prime);
 int getUncovered(int **returnPtr, quine *prime, int **piChart, int *minterms, int minCount);
 int getSetCoverage(char*** returnPtr, quine *prime,int **table ,int *uncovered_terms ,int uncovered_count);
 int column_domination(char** setArr, int* setArrCount,int *uncovered_terms ,int uncovered_count);
-int petrick(qmData *data, quine *prime , char **POS_terms, int POS_count, int var);
 char* storeResult(const quine *prime, int var);
 
 void displayGroups(quine *group , int var);

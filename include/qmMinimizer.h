@@ -1,6 +1,7 @@
 #pragma once
 #include<stdlib.h>
 #include "quine.h"
+#include "petrick.h"
 
 typedef struct qmData{
 	int error; // handles error boolean
@@ -23,16 +24,10 @@ typedef struct qmData{
 	int *newUncoveredTerms;
 	int newUncoveredCount;
 
-	char **petrickLog;
-	int logCount;
-
-	char** SOP_terms;
-	int SOP_count;
-
-	char** combinations;
-	int *cost;
+	petrickData petrick;
 
 	char *result;
+
 } qmData;
 
 qmData qmMinimizer(int *minterms, int n_terms, int min_count, int var);
@@ -54,14 +49,11 @@ static void destroyQmData(qmData *var){
 	destroyQmGroupTables(var);
 	free_2d_pointer((char**)var->piChart , var->PI.count);
 	free_2d_pointer(var->essentialPi , var->essentialCount);
-	free_2d_pointer(var->petrickLog, var->logCount);
-	free_2d_pointer(var->SOP_terms, var->SOP_count);
-	free_2d_pointer(var->combinations, var->SOP_count);
 	clear_quine(&var->PI);
 	free(var->uncoveredTerms);
 	free(var->newUncoveredTerms);
+	destroyPetrick(&var->petrick);
 	free(var->result);
-	free(var->cost);
 }
 
 static int qmDataGroupAllocate(qmData *var, int size){

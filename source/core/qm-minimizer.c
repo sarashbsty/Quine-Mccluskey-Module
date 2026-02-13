@@ -4,6 +4,7 @@
 #include "qmMinimizer.h"
 #include "memory.h"
 #include "int_array_dup.h"
+#include "petrick.h"
 
 qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
@@ -125,7 +126,8 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		else free(uncoveredTerms);
 
 		//Apply Petrick Algorithm
-		if(petrick(&data, &prime, setArr, setArrCount, var)){
+		data.petrick = petrick(&prime, setArr, setArrCount, var);
+		if(data.petrick.error){
 			data.error = 1;
 			data.errorMgs = "petrick failed";
 			return data;
