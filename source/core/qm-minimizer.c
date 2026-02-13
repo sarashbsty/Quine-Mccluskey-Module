@@ -37,10 +37,8 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 		if(newGroup == group) newGroup = NULL;
 		else if (!newGroup){
-			int idx = data.tableCount;
-			data.groupTables[idx] = group; group = NULL;
-			data.groupCount[idx] = var+1;
-			data.tableCount++;
+			for(int i = 0; i < var+1; i++) clear_quine(&group[i]);
+			free(group);
 			FAIL("Memory Allocation failed var: newGroup");
 		}
 
