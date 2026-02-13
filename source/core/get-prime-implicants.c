@@ -5,7 +5,12 @@
 
 static char* Expression(const char *binary);
 
+//memory safe
 int getPrimeImplicants(quine *group , quine *prime , int var){
+
+	char *bin = NULL;
+	char *expres = NULL;
+	int *arr = NULL;
 
 	for (int i = 0; i <= var; i++){
 		if (group[i].count == 0) continue; // skip empty groups
@@ -17,26 +22,25 @@ int getPrimeImplicants(quine *group , quine *prime , int var){
 			//allocating quine items
 			if(prime->capacity == 0){
 				if(allocate(prime , 4))
-					return 1;
+					goto FAIL;
 			}
 			else if(prime->count >= prime->capacity){
 				int new_cap = prime->capacity + 5;
 				if(allocate(prime , new_cap))
-					return 1;
+					goto FAIL;
 			}
 
 			//duplicate binary
-			char *bin = strdup(group[i].binary[j]);
-			if(!bin) return 1;
+			bin = strdup(group[i].binary[j]);
+			if(!bin) goto FAIL;
 
 			//duplicare int array
-			int *arr = intDupArr(group[i].minterms[j], group[i].mintermCount[j]);
-			if(!arr) return 1;
+			arr = intDupArr(group[i].minterms[j], group[i].mintermCount[j]);
+			if(!arr) goto FAIL;
 
 			//get expression string from binary
-			char *expres = Expression(group[i].binary[j]);
-			if(!expres)
-				return 1;
+			expres = Expression(group[i].binary[j]);
+			if(!expres) goto FAIL;
 
 			//Inserting quine items
 			int index = prime->count;
@@ -47,9 +51,19 @@ int getPrimeImplicants(quine *group , quine *prime , int var){
 			prime->minimal[index] = 0;
 			prime->cost[index] = strlen(expres);
 			prime->count++;
+
+			bin = NULL;
+			expres = NULL;
+			arr = NULL;
         }
 	}
 	return 0;
+
+	FAIL:
+		free(bin);
+		free(arr);
+		free(expres);
+		return 1;
 }
 
 static char* Expression(const char *binary){

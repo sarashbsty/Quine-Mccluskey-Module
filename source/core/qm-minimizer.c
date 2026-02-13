@@ -44,7 +44,16 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 		//get prime-implicants afer each reduction
 		error = getPrimeImplicants(group, &prime, var);
-		if(error) FAIL("getPrimeImplicants failed");
+		if(error){
+			for(int i = 0; i < var+1; i++){
+				clear_quine(&group[i]);
+				clear_quine(&newGroup[i]);
+			}
+			free(group);
+			free(newGroup);
+			clear_quine(&prime);
+			FAIL("getPrimeImplicants failed");
+		}
 
 		//store each group Table
 		int idx = data.tableCount;
