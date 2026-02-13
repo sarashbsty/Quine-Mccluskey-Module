@@ -5,7 +5,7 @@
 
 typedef struct qmData{
 	int error; // handles error boolean
-	char *errorMgs;
+	char *errorMsg;
 
 	int *groupCount;
 	quine** groupTables;

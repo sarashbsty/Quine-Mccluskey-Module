@@ -63,7 +63,7 @@ int main() {
     qmData data = qmMinimizer(minterms, n_terms, minCount, var);
 
 	if(data.error){
-		printf("%s\n",data.errorMgs);
+		printf("%s\n",data.errorMsg);
 		destroyQmData(&data);
 		free(minterms);
 		return 1;

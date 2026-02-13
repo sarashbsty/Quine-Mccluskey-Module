@@ -17,7 +17,7 @@ typedef struct quine {
 } quine;
 
 int allocate(quine *var , int size);
-int createGroupTable(quine *group , int *minterms , int n_terms, int var);
+quine* createGroupTable(int *minterms, int n_terms, int var);
 int reduce_table(quine *group , quine *reduce , int var);
 int getPrimeImplicants(quine *group , quine *prime , int var);
 int** createPiChart(quine *prime , int minterms[] , int min_count, int var);
