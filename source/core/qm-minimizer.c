@@ -6,114 +6,191 @@
 #include "int_array_dup.h"
 #include "petrick.h"
 
-//memory safe
 qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 	qmData data = {0};
 
-	#define FAIL(msg)\
-        do { \
-            data.error = 1;\
-            data.errorMsg = msg;\
-            return data;\
-        } while (0)
+	petrickData petrickFiles = {0};
+
+	quine **groupTables = NULL , *group = NULL , *newGroup = NULL , prime = {0};
+
+	char *essentialPi = NULL , *result = NULL;
+
+	int *groupSize = NULL, **piChart = NULL, *uncoveredTerms = NULL, *newUncoveredTerms = NULL;
+
+	int groupTablesCount = 0, error = 0 , uncoveredCount = 0, newUncoveredCount = 0;
+
 
 
 	//Allocate memory for group tables pointer array
-	int error = qmDataGroupAllocate(&data, var+1);
-	if(error) FAIL("qmDataGroupAllocate Failed");
+	groupTables = calloc(var+1 , sizeof(*groupTables));
+	if(!groupTables){
+		data.errorMsg = "groupTables Allocation Failed";
+		goto FAIL;
+	}
 
-	quine *group = createGroupTable(minterms, n_terms, var); //memory safe
-	if(!group) FAIL("createGroupTable failed");
+	groupSize = calloc(var+1 , sizeof(*groupSize));
+	if(!groupSize){
+		data.errorMsg = "groupSize Allocation Failed";
+		goto FAIL;
+	}
 
-	quine *newGroup = NULL;
-
-	quine prime = {0};
+	group = createGroupTable(minterms, n_terms, var); //memory safe
+	if(!group){
+		data.errorMsg = "createGroupTable failed";
+		goto FAIL;
+	}
 
 	//Table Reduction Process
 	while(group != newGroup){
 
 		//Reduction : returns 'group' if no reduction happened.
-		newGroup = getReducedTable(group, var); //memory safe
-
-		if(newGroup == group) newGroup = NULL;
-		else if (!newGroup){
-			for(int i = 0; i < var+1; i++) clear_quine(&group[i]);
-			free(group);
-			FAIL("Memory Allocation failed var: newGroup");
+		newGroup = getReducedTable(group, var);          //memory safe
+		if (!newGroup){
+			data.errorMsg = "getReducedTable Failed";
+			goto FAIL;
 		}
+		else if(newGroup == group) newGroup = NULL;
 
 		//get prime-implicants afer each reduction
 		error = getPrimeImplicants(group, &prime, var);  //memory safe
 		if(error){
-			for(int i = 0; i < var+1; i++){
-				clear_quine(&group[i]);
-				clear_quine(&newGroup[i]);
-			}
-			free(group);
-			free(newGroup);
-			clear_quine(&prime);
-			FAIL("getPrimeImplicants failed");
+			data.errorMsg = "getPrimeImplicants Failed";
+			goto FAIL;
 		}
 
 		//store each group Table
-		int idx = data.tableCount;
-		data.groupTables[idx] = group; group = NULL;
-		data.groupCount[idx] = var+1;
-		data.tableCount++;
+		int idx = groupTablesCount;
+		groupTables[idx] = group;
+		group = NULL;
 
-		group = newGroup; newGroup = NULL;
+		groupSize[idx] = var+1;
+
+		groupTablesCount++;
+
+		group = newGroup;
+		newGroup = NULL;
 	}
 
-	data.PI = prime;
-
 	// prime_implicant_chart_table
-	int **piChart = createPiChart(&prime, minterms, minCount, var);  //memory safe
-	if(!piChart) FAIL("Memory Allocation failed var: piChart");
-
-	data.piChart = piChart;
+	piChart = createPiChart(&prime, minterms, minCount, var);  //memory safe
+	if(!piChart){
+		data.errorMsg = "createPiChart Failed";
+		goto FAIL;
+	}
 
 	//store Essential Implicants
-	error = getEssentialPi(&data.essentialPi, &prime);   //memory safe
-	if(error) FAIL("getEssentialPi failed");
+	error = getEssentialPi(&essentialPi, &prime);   //memory safe
+	if(error){
+		data.errorMsg = "getEssentialPi Failed";
+		goto FAIL;
+	}
 
 	//Get uncovered Minterms if exist
-	int *uncoveredTerms = NULL;
-	int uncoveredCount = getUncovered(&uncoveredTerms, &prime, piChart, minterms, minCount);  //memory safe
-	if(uncoveredCount == -1) FAIL("getUncovered failed");
+	uncoveredCount = getUncovered(&uncoveredTerms, &prime, piChart, minterms, minCount);  //memory safe
+	if(uncoveredCount == -1){
+		data.errorMsg = "getUncovered Failed";
+		goto FAIL;
+	}
 
 	if(uncoveredCount > 0){
 
-		//Store Uncovered minterms
-		data.uncoveredTerms = intDupArr(uncoveredTerms, uncoveredCount); //memory safe
-		if(!data.uncoveredTerms){ free(uncoveredTerms); FAIL("intDupArr failed"); }
-		data.uncoveredCount = uncoveredCount;
+		//create a copy of Uncovered minterms
+		newUncoveredTerms = intDupArr(uncoveredTerms, uncoveredCount); //memory safe
+		if(!newUncoveredTerms){
+			data.errorMsg = "intDupArr Failed";
+			goto FAIL;
+		}
+		newUncoveredCount = uncoveredCount;
 
 		//Create a string array where each string is the indexes of all prime-implicants that cover ith uncovered term
 		char **setArr = NULL;
-		int setArrCount = getSetCoverage(&setArr, &prime, piChart, uncoveredTerms, uncoveredCount); // memory safe
-		if(setArrCount == -1){ free(uncoveredTerms); FAIL("getSetCoverage failed"); }
+		int setArrCount = getSetCoverage(&setArr, &prime, piChart, newUncoveredTerms, newUncoveredCount); // memory safe
+		if(setArrCount == -1){
+			data.errorMsg = "getSetCoverage Failed";
+			goto FAIL;
+		}
 
 		//Apply Column Reduction
-		int newUncoveredCount = column_domination(setArr, &setArrCount, uncoveredTerms, uncoveredCount); //memory safe
-		if(newUncoveredCount <  uncoveredCount){
-			uncoveredCount = newUncoveredCount;
-			data.newUncoveredTerms = uncoveredTerms;
-			uncoveredTerms = NULL;
-			data.newUncoveredCount = uncoveredCount;
+		newUncoveredCount = column_domination(setArr, &setArrCount, newUncoveredTerms, newUncoveredCount); //memory safe
+		if(newUncoveredCount == uncoveredCount){
+			free(newUncoveredTerms);
+			newUncoveredTerms = NULL;
+			newUncoveredCount = 0;
 		}
-		else free(uncoveredTerms);
 
 		//Apply Petrick Algorithm
-		data.petrick = petrick(&prime, setArr, setArrCount, var);  //memory safe
+		petrickFiles = petrick(&prime, setArr, setArrCount, var);  //memory safe
 		free_2d_pointer(setArr, setArrCount);
-		if(data.petrick.error) FAIL("petrick failed");
+		if(petrickFiles.error){
+			data.errorMsg = "petrick Failed";
+			goto FAIL;
+		}
 	}
 
-	char *result = storeResult(&prime, var);
-	if(!result) FAIL("storeResult Failed");
-	data.result = result;
+	result = storeResult(&prime, var);
+	if(!result){
+		data.errorMsg = "storeResult Failed";
+		goto FAIL;
+	}
+
+	data.groupTables	    =  groupTables;
+	data.groupSize   	    =  groupSize;
+	data.tableCount 	    =  groupTablesCount;
+	data.PI 			    =  prime;
+	data.piChart		    =  piChart;
+	data.essentialPi 	    =  essentialPi;
+	data.uncoveredTerms     =  uncoveredTerms;
+	data.uncoveredCount     =  uncoveredCount;
+	data.newUncoveredTerms  =  newUncoveredTerms;
+	data.newUncoveredCount  =  newUncoveredCount;
+	data.petrick            =  petrickFiles;
+	data.result             =  result;
+
+	groupTables = NULL;
+	groupSize = NULL;
+	groupTablesCount = 0;
+	piChart = NULL;
+	essentialPi = NULL;
+	uncoveredTerms = NULL;
+	uncoveredCount = 0;
+	newUncoveredTerms = NULL;
+	newUncoveredCount = 0;
 	result = NULL;
 
     return data;
+
+	FAIL:
+		//clear group tables
+		for(int i = 0; i < groupTablesCount; i++){
+			quine *table = groupTables[i];
+			for(int j = 0; j < groupSize[i]; j++)
+				clear_quine(&table[j]);
+			free(table);
+			groupSize[i] = 0;
+		}
+
+		free(groupTables); groupTables = NULL;
+		free(groupSize);
+		groupTablesCount = 0;
+
+		for(int i = 0; i < var+1; i++){
+			if(group) clear_quine(&group[i]);
+			if(newGroup) clear_quine(&newGroup[i]);
+		}
+		free(group);
+		free(newGroup);
+
+		free_2d_pointer((char**)piChart , prime.count);
+		clear_quine(&prime);
+
+		free(essentialPi);
+		free(uncoveredTerms);
+		free(newUncoveredTerms);
+		destroyPetrick(&petrickFiles);
+		free(result);
+
+		if(!data.errorMsg) data.errorMsg = "qmMinimizer Failed";
+		data.error = 1;
+		return data;
 }

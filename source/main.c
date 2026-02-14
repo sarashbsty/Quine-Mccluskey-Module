@@ -71,7 +71,7 @@ int main() {
 
 	for(int i = 0 ; i < data.tableCount; i++){
 		printf("\nTABLE #%d",i+1);
-		displayGroups(data.groupTables[i], data.groupCount[i] - 1);
+		displayGroups(data.groupTables[i], data.groupSize[i] - 1);
 	}
 
 	printf("\nPrime Implicants:");

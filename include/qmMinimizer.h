@@ -7,7 +7,7 @@ typedef struct qmData{
 	int error; // handles error boolean
 	char *errorMsg;
 
-	int *groupCount;
+	int *groupSize;
 	quine** groupTables;
 	int tableCount;
 	int tableCapacity;
@@ -33,14 +33,13 @@ qmData qmMinimizer(int *minterms, int n_terms, int min_count, int var);
 
 static void destroyQmGroupTables(qmData *var){
 	for(int i = 0; i < var->tableCount; i++){
-		for(int k = 0; k < var->groupCount[i]; k++)
+		for(int k = 0; k < var->groupSize[i]; k++)
 			clear_quine(&var->groupTables[i][k]);
 		free(var->groupTables[i]);
-		var->groupCount[i] = 0;
+		var->groupSize[i] = 0;
 	}
 	free(var->groupTables); var->groupTables = NULL;
-	free(var->groupCount); var->groupCount = NULL;
-	var->tableCapacity = 0;
+	free(var->groupSize); var->groupSize = NULL;
 	var->tableCount = 0;
 }
 
@@ -65,7 +64,7 @@ static void destroyQmData(qmData *var)
 
 static int qmDataGroupAllocate(qmData *var, int size){
 
-	int *temp1 = realloc(var->groupCount, size * sizeof(*temp1));
+	int *temp1 = realloc(var->groupSize, size * sizeof(*temp1));
 	if(!temp1) return 1;
 
 	quine **temp2 = realloc(var->groupTables, size * sizeof(*temp2));
@@ -74,7 +73,7 @@ static int qmDataGroupAllocate(qmData *var, int size){
 		return 1;
 	}
 
-	var->groupCount = temp1;
+	var->groupSize = temp1;
 	var->groupTables = temp2;
 	var->tableCapacity = size;
 
