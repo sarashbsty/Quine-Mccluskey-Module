@@ -11,7 +11,7 @@ int getSetCoverage(char*** returnPtr, quine *prime,int **table ,int *uncoveredTe
 
 	for(int i = 0; i < uncoveredCount; i++){
 		char *term = malloc(sizeof(*term) * (max_literals+1));
-		if(!term) return -1;
+		if(!term){ free_2d_pointer(setArr, i); return -1; }
 
 		int offset = 0;
 		for(int j = 0; j < prime->count; j++){
