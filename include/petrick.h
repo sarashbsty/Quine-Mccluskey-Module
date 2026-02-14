@@ -13,6 +13,7 @@ typedef struct{
 
 	char** combinations;
 	int *cost;
+	int minCostIdx;
 
 } petrickData;
 
