@@ -79,18 +79,18 @@ int main() {
 
 	printf("\nPrime Implicant Chart:");
 	displayPiChart(&data.PI, data.piChart, minterms, minCount);
+	if(data.essentialPi) printf("Essential Implicants: %s\n" , data.essentialPi);
 
-	if(data.essentialCount){
-		printf("Essential Implicants: ");
-		for(int i = 0; i < data.essentialCount; i++) printf("%s ",data.essentialPi[i]);
-		printf("\n");
-	}
+	if(data.uncoveredCount)
+	{
+		if(data.essentialPi)
+		{
+			printf("\nUncovered minterms Prime Implicant Chart:");
+			displayPiChart(&data.PI, data.piChart, data.uncoveredTerms, data.uncoveredCount);
+		}
 
-	if(data.uncoveredCount){
-		printf("\nUncovered minterms Prime Implicant Chart:");
-		displayPiChart(&data.PI, data.piChart, data.uncoveredTerms, data.uncoveredCount);
-
-		if(data.newUncoveredCount){
+		if(data.newUncoveredCount)
+		{
 			printf("\nMinterm : ");
 			for(int i = 0; i < data.uncoveredCount; i++){
 				int exist = 0;
@@ -119,7 +119,10 @@ int main() {
 			printf("%s ",data.petrick.SOP_terms[i]);
 
 		printf("\n\nPossible Combinations and Cost:\n\n");
-		for(int i = 0; i < data.petrick.SOP_count; i++){
+		for(int i = 0; i < data.petrick.SOP_count; i++)
+		{
+			printf("%d. ",i+1);
+
 			char *ch = data.petrick.combinations[i];
 			while(*ch){
 				printf((*ch == ',') ? " + " : "%c" , *ch);
@@ -127,6 +130,8 @@ int main() {
 			}
 			printf(" \t\t (%d)\n\n", data.petrick.cost[i]);
 		}
+
+		printf("Chosen #%d Combination.\n",1+data.petrick.minCostIdx);
 	}
 	else printf("\nAll Minterms Covered By Essential Implicants.\n");
 
