@@ -15,8 +15,7 @@ typedef struct qmData{
 	quine PI;
 	int **piChart;
 
-	char **essentialPi;
-	int essentialCount;
+	char *essentialPi;
 
 	int *uncoveredTerms;
 	int uncoveredCount;
@@ -45,14 +44,22 @@ static void destroyQmGroupTables(qmData *var){
 	var->tableCount = 0;
 }
 
-static void destroyQmData(qmData *var){
+static void destroyQmData(qmData *var)
+{
 	destroyQmGroupTables(var);
+
 	free_2d_pointer((char**)var->piChart , var->PI.count);
-	free_2d_pointer(var->essentialPi , var->essentialCount);
+
 	clear_quine(&var->PI);
+
+	free(var->essentialPi);
+
 	free(var->uncoveredTerms);
+
 	free(var->newUncoveredTerms);
+
 	destroyPetrick(&var->petrick);
+
 	free(var->result);
 }
 
