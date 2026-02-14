@@ -1,8 +1,8 @@
-#include "memory_tracker.h"
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
 #include "boolean_algebra.h"
+#include "memory.h"
 
 int isSubset(char* A, char* B){
 	int A_in_B = 1;
@@ -56,15 +56,19 @@ int absorp(char **termsArr, int count){
 	return new_count;
 }
 
-int distributive(char** newTermsArr, char **TermsArr , int count , char *term , int term_size){
+int distributive(char*** returnPtr, char **termsArr , int count , char *term , int term_size){
+
 	int newCount = 0;
+	char** newTermsArr = malloc(count * strlen(term) * sizeof(*newTermsArr));
+
 	for(int i = 0; i < count; i++){
 
-		char *termA = TermsArr[i] , *termB = term;
+		char *termA = termsArr[i] , *termB = term;
 
-		for(char *x = termB; *x; x++){
+		for(char *x = termB; *x; x++)
+		{
 			char *newTerm = malloc(sizeof(*newTerm) * term_size);
-			if(!newTerm) return -1;
+			if(!newTerm){ free_2d_pointer(newTermsArr, newCount); return -1; }
 
 			//if 'x' literal already exist in 'termA', then just copy 'termA' to newTerm and continue to next
 			if(strchr(termA, *x))
@@ -75,5 +79,7 @@ int distributive(char** newTermsArr, char **TermsArr , int count , char *term , 
 			newTermsArr[newCount++] = newTerm;
 		}
 	}
+
+	*returnPtr = newTermsArr;
 	return newCount;
 }
