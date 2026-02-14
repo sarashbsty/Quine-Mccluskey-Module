@@ -135,7 +135,15 @@ int main() {
 	}
 	else printf("\nAll Minterms Covered By Essential Implicants.\n");
 
-	printf("\n%s\n",data.result);
+	printf("\nResult : Y(");
+	for(int i = 0; i < var; i++)
+		printf( i==0 ? "%c" : ",%c", 'A'+i);
+	printf(") = ");
+	for(char *ch = data.result; *ch; ch++){
+		if(*ch == ',') printf(" + ");
+		else printf("%c",*ch);
+	}
+	printf("\n");
 
 	destroyQmData(&data);
 

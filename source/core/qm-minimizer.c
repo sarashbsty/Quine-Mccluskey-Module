@@ -132,11 +132,16 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		}
 	}
 
-	result = storeResult(prime, var);
+	petrickData *P = petrickFiles;
+
+	if(P) result = getResult(essentialPi, P->combinations[P->minCostIdx]);
+	else result = getResult(essentialPi, NULL);
 	if(!result){
 		data.errorMsg = "storeResult Failed";
 		goto FAIL;
 	}
+
+	P = NULL;
 
 	data.tableCount 	    =  groupTablesCount;
 	data.groupTables	    =  groupTables;

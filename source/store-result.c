@@ -1,36 +1,41 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include "quine.h"
+#include <string.h>
 
-char* storeResult(const quine *prime, int var)
+char* getResult(char* s1, char* s2)
 {
-	int N = 0 , first = 1 , cap = 0, offset = 0;
+	if (!s1 && !s2) return NULL;
 
-	N += snprintf(NULL, 0, "Result: Y(");
-	for(int i = 0; i < var; i++)
-		N += snprintf(NULL, 0, (i==0) ? "%c" : ",%c", 'A'+i);
-	N += snprintf(NULL, 0, ") = ");
-
-	for(int i = 0; i < prime->count; i++){
-		if(prime->minimal[i] == 0) continue;
-		N += snprintf(NULL, 0, (first) ? "%s" : " + %s" , prime->expression[i]);
-		first = 0;
+	if(!s1) {
+        size_t len = strlen(s2);
+        char *out = malloc(len + 1);
+        if (!out) return NULL;
+        memcpy(out, s2, len + 1);
+        return out;
 	}
 
-	cap = N+1;
-	char *result = malloc(cap * sizeof(*result));
-	if(!result) return NULL;
+	if (!s2) {
+        size_t len = strlen(s1);
+        char *out = malloc(len + 1);
+        if (!out) return NULL;
+        memcpy(out, s1, len + 1);
+        return out;
+    }
 
-	offset += snprintf(result+offset, cap-offset, "Result: Y(");
-    for (int i = 0; i < var; i++)
-		offset += snprintf(result+offset, cap-offset, (i==0) ? "%c" : ",%c", 'A'+i);
-    offset += snprintf(result+offset, cap-offset, ") = ");
+    size_t len1 = strlen(s1);
+    size_t len2 = strlen(s2);
 
-	first = 1;
-	for(int i = 0; i < prime->count; i++){
-		if(prime->minimal[i] == 0) continue;
-		offset += snprintf(result+offset, cap-offset, (first) ? "%s" : " + %s" , prime->expression[i]);
-		first = 0;
-	}
-	return result;
+    int need_comma = (len1 > 0 && len2 > 0);
+
+    char *out = malloc(len1 + len2 + need_comma + 1);
+    if (!out) return NULL;
+
+    memcpy(out, s1, len1);
+    size_t pos = len1;
+    if(need_comma) out[pos++] = ',';
+    memcpy(out + pos, s2, len2);
+    out[pos + len2] = '\0';
+
+    return out;
 }
+
