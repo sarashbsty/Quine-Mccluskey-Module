@@ -21,7 +21,7 @@ quine* createGroupTable(int *minterms, int n_terms, int var);
 quine* getReducedTable(quine *group , int var);
 int getPrimeImplicants(quine *group , quine *prime , int var);
 int** createPiChart(quine *prime , int minterms[] , int min_count, int var);
-int getEssentialPi(char ***returnPtr, quine *prime);
+int getEssentialPi(char **returnPtr, quine *prime);
 int getUncovered(int **returnPtr, quine *prime, int **piChart, int *minterms, int minCount);
 int getSetCoverage(char*** returnPtr, quine *prime,int **table ,int *uncovered_terms ,int uncovered_count);
 int column_domination(char** setArr, int* setArrCount,int *uncovered_terms ,int uncovered_count);
