@@ -74,28 +74,28 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	data.piChart = piChart;
 
 	//store Essential Implicants
-	data.essentialCount = getEssentialPi(&data.essentialPi, &prime);   //memory safe
-	if(data.essentialCount == -1) FAIL("getEssentialPi failed");
+	error = getEssentialPi(&data.essentialPi, &prime);   //memory safe
+	if(error) FAIL("getEssentialPi failed");
 
 	//Get uncovered Minterms if exist
 	int *uncoveredTerms = NULL;
-	int uncoveredCount = getUncovered(&uncoveredTerms, &prime, piChart, minterms, minCount);
+	int uncoveredCount = getUncovered(&uncoveredTerms, &prime, piChart, minterms, minCount);  //memory safe
 	if(uncoveredCount == -1) FAIL("getUncovered failed");
 
 	if(uncoveredCount > 0){
 
 		//Store Uncovered minterms
-		data.uncoveredTerms = intDupArr(uncoveredTerms, uncoveredCount);
+		data.uncoveredTerms = intDupArr(uncoveredTerms, uncoveredCount); //memory safe
 		if(!data.uncoveredTerms){ free(uncoveredTerms); FAIL("intDupArr failed"); }
 		data.uncoveredCount = uncoveredCount;
 
 		//Create a string array where each string is the indexes of all prime-implicants that cover ith uncovered term
 		char **setArr = NULL;
-		int setArrCount = getSetCoverage(&setArr, &prime, piChart, uncoveredTerms, uncoveredCount);
+		int setArrCount = getSetCoverage(&setArr, &prime, piChart, uncoveredTerms, uncoveredCount); // memory safe
 		if(setArrCount == -1){ free(uncoveredTerms); FAIL("getSetCoverage failed"); }
 
 		//Apply Column Reduction
-		int newUncoveredCount = column_domination(setArr, &setArrCount, uncoveredTerms, uncoveredCount);
+		int newUncoveredCount = column_domination(setArr, &setArrCount, uncoveredTerms, uncoveredCount); //memory safe
 		if(newUncoveredCount <  uncoveredCount){
 			uncoveredCount = newUncoveredCount;
 			data.newUncoveredTerms = uncoveredTerms;
@@ -105,10 +105,9 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		else free(uncoveredTerms);
 
 		//Apply Petrick Algorithm
-		data.petrick = petrick(&prime, setArr, setArrCount, var);
-		if(data.petrick.error) FAIL("petrick failed");
-
+		data.petrick = petrick(&prime, setArr, setArrCount, var);  //memory safe
 		free_2d_pointer(setArr, setArrCount);
+		if(data.petrick.error) FAIL("petrick failed");
 	}
 
 	char *result = storeResult(&prime, var);
