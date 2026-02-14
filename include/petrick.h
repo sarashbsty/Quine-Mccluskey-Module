@@ -17,7 +17,7 @@ typedef struct{
 
 } petrickData;
 
-petrickData petrick(quine *prime , char **POS_terms, int POS_count, int var);
+petrickData* petrick(quine *prime , char **POS_terms, int POS_count, int var);
 
 static void destroyPetrick(petrickData *var){
 	if(!var) return;

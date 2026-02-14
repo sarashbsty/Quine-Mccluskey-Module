@@ -75,10 +75,10 @@ int main() {
 	}
 
 	printf("\nPrime Implicants:");
-	displayPi(&data.PI);
+	displayPi(data.PI);
 
 	printf("\nPrime Implicant Chart:");
-	displayPiChart(&data.PI, data.piChart, minterms, minCount);
+	displayPiChart(data.PI, data.piChart, minterms, minCount);
 	if(data.essentialPi) printf("Essential Implicants: %s\n" , data.essentialPi);
 
 	if(data.uncoveredCount)
@@ -86,7 +86,7 @@ int main() {
 		if(data.essentialPi)
 		{
 			printf("\nUncovered minterms Prime Implicant Chart:");
-			displayPiChart(&data.PI, data.piChart, data.uncoveredTerms, data.uncoveredCount);
+			displayPiChart(data.PI, data.piChart, data.uncoveredTerms, data.uncoveredCount);
 		}
 
 		if(data.newUncoveredCount)
@@ -102,36 +102,36 @@ int main() {
 			}
 			printf("Removed through Column Domination");
 
-			displayPiChart(&data.PI, data.piChart, data.newUncoveredTerms, data.newUncoveredCount);
+			displayPiChart(data.PI, data.piChart, data.newUncoveredTerms, data.newUncoveredCount);
 		}
 
 		printf("\nPretrick Algorithm:\n\n");
 
 		printf("let,\n");
-		for(int i = 0; i < data.PI.count; i++)
-			printf("  P%d = %s\n", i+1, data.PI.expression[i]);
+		for(int i = 0; i < data.PI->count; i++)
+			printf("  P%d = %s\n", i+1, data.PI->expression[i]);
 
-		for(int i = 0; i < data.petrick.processCount; i++)
-			printf("\n%s\n",data.petrick.process[i]);
+		for(int i = 0; i < data.petrick->processCount; i++)
+			printf("\n%s\n",data.petrick->process[i]);
 
 		printf("\nMinimum literal SOP Terms: ");
-		for(int i = 0; i < data.petrick.SOP_count; i++)
-			printf("%s ",data.petrick.SOP_terms[i]);
+		for(int i = 0; i < data.petrick->SOP_count; i++)
+			printf("%s ",data.petrick->SOP_terms[i]);
 
 		printf("\n\nPossible Combinations and Cost:\n\n");
-		for(int i = 0; i < data.petrick.SOP_count; i++)
+		for(int i = 0; i < data.petrick->SOP_count; i++)
 		{
 			printf("%d. ",i+1);
 
-			char *ch = data.petrick.combinations[i];
+			char *ch = data.petrick->combinations[i];
 			while(*ch){
 				printf((*ch == ',') ? " + " : "%c" , *ch);
 				ch++;
 			}
-			printf(" \t\t (%d)\n\n", data.petrick.cost[i]);
+			printf(" \t\t (%d)\n\n", data.petrick->cost[i]);
 		}
 
-		printf("Chosen #%d Combination.\n",1+data.petrick.minCostIdx);
+		printf("Chosen #%d Combination.\n",1+data.petrick->minCostIdx);
 	}
 	else printf("\nAll Minterms Covered By Essential Implicants.\n");
 

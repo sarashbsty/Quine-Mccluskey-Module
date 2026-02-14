@@ -10,17 +10,15 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 	qmData data = {0};
 
-	petrickData petrickFiles = {0};
+	petrickData *petrickFiles = NULL;
 
-	quine **groupTables = NULL , *group = NULL , *newGroup = NULL , prime = {0};
+	quine **groupTables = NULL , *group = NULL , *newGroup = NULL , *prime = NULL;
 
 	char *essentialPi = NULL , *result = NULL;
 
 	int *groupSize = NULL, **piChart = NULL, *uncoveredTerms = NULL, *newUncoveredTerms = NULL;
 
 	int groupTablesCount = 0, error = 0 , uncoveredCount = 0, newUncoveredCount = 0;
-
-
 
 	//Allocate memory for group tables pointer array
 	groupTables = calloc(var+1 , sizeof(*groupTables));
@@ -41,6 +39,12 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		goto FAIL;
 	}
 
+	prime = calloc(1,sizeof(*prime));
+	if(!prime){
+		data.errorMsg = "var :Prime allocation Failed";
+		goto FAIL;
+	}
+
 	//Table Reduction Process
 	while(group != newGroup){
 
@@ -53,7 +57,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		else if(newGroup == group) newGroup = NULL;
 
 		//get prime-implicants afer each reduction
-		error = getPrimeImplicants(group, &prime, var);  //memory safe
+		error = getPrimeImplicants(group, prime, var);  //memory safe
 		if(error){
 			data.errorMsg = "getPrimeImplicants Failed";
 			goto FAIL;
@@ -73,21 +77,21 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	}
 
 	// prime_implicant_chart_table
-	piChart = createPiChart(&prime, minterms, minCount, var);  //memory safe
+	piChart = createPiChart(prime, minterms, minCount, var);  //memory safe
 	if(!piChart){
 		data.errorMsg = "createPiChart Failed";
 		goto FAIL;
 	}
 
 	//store Essential Implicants
-	error = getEssentialPi(&essentialPi, &prime);   //memory safe
+	error = getEssentialPi(&essentialPi, prime);   //memory safe
 	if(error){
 		data.errorMsg = "getEssentialPi Failed";
 		goto FAIL;
 	}
 
 	//Get uncovered Minterms if exist
-	uncoveredCount = getUncovered(&uncoveredTerms, &prime, piChart, minterms, minCount);  //memory safe
+	uncoveredCount = getUncovered(&uncoveredTerms, prime, piChart, minterms, minCount);  //memory safe
 	if(uncoveredCount == -1){
 		data.errorMsg = "getUncovered Failed";
 		goto FAIL;
@@ -105,7 +109,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 		//Create a string array where each string is the indexes of all prime-implicants that cover ith uncovered term
 		char **setArr = NULL;
-		int setArrCount = getSetCoverage(&setArr, &prime, piChart, newUncoveredTerms, newUncoveredCount); // memory safe
+		int setArrCount = getSetCoverage(&setArr, prime, piChart, newUncoveredTerms, newUncoveredCount); // memory safe
 		if(setArrCount == -1){
 			data.errorMsg = "getSetCoverage Failed";
 			goto FAIL;
@@ -120,15 +124,15 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		}
 
 		//Apply Petrick Algorithm
-		petrickFiles = petrick(&prime, setArr, setArrCount, var);  //memory safe
+		petrickFiles = petrick(prime, setArr, setArrCount, var);  //memory safe
 		free_2d_pointer(setArr, setArrCount);
-		if(petrickFiles.error){
+		if(petrickFiles->error){
 			data.errorMsg = "petrick Failed";
 			goto FAIL;
 		}
 	}
 
-	result = storeResult(&prime, var);
+	result = storeResult(prime, var);
 	if(!result){
 		data.errorMsg = "storeResult Failed";
 		goto FAIL;
@@ -147,15 +151,15 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	data.petrick            =  petrickFiles;
 	data.result             =  result;
 
+	groupTablesCount = 0;
 	groupTables = NULL;
 	groupSize = NULL;
-	groupTablesCount = 0;
 	piChart = NULL;
+	prime = NULL;
 	essentialPi = NULL;
 	uncoveredTerms = NULL;
-	uncoveredCount = 0;
 	newUncoveredTerms = NULL;
-	newUncoveredCount = 0;
+	petrickFiles = NULL;
 	result = NULL;
 
     return data;
@@ -171,7 +175,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		}
 
 		free(groupTables); groupTables = NULL;
-		free(groupSize);
+		free(groupSize); groupSize = NULL;
 		groupTablesCount = 0;
 
 		for(int i = 0; i < var+1; i++){
@@ -181,16 +185,21 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		free(group);
 		free(newGroup);
 
-		free_2d_pointer((char**)piChart , prime.count);
-		clear_quine(&prime);
+		if(prime) free_2d_pointer((char**)piChart , prime->count);
+		clear_quine(prime);
+		free(prime);
 
 		free(essentialPi);
 		free(uncoveredTerms);
 		free(newUncoveredTerms);
-		destroyPetrick(&petrickFiles);
+
+		destroyPetrick(petrickFiles);
+		free(petrickFiles);
+
 		free(result);
 
 		if(!data.errorMsg) data.errorMsg = "qmMinimizer Failed";
 		data.error = 1;
 		return data;
+
 }

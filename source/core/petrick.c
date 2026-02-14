@@ -11,10 +11,12 @@ static int removeNonMinimalTerms(char **SOP_terms, int SOP_count, int min_litera
 static int logger(char** returnPtr, char **SOP_terms, int SOP_count, char **POS_terms, int POS_count, int i);
 static int convertStyle(char **ptr);
 
-petrickData petrick(quine *prime , char **POS_terms, int POS_count, int var){
+petrickData* petrick(quine *prime , char **POS_terms, int POS_count, int var){
 
 	//all dynamic variable Declaration
-	petrickData P = {0};
+	petrickData *P = calloc(1, sizeof(*P));
+	if(!P) goto FAIL;
+
 	char **processArr = NULL, **combinations = NULL, **SOP_terms = NULL;
 	int *costArr = NULL, combiCount = 0;
 
@@ -48,7 +50,7 @@ petrickData petrick(quine *prime , char **POS_terms, int POS_count, int var){
 		new_SOP_terms = NULL;
 		new_SOP_count = 0;
 
-		if(logger(&processArr[processCount++], SOP_terms, SOP_count, POS_terms, POS_count, i)) { P.error = 1; return P; }
+		if(logger(&processArr[processCount++], SOP_terms, SOP_count, POS_terms, POS_count, i)) { P->error = 1; return P; }
 	}
 
 	int min_literal = getMinLiterals(SOP_terms, SOP_count, max_literals);
@@ -102,13 +104,13 @@ petrickData petrick(quine *prime , char **POS_terms, int POS_count, int var){
 	for(int i = 0; i < SOP_count; i++)
 		convertStyle(&SOP_terms[i]);  // convert ABC to P1P2P3
 
-	P.process      = processArr;
-	P.processCount = processCount;
-	P.SOP_terms    = SOP_terms;
-	P.SOP_count    = SOP_count;
-	P.combinations = combinations;
-	P.cost         = costArr;
-	P.minCostIdx   = minCostIdx;
+	P->process      = processArr;
+	P->processCount = processCount;
+	P->SOP_terms    = SOP_terms;
+	P->SOP_count    = SOP_count;
+	P->combinations = combinations;
+	P->cost         = costArr;
+	P->minCostIdx   = minCostIdx;
 
 	processArr   = NULL;
 	SOP_terms    = NULL;
@@ -122,7 +124,7 @@ petrickData petrick(quine *prime , char **POS_terms, int POS_count, int var){
 		free_2d_pointer(SOP_terms, SOP_count);
 		free_2d_pointer(combinations, combiCount);
 		free(costArr);
-		P.error = 1;
+		P->error = 1;
 		return P;
 }
 
