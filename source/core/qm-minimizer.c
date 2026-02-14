@@ -138,9 +138,9 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		goto FAIL;
 	}
 
+	data.tableCount 	    =  groupTablesCount;
 	data.groupTables	    =  groupTables;
 	data.groupSize   	    =  groupSize;
-	data.tableCount 	    =  groupTablesCount;
 	data.PI 			    =  prime;
 	data.piChart		    =  piChart;
 	data.essentialPi 	    =  essentialPi;
@@ -151,16 +151,16 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	data.petrick            =  petrickFiles;
 	data.result             =  result;
 
-	groupTablesCount = 0;
-	groupTables = NULL;
-	groupSize = NULL;
-	piChart = NULL;
-	prime = NULL;
-	essentialPi = NULL;
-	uncoveredTerms = NULL;
-	newUncoveredTerms = NULL;
-	petrickFiles = NULL;
-	result = NULL;
+	groupTablesCount   =  0;
+	groupTables        =  NULL;
+	groupSize          =  NULL;
+	prime              =  NULL;
+	piChart            =  NULL;
+	essentialPi        =  NULL;
+	uncoveredTerms     =  NULL;
+	newUncoveredTerms  =  NULL;
+	petrickFiles       =  NULL;
+	result             =  NULL;
 
     return data;
 
