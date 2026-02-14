@@ -2,19 +2,33 @@
 #include<string.h>
 #include "quine.h"
 
-int getEssentialPi(char ***returnPtr, quine *prime){
+int getEssentialPi(char **returnPtr, quine *prime){
 
-	char **essentialPi = calloc(prime->count , sizeof(*essentialPi));
-	if(!essentialPi) return -1;
-
-	int count = 0;
-	for(int i = 0; i < prime->count; i++){
+	int N = 0;
+	for(int i = 0; i < prime->count; i++)
+	{
 		if(prime->minimal[i] == 0) continue;
-		char *exp = strdup(prime->expression[i]);
-		if(!exp){ free_2d_pointer(essentialPi,count); return -1; }
-		essentialPi[count++] = exp;
+		char *exp = prime->expression[i];
+		N += snprintf(NULL, 0, "%s,", prime->expression[i]);
 	}
 
-	*returnPtr = essentialPi;
-	return count;
+	if(N < 0) return 1;
+	else if(N == 0){
+		*returnPtr = NULL;
+		return 0;
+	}
+
+	char *exp = malloc(N+1 * sizeof(*exp));
+	if(!exp) return 1;
+
+	int offset = 0;
+	for(int i = 0; i < prime->count; i++)
+	{
+		if(prime->minimal[i] == 0) continue;
+		offset += snprintf(exp+offset, (N+1)-offset, "%s," ,prime->expression[i]);
+	}
+	exp[offset-1] = '\0';
+
+	*returnPtr = exp;
+	return 0;
 }
