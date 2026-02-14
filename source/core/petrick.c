@@ -13,79 +13,83 @@ static int convertStyle(char **ptr);
 
 petrickData petrick(quine *prime , char **POS_terms, int POS_count, int var){
 
+	//all dynamic variable Declaration
 	petrickData P = {0};
-
-	#define LOG_ALLOCATE \
-        do { \
-            if (logCount + 1 >= logCap) { \
-                    logCap *= 2; \
-                char **tmp = realloc(logArr, logCap); \
-                if (!tmp) { free_2d_pointer(logArr,logCount); P.error = 1; return P; } \
-                logArr = tmp; \
-            } \
-        } while (0);
-
-	char **logArr = malloc(10 * sizeof(*logArr));
-	if(!logArr){ P.error = 1; return P; }
-	int logCount = 0 , logCap = 10;
+	char **processArr = NULL, **combinations = NULL, **SOP_terms = NULL;
+	int *costArr = NULL, combiCount = 0;
 
 	//initialization
-	char **SOP_terms = malloc(sizeof(*SOP_terms) * 1);
-	if(!SOP_terms) { P.error = 1; return P; }
+	int processCount = 0;
+	processArr       = malloc(POS_count * sizeof(*processArr));
+	if(!processArr)  goto FAIL;
 
-	SOP_terms[0] = strdup("");
-	if(!SOP_terms[0]) { P.error = 1; return P; }
+
+	SOP_terms      = malloc(sizeof(*SOP_terms) * 1);
+	if(!SOP_terms) goto FAIL;
+
+	SOP_terms[0]      = strdup("");
+	if(!SOP_terms[0]) goto FAIL;
 
 	int SOP_count = 1, max_literals = prime->count;
 
-	//Patrick Algorithm
-	for(int i = 0; i < POS_count; i++){
-		char **new_SOP_terms = malloc(sizeof(*new_SOP_terms) * SOP_count * strlen(POS_terms[i]));
-		if(!new_SOP_terms){
-			free_2d_pointer(SOP_terms,SOP_count);
-			P.error = 1; return P;
-		}
+	//Petrick Algorithm
+	for(int i = 0; i < POS_count; i++)
+	{
+		char **new_SOP_terms = NULL;
+		int new_SOP_count    = distributive(&new_SOP_terms, SOP_terms, SOP_count, POS_terms[i], max_literals+1);
+		if(new_SOP_count == -1) goto FAIL;
 
-		int new_SOP_count = distributive(new_SOP_terms, SOP_terms, SOP_count, POS_terms[i], max_literals+1);
 		new_SOP_count = absorp(new_SOP_terms,new_SOP_count);
 
 		free_2d_pointer(SOP_terms,SOP_count);
 		SOP_terms = new_SOP_terms;
 		SOP_count = new_SOP_count;
 
-		LOG_ALLOCATE;
-		if(logger(&logArr[logCount++], SOP_terms, SOP_count, POS_terms, POS_count, i)) { P.error = 1; return P; }
+		new_SOP_terms = NULL;
+		new_SOP_count = 0;
+
+		if(logger(&processArr[processCount++], SOP_terms, SOP_count, POS_terms, POS_count, i)) { P.error = 1; return P; }
 	}
 
 	int min_literal = getMinLiterals(SOP_terms, SOP_count, max_literals);
-	SOP_count = removeNonMinimalTerms(SOP_terms, SOP_count, min_literal);
+	SOP_count       = removeNonMinimalTerms(SOP_terms, SOP_count, min_literal);
 
-	char** combinations = malloc(SOP_count * sizeof(*combinations));
-	if(!combinations) { P.error = 1; return P; }
+	combiCount   = 0;
+	combinations = malloc(SOP_count * sizeof(*combinations));
+	if(!combinations) goto FAIL;
 
-	int *costArr = malloc(SOP_count * sizeof(*costArr));
-	if(!costArr) { P.error = 1; return P; }
+	costArr = malloc(SOP_count * sizeof(*costArr));
+	if(!costArr) goto FAIL;
 
-	int min_cost = (var*2) * min_literal , minCostIdx = 0;
-	for(int i = 0; i < SOP_count; i++){
+	//storing combinations of Expressions and cost
+	for(int i = 0; i < SOP_count; i++)
+	{
+		int cost = 0 , offset = 0 , cap = (var*2 + 1) * min_literal + 1;
 
-		int new_cost = 0 , offset = 0 , cap = (var*2 + 1) * min_literal + 1;
 		char* str = malloc(cap * sizeof(*str)); //A'B'C', = 7
-		if(!str) { P.error = 1; return P; }
+		if(!str) goto FAIL;
 
 		char* term = SOP_terms[i];
-		for(int j = 0; term[j] != '\0'; j++){
+		for(int j = 0; term[j] != '\0'; j++)
+		{
 			int idx = term[j] - 'A';
-			offset += snprintf(str+offset, cap-offset, "%s,", prime->expression[j]);
-			new_cost += prime->cost[idx];
+			offset += snprintf(str+offset, cap-offset, "%s,", prime->expression[idx]);
+			cost   += prime->cost[idx];
 		}
-		str[offset-1] = '\0';
-		combinations[i] = str;
-		costArr[i] = new_cost;
 
-		if(new_cost < min_cost){
-			min_cost = new_cost;
+		str[offset-1] = '\0';
+		combinations[combiCount++] = str;
+		costArr[i] = cost;
+
+		str = NULL;
+	}
+
+	//determine index of the SOP term with minimum cost
+	int min_cost = costArr[0] , minCostIdx = 0;
+	for(int i = 1; i < SOP_count; i++){
+		if(costArr[i] < min_cost){
 			minCostIdx = i;
+			min_cost   = costArr[i];
 		}
 	}
 
@@ -98,14 +102,28 @@ petrickData petrick(quine *prime , char **POS_terms, int POS_count, int var){
 	for(int i = 0; i < SOP_count; i++)
 		convertStyle(&SOP_terms[i]);  // convert ABC to P1P2P3
 
-	P.process = logArr;
-	P.processCount = logCount;
-	P.SOP_terms = SOP_terms;
-	P.SOP_count = SOP_count;
+	P.process      = processArr;
+	P.processCount = processCount;
+	P.SOP_terms    = SOP_terms;
+	P.SOP_count    = SOP_count;
 	P.combinations = combinations;
-	P.cost = costArr;
+	P.cost         = costArr;
+	P.minCostIdx   = minCostIdx;
+
+	processArr   = NULL;
+	SOP_terms    = NULL;
+	combinations = NULL;
+	costArr      = NULL;
 
 	return P;
+
+	FAIL:
+		free_2d_pointer(processArr , processCount);
+		free_2d_pointer(SOP_terms, SOP_count);
+		free_2d_pointer(combinations, combiCount);
+		free(costArr);
+		P.error = 1;
+		return P;
 }
 
 static int convertStyle(char **ptr){
