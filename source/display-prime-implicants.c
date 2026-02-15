@@ -3,7 +3,8 @@
 #include<string.h>
 #include<math.h>
 #include "quine.h" // quine struture
-#include "helper.h"  // for make_line , digit , array_to_string
+#include "memory.h"
+#include "display_tools.h" // for make_line , array_to_string , digit
 
 void displayPi(const quine *prime){
 	if(prime->count == 0){ printf("\nEmpty Implicant table\n"); return; }
@@ -19,7 +20,7 @@ void displayPi(const quine *prime){
 	char **line = make_line(line_width , 3 , "─" , 3);
 	if(line == NULL) { printf("\nERROR: Line creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
 
-	printf("╔%s┬%s┬%s╗\n",line[0],line[1],line[2]);
+	printf("\n╭%s┬%s┬%s╮\n",line[0],line[1],line[2]);
 	printf("│ %-*s │ %-*s │ %-*s │\n", width[0], "Expression" ,width[1], "Binary" , width[2], "Minterms");
 
 	for(int i = 0; i < prime->count; i++){
@@ -33,6 +34,6 @@ void displayPi(const quine *prime){
 
 		free(str);
 	}
-	printf("╚%s┴%s┴%s╝\n",line[0],line[1],line[2]);
+	printf("╰%s┴%s┴%s╯\n",line[0],line[1],line[2]);
 	free_2d_pointer(line , 3);
 }

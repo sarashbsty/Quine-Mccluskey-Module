@@ -10,7 +10,7 @@ include_directories(include)
 
 file(GLOB_RECURSE ALL_SOURCES
     "source/*.c"
-    "helper_source/*.c"
+    "utils/*.c"
 )
 
 add_executable(quine ${ALL_SOURCES} ${ALL_HEADERS})

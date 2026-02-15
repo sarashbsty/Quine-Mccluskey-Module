@@ -5,8 +5,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "quine.h"
-#include "helper.h"
+#include "qmMinimizer.h"
+#include "memory.h"
+
+static inline void clear_input_buffer(){
+	int c;
+    while ((c = getchar()) != '\n' && c != EOF);  //clear stdin
+}
+
+static void commaFormatted(char *str, char* format){
+	for(int i = 0; str[i]; i++){
+		char ch = str[i];
+		if(ch == ',') printf("%s",format);
+		else printf("%c",ch);
+	}
+}
+
+static int get_minterms(int *minterms , int index, int max_terms);
 
 int main() {
 
@@ -31,134 +46,189 @@ int main() {
 	if(minterms == NULL){ printf("ERROR: failed creating minterm array for input | low memory | main"); exit(0); }
 
     printf("Enter min terms : ");
-	int min_count = get_minterms(minterms , 0 , maxTerms);
+	int minCount = get_minterms(minterms , 0 , maxTerms);
 
-	if(min_count == 0){
+	if(minCount == 0){
 		printf("No Minterms Entered!\n");
 		free(minterms);
 		return 0;
 	}
 
 	printf("Enter dont care : ");
-	int dont_care_count = get_minterms(minterms , min_count , maxTerms);
+	int dont_care_count = get_minterms(minterms , minCount , maxTerms);
 
-    int n_terms = min_count + dont_care_count;
+    int n_terms = minCount + dont_care_count;
 
-    printf("\n\n%d Min terms: ", min_count);
-    for (int i = 0; i < min_count; i++)
+    printf("\n\n%d Min terms: ", minCount);
+    for (int i = 0; i < minCount; i++)
         printf("%d ", minterms[i]);
 
     printf("\n%d Dont care: ", dont_care_count);
-    for (int i = min_count; i < n_terms; i++)
+    for (int i = minCount; i < n_terms; i++)
         printf("%d ", minterms[i]);
+	printf("\n");
 
-    // declare data structures
-	quine *group = malloc((var+1) * sizeof(quine));
-	if(!group){ printf("ERROR: Create Group struture failed | low Memory | main\n"); exit(0); }
+    qmData data = qmMinimizer(minterms, n_terms, minCount, var);
 
-	quine *reduced = malloc((var+1) * sizeof(quine));
-	if(!reduced){ printf("ERROR: Create reduced struture failed | low Memory | main\n"); exit(0); }
+	if(data.error){
+		printf("%s\n",data.errorMsg);
+		destroyQmData(&data);
+		free(minterms);
+		return 1;
+	}
 
-	quine prime;
-	init_quine(&prime);
+	for(int i = 0 ; i < data.tableCount; i++){
+		printf("\nTABLE #%d",i+1);
+		displayGroups(data.groupTables[i], data.groupSize[i] - 1);
+	}
 
-	fill_group_table(group, minterms, n_terms, var);
+	printf("\nPrime Implicants:");
+	displayPi(data.PI);
 
-	int i = 0 , canReduce = 0;
-	do{
-		//Reduction
-		canReduce = reduce_table(group, reduced, var);
+	printf("\nPrime Implicant Chart:");
+	displayPiChart(data.PI, data.piChart, minterms, minCount);
+	if(data.essentialPi){
+		printf("Essential Implicants: " , data.essentialPi);
+		commaFormatted(data.essentialPi , " , ");
+		printf("\n");
+	}
 
-		//display
-		if(i) printf("\nReduction #%d:\n", i);
-		else  printf("\n\nInitial Grouping:\n");
-		displayGroups(group, var);
-		i++;
-
-		//get prime-implicants afer each reduction
-		prime_implicants(group, &prime, var);
-
-		//clear old group and copy new reduced group
-		for (int j = 0; j <= var; j++){
-			clear_quine(&group[j]);
-			group[j] = reduced[j];
+	if(data.uncoveredCount)
+	{
+		if(data.essentialPi)
+		{
+			printf("\nUncovered minterms Prime Implicant Chart:");
+			displayPiChart(data.PI, data.piChart, data.uncoveredTerms, data.uncoveredCount);
 		}
-	} while(canReduce);
 
-	free(reduced);
-	free(group);
-
-	printf("\nPrime Implicants:\n");
-	displayPi(&prime);
-
-	// prime_implicant_chart_table
-	int **table = createPiChart(&prime, minterms, min_count, var);
-	if(!table){ printf("\nERROR: Table creation failed | Low Memory | main\n"); exit(0); }
-
-	printf("\nPrime Implicants Chart:\n");
-    displayPiChart(&prime, table, minterms, min_count);
-
-
-	int *uncoveredTerms = malloc(min_count * sizeof(int));
-	if(!uncoveredTerms) { printf("\nminterm_uncovered array allocation failed | low memory | main\n"); exit(0); }
-
-	//Gather Uncovered Minterms if exist
-	int uncoveredCount = 0;
-	for(int i = 0; i < min_count; i++){
-		int exist = 0;
-		for(int j = 0; j < prime.count; j++){
-			if(prime.minimal[j] == 0) continue;
-			if(table[j][minterms[i]] != 0){
-			 	exist = 1; break;
+		if(data.newUncoveredCount)
+		{
+			printf("\nMinterm : ");
+			for(int i = 0; i < data.uncoveredCount; i++){
+				int exist = 0;
+				for(int j = 0; j < data.newUncoveredCount; j++){
+					if(data.uncoveredTerms[i] == data.newUncoveredTerms[j])
+					{ exist = 1; break; }
+				}
+				if(exist == 0) printf("%d ",data.uncoveredTerms[i]);
 			}
-		}
-		if(!exist) uncoveredTerms[uncoveredCount++] = minterms[i];
-	}
+			printf("Removed through Column Domination");
 
-	if(uncoveredCount == 0)
-	{
-		printf("All Minterms covered by essentialPI-implicants:");
-		for(int i = 0; i < prime.count; i++)
-			if(prime.minimal[i] == 1)
-				printf(" %s",prime.expression[i]);
-	}
-	else
-	{
-		if(uncoveredCount == min_count) printf("No Essential Prime-Implicants\n");
-		else{
-			printf("Essential-implicants:");
-			for(int i = 0; i < prime.count; i++)
-				if(prime.minimal[i] == 1)
-					printf(" %s",prime.expression[i]);
-
-			printf("\n\nUncovered Minterms PI Chart:\n");
-			displayPiChart(&prime, table, uncoveredTerms, uncoveredCount);
+			displayPiChart(data.PI, data.piChart, data.newUncoveredTerms, data.newUncoveredCount);
 		}
 
-		char **setArr = malloc(uncoveredCount * sizeof(*setArr));
-		if(!setArr) { printf("\nset coverage array allocation failed | low memory | main\n"); exit(0); }
+		printf("\nPretrick Algorithm:\n\n");
 
-		printf("\n#Set Coverage (column):\n");
-		int setArrCount = getSetCoverage(setArr, &prime, table, uncoveredTerms, uncoveredCount);
+		printf("let,\n");
+		for(int i = 0; i < data.PI->count; i++)
+			printf("  P%d = %s\n", i+1, data.PI->expression[i]);
 
-		int new_uncovered_count = column_domination(setArr, &setArrCount, uncoveredTerms, uncoveredCount);
+		printf("\nBy law of Distribution and absorption,\n");
+		for(int i = 0; i < data.petrick->processCount; i++)
+			printf("\n%s\n",data.petrick->process[i]);
 
-		if(new_uncovered_count < uncoveredCount){
-			uncoveredCount = new_uncovered_count;
-			printf("\n\nColumn Reduced Uncovered Minterms PI Chart:\n");
-			displayPiChart(&prime, table, uncoveredTerms, uncoveredCount);
+		printf("\n\nMinimum literal SOP Terms: ");
+		for(int i = 0; i < data.petrick->SOP_count; i++)
+			printf("%s ",data.petrick->SOP_terms[i]);
+
+		printf("\n\n\nPossible Combinations and Cost:\n\n");
+		for(int i = 0; i < data.petrick->SOP_count; i++)
+		{
+			printf("%d. ",i+1);
+			commaFormatted(data.petrick->combinations[i] , " + ");
+			printf(" \t\t (%d)\n", data.petrick->cost[i]);
 		}
 
-		//Petrick Algorithm
-		petrick(&prime,setArr,setArrCount,var);
-		free_2d_pointer(setArr,setArrCount);
+		printf("\nChosen #%d Combination.\n",1+data.petrick->minCostIdx);
 	}
+	else printf("\nAll Minterms Covered By Essential Implicants.\n");
 
-	printResult(&prime,var);
+	printf("\nResult : Y(");
+	for(int i = 0; i < var; i++)
+		printf( i==0 ? "%c" : ",%c", 'A'+i);
+	printf(") = ");
+	commaFormatted(data.result , " + ");
+	printf("\n");
 
-	free(uncoveredTerms);
-	free_2d_pointer((char**)table , prime.count);
-	clear_quine(&prime);
+	destroyQmData(&data);
+
 	free(minterms);
+
     return 0;
+}
+
+static char* get_input(){
+	size_t capacity = 16;
+	size_t size = 0;
+	char *buffer = malloc(capacity * sizeof(*buffer));
+	if(buffer == NULL) return NULL;
+
+	int ch;
+	while((ch = getchar()) != '\n' && ch != EOF){
+
+		if (size >= capacity-1){
+
+			capacity *= 2;
+			char* temp = realloc(buffer , capacity * sizeof(*temp));
+			if(temp == NULL){
+				clear_input_buffer();
+				free(buffer);
+				return NULL;
+			}
+			buffer = temp;
+		}
+		buffer[size++] = (char)ch;
+	}
+	buffer[size] = '\0';
+	return buffer;
+}
+
+static void clear_separators(char **ch){
+	while (**ch == ' ' || **ch == '\t' || **ch == ',') (*ch)++;
+}
+
+static int get_minterms(int *minterms , int index, int max_terms){
+
+	char *input = get_input();
+
+	if(input == NULL){
+		printf("ERROR: minterms Input failed | Low Memory | get-minterms\n");
+		return 0;
+	}
+
+	if (input[0] == '\0'){  // No change if empty input
+		free(input);
+		return 0;
+	}
+
+	int initial_index = index;
+    char *ptr = input;
+    int num;
+
+    while (index < max_terms){
+
+		clear_separators(&ptr);
+        if(sscanf(ptr, "%d", &num) == 1){
+
+            if (num < 0) printf("Error: Negative value %d ignored\n", num);
+			else if(num >= max_terms) printf("Error: %d is not a valid minterm of %d variables. Ignored\n", num, (int)log2(max_terms));
+            else  minterms[index++] = num;
+
+            while (*ptr != ',' && *ptr != ' ' && *ptr != '\t' && *ptr != '\0') ptr++;   // Move pointer past the character
+        }
+
+		else if (*ptr != '\n' && *ptr != '\0'){ // Check if there's invalid input
+
+            printf("Error: Invalid input '%c' ignored\n", *ptr);
+            ptr++;   // Move pointer past that character
+        }
+        else break;
+    }
+
+	clear_separators(&ptr);
+	if(*ptr != '\0')                            //note: *ptr == ptr[0]
+		printf("Error: Excess Input: %s\n",ptr);
+
+	free(input);
+	return index - initial_index;
 }
