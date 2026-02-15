@@ -21,8 +21,7 @@ quine* createGroupTable(int *minterms, int n_terms, int var){
 
 		//create array of size 1
 		arr = malloc(sizeof(*arr));
-		if(!arr)
-			goto FAIL;
+		if(!arr) goto FAIL;
 
 		//find no.s of ones in binary
 		int ones = count_1s(bin);

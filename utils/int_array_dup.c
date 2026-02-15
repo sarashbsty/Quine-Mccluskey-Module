@@ -1,7 +1,7 @@
-#include "memory_tracker.h"
-#include "int_array_dup.h"
+#include <stddef.h>
 #include<stdlib.h>
 #include<string.h>
+#include "int_array_dup.h"
 
 int *intDupArr(const int *src, size_t n){
     if (src == NULL || n == 0)

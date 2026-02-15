@@ -148,7 +148,7 @@ int main() {
 		printf( i==0 ? "%c" : ",%c", 'A'+i);
 	printf(") = ");
 	commaFormatted(data.result , " + ");
-	printf("\n");
+	printf("\n\n");
 
 	destroyQmData(&data);
 

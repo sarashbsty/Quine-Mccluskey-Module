@@ -1,6 +1,4 @@
 #pragma once
-
-#include "memory_tracker.h"
 #include<stdlib.h>
 
 static inline void free_2d_pointer(char **arr, int size){

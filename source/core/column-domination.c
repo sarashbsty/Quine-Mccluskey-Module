@@ -1,4 +1,3 @@
-#include "memory_tracker.h"
 #include<stdlib.h>
 #include "boolean_algebra.h"
 

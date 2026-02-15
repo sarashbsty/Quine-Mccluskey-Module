@@ -1,6 +1,0 @@
-0,1,2,5,6,7,8,9,10,14,15,16,17,18,21,22,23,24,25,26,29,30,31 = C'D' + CD + DE' + B'CE + ACE
-
-0 1 2 5 6 7 8 9 14 15 16 17 21 22 23 24 25 26 30 31 =  C'D' + CD + A'B'DE' + B'CE + ABDE'
-
-variable: 5 minterm: 5 bug
-variable: 5 minterm: 1 2 3 bug
