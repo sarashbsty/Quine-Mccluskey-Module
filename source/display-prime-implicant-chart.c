@@ -16,7 +16,7 @@ void displayPiChart(const quine *prime , int **table , int *minterms , int min_c
 	char **line = make_line(line_width , 2 , "─" , 3);
 	if(line == NULL) { printf("\nERROR: Line creation Failed | Low Memory | Display-Essential-Table\n"); exit(0); }
 
-	printf("\n╔%s┬%s╗\n",line[0] , line[1]);
+	printf("\n╭%s┬%s╮\n",line[0] , line[1]);
 
 	printf("│ %-*s │  " , width[0] , "Expression");
 	for(int j = 0; j < min_count; j++)
@@ -35,6 +35,6 @@ void displayPiChart(const quine *prime , int **table , int *minterms , int min_c
 		printf(" │\n");
 
 	}
-	printf("╚%s┴%s╝\n",line[0],line[1]);
+	printf("╰%s┴%s╯\n",line[0],line[1]);
 	free_2d_pointer(line , 2);
 }
