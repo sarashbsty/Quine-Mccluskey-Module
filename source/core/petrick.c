@@ -6,9 +6,9 @@
 #include "memory.h"
 #include "petrick.h"
 
-static int getMinLiterals(char **SOP_terms, int SOP_count, int max_literals);
+static int getMinLiterals(char **SOP_terms, int SOP_count, int termSize);
 static int removeNonMinimalTerms(char **SOP_terms, int SOP_count, int min_literal);
-static int logger(char** returnPtr, char **SOP_terms, int SOP_count, char **POS_terms, int POS_count, int i);
+static int logger(char** returnPtr, char **SOP_terms, int SOP_count, char **POS_terms, int POS_count);
 static int convertStyle(char **ptr);
 
 petrickData* petrick(quine *prime , char **POS_terms, int POS_count, int var){
@@ -18,27 +18,26 @@ petrickData* petrick(quine *prime , char **POS_terms, int POS_count, int var){
 	if(!P) goto FAIL;
 
 	char **processArr = NULL, **combinations = NULL, **SOP_terms = NULL;
-	int *costArr = NULL, combiCount = 0;
+	int *costArr = NULL, combiCount = 0 , SOP_count = 0, processCount = 0;
 
 	//initialization
-	int processCount = 0;
 	processArr       = malloc(POS_count * sizeof(*processArr));
 	if(!processArr)  goto FAIL;
-
 
 	SOP_terms      = malloc(sizeof(*SOP_terms) * 1);
 	if(!SOP_terms) goto FAIL;
 
 	SOP_terms[0]      = strdup("");
 	if(!SOP_terms[0]) goto FAIL;
+	SOP_count++;
 
-	int SOP_count = 1, max_literals = prime->count;
+	int termSize = prime->count;
 
 	//Petrick Algorithm
 	for(int i = 0; i < POS_count; i++)
 	{
 		char **new_SOP_terms = NULL;
-		int new_SOP_count    = distributive(&new_SOP_terms, SOP_terms, SOP_count, POS_terms[i], max_literals+1);
+		int new_SOP_count    = distributive(&new_SOP_terms, SOP_terms, SOP_count, POS_terms[i], termSize+1);
 		if(new_SOP_count == -1) goto FAIL;
 
 		new_SOP_count = absorp(new_SOP_terms,new_SOP_count);
@@ -50,10 +49,10 @@ petrickData* petrick(quine *prime , char **POS_terms, int POS_count, int var){
 		new_SOP_terms = NULL;
 		new_SOP_count = 0;
 
-		if(logger(&processArr[processCount++], SOP_terms, SOP_count, POS_terms, POS_count, i)) { P->error = 1; return P; }
+		if(logger(&processArr[processCount++], SOP_terms, SOP_count, POS_terms+i+1, POS_count-i-1)) goto FAIL;
 	}
 
-	int min_literal = getMinLiterals(SOP_terms, SOP_count, max_literals);
+	int min_literal = getMinLiterals(SOP_terms, SOP_count, termSize);
 	SOP_count       = removeNonMinimalTerms(SOP_terms, SOP_count, min_literal);
 
 	combiCount   = 0;
@@ -146,8 +145,8 @@ static int convertStyle(char **ptr){
 	return 0;
 }
 
-static int getMinLiterals(char **SOP_terms, int SOP_count, int max_literals){
-	int min_literal = max_literals; //initialize maximum possible literal
+static int getMinLiterals(char **SOP_terms, int SOP_count, int termSize){
+	int min_literal = termSize; //initialize maximum possible literal
 	for(int i = 0; i < SOP_count; i++){
 		int size = strlen(SOP_terms[i]);
 		if(size < min_literal) min_literal = size;
@@ -174,7 +173,7 @@ static int removeNonMinimalTerms(char **SOP_terms, int SOP_count, int min_litera
 	return new_SOP_count;
 }
 
-static int logger(char** returnPtr, char **SOP_terms, int SOP_count, char **POS_terms, int POS_count, int i){
+static int logger(char** returnPtr, char **SOP_terms, int SOP_count, char **POS_terms, int POS_count){
 	//two pass method
 	int needed = 0;
 
@@ -189,7 +188,7 @@ static int logger(char** returnPtr, char **SOP_terms, int SOP_count, char **POS_
 	}
 	needed += snprintf(NULL, 0, ")");
 
-	for(int k = i+1; k < POS_count; k++){
+	for(int k = 0; k < POS_count; k++){
 		needed += snprintf(NULL, 0,"·(");
 		for(int x = 0; POS_terms[k][x] != '\0'; x++){
 			char ch = POS_terms[k][x];
@@ -215,7 +214,7 @@ static int logger(char** returnPtr, char **SOP_terms, int SOP_count, char **POS_
 	}
 	offset += snprintf(log+offset, cap-offset, ")");
 
-	for(int k = i+1; k < POS_count; k++){
+	for(int k = 0; k < POS_count; k++){
 		offset += snprintf(log+offset, cap-offset, "·(");
 		for(int x = 0; POS_terms[k][x] != '\0'; x++){
 			char ch = POS_terms[k][x];
