@@ -13,6 +13,14 @@ static inline void clear_input_buffer(){
     while ((c = getchar()) != '\n' && c != EOF);  //clear stdin
 }
 
+static void commaFormatted(char *str, char* format){
+	for(int i = 0; str[i]; i++){
+		char ch = str[i];
+		if(ch == ',') printf("%s",format);
+		else printf("%c",ch);
+	}
+}
+
 static int get_minterms(int *minterms , int index, int max_terms);
 
 int main() {
@@ -79,7 +87,11 @@ int main() {
 
 	printf("\nPrime Implicant Chart:");
 	displayPiChart(data.PI, data.piChart, minterms, minCount);
-	if(data.essentialPi) printf("Essential Implicants: %s\n" , data.essentialPi);
+	if(data.essentialPi){
+		printf("Essential Implicants: " , data.essentialPi);
+		commaFormatted(data.essentialPi , " , ");
+		printf("\n");
+	}
 
 	if(data.uncoveredCount)
 	{
@@ -111,27 +123,23 @@ int main() {
 		for(int i = 0; i < data.PI->count; i++)
 			printf("  P%d = %s\n", i+1, data.PI->expression[i]);
 
+		printf("\nBy law of Distribution and absorption,\n");
 		for(int i = 0; i < data.petrick->processCount; i++)
 			printf("\n%s\n",data.petrick->process[i]);
 
-		printf("\nMinimum literal SOP Terms: ");
+		printf("\n\nMinimum literal SOP Terms: ");
 		for(int i = 0; i < data.petrick->SOP_count; i++)
 			printf("%s ",data.petrick->SOP_terms[i]);
 
-		printf("\n\nPossible Combinations and Cost:\n\n");
+		printf("\n\n\nPossible Combinations and Cost:\n\n");
 		for(int i = 0; i < data.petrick->SOP_count; i++)
 		{
 			printf("%d. ",i+1);
-
-			char *ch = data.petrick->combinations[i];
-			while(*ch){
-				printf((*ch == ',') ? " + " : "%c" , *ch);
-				ch++;
-			}
-			printf(" \t\t (%d)\n\n", data.petrick->cost[i]);
+			commaFormatted(data.petrick->combinations[i] , " + ");
+			printf(" \t\t (%d)\n", data.petrick->cost[i]);
 		}
 
-		printf("Chosen #%d Combination.\n",1+data.petrick->minCostIdx);
+		printf("\nChosen #%d Combination.\n",1+data.petrick->minCostIdx);
 	}
 	else printf("\nAll Minterms Covered By Essential Implicants.\n");
 
@@ -139,10 +147,7 @@ int main() {
 	for(int i = 0; i < var; i++)
 		printf( i==0 ? "%c" : ",%c", 'A'+i);
 	printf(") = ");
-	for(char *ch = data.result; *ch; ch++){
-		if(*ch == ',') printf(" + ");
-		else printf("%c",*ch);
-	}
+	commaFormatted(data.result , " + ");
 	printf("\n");
 
 	destroyQmData(&data);
