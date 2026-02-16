@@ -9,8 +9,14 @@
 void displayPi(const quine *prime){
 	if(prime->count == 0){ printf("\nEmpty Implicant table\n"); return; }
 
+	int maxIdx = 0;
+	for(int i = 0; i < prime->count; i++){
+		if(prime->mintermCount[i] > prime->mintermCount[maxIdx])
+			maxIdx = i;
+	}
+
 	int n = strlen(prime->binary[0]);                                         // also gives no. of variables
-	int m = (digit(pow(2,n)) + 1) * prime->mintermCount[prime->count-1];      // digit + 1 = no. of digits + comma(,)
+	int m = (digit(pow(2,n)) + 1) * prime->mintermCount[maxIdx];      // digit + 1 = no. of digits + comma(,)
 
 	int width[3] = {((n*2) > 10) ? n*2 : 10 , (n > 6) ? n : 6 , (m > 8) ? m : 8};
 
