@@ -16,7 +16,6 @@ typedef struct quine {
 	int *cost;
 } quine;
 
-int allocate(quine *var , int size);
 quine* createGroupTable(int *minterms, int n_terms, int var);
 quine* getReducedTable(quine *group , int var);
 int getPrimeImplicants(quine *group , quine *prime , int var);
@@ -42,4 +41,51 @@ static inline void clear_quine(quine *var){
 	if(var->cost) { free(var->cost); var->cost = NULL; }
 	var->capacity = 0;
 	var->count = 0;
+}
+
+static int allocate(quine *var , int size){
+	//Memory Allocation for quine items
+
+	char **binaryTmp =  NULL, **expressionTmp = NULL;
+	int **mintermsTmp = NULL, *mintermCountTmp = NULL, *combinedTmp = NULL, *minimalTmp = NULL, *costTmp = NULL;
+
+	binaryTmp = realloc(var->binary , size * sizeof(*binaryTmp));
+	if(!binaryTmp) goto FAIL;
+
+	mintermsTmp = realloc(var->minterms , size * sizeof(*mintermsTmp));
+	if(!mintermsTmp) goto FAIL;
+
+	mintermCountTmp = realloc(var->mintermCount , size * sizeof(*mintermCountTmp));
+	if(!mintermCountTmp) goto FAIL;
+
+	combinedTmp = realloc(var->combined , size * sizeof(*combinedTmp));
+	if(!combinedTmp) goto FAIL;
+
+	minimalTmp = realloc(var->minimal , size * sizeof(*minimalTmp));
+	if(!minimalTmp) goto FAIL;
+
+	expressionTmp = realloc(var->expression , size * sizeof(*expressionTmp));
+	if(!expressionTmp) goto FAIL;
+
+	costTmp = realloc(var->cost , size * sizeof(*costTmp));
+	if(!costTmp) goto FAIL;
+
+	var->binary = binaryTmp;
+	var->minterms = mintermsTmp;
+	var->mintermCount = mintermCountTmp;
+	var->combined = combinedTmp;
+	var->minimal = minimalTmp;
+	var->expression = expressionTmp;
+	var->cost = costTmp;
+	var->capacity = size;
+	return 0;
+
+	FAIL:
+		free(binaryTmp);
+		free(mintermsTmp);
+		free(mintermCountTmp);
+		free(combinedTmp);
+		free(minimalTmp);
+		free(expressionTmp);
+		return 1;
 }
