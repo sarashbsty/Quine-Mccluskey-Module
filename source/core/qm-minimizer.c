@@ -14,11 +14,11 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 	quine **groupTables = NULL , *group = NULL , *newGroup = NULL , *prime = NULL;
 
-	char *essentialPi = NULL , *result = NULL;
+	char *essentialPi = NULL , *result = NULL, **set = NULL;
 
 	int *groupSize = NULL, **piChart = NULL, *uncoveredTerms = NULL, *newUncoveredTerms = NULL;
 
-	int groupTablesCount = 0, error = 0 , uncoveredCount = 0, newUncoveredCount = 0;
+	int groupTablesCount = 0, error = 0 , uncoveredCount = 0, newUncoveredCount = 0 , setCount = 0;
 
 	//Allocate memory for group tables pointer array
 	groupTables = calloc(var+1 , sizeof(*groupTables));
@@ -108,15 +108,14 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		newUncoveredCount = uncoveredCount;
 
 		//Create a string array where each string is the indexes of all prime-implicants that cover ith uncovered term
-		char **setArr = NULL;
-		int setArrCount = getSetCoverage(&setArr, prime, piChart, newUncoveredTerms, newUncoveredCount); // memory safe
-		if(setArrCount == -1){
+		setCount = getSetCoverage(&set, prime, piChart, newUncoveredTerms, newUncoveredCount); // memory safe
+		if(setCount == -1){
 			data.errorMsg = "getSetCoverage Failed";
 			goto FAIL;
 		}
 
 		//Apply Column Reduction
-		newUncoveredCount = column_domination(setArr, &setArrCount, newUncoveredTerms, newUncoveredCount); //memory safe
+		newUncoveredCount = column_domination(set, &setCount, newUncoveredTerms, newUncoveredCount); //memory safe
 		if(newUncoveredCount == uncoveredCount){
 			free(newUncoveredTerms);
 			newUncoveredTerms = NULL;
@@ -124,8 +123,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		}
 
 		//Apply Petrick Algorithm
-		petrickFiles = petrick(prime, setArr, setArrCount, var);  //memory safe
-		free_2d_pointer(setArr, setArrCount);
+		petrickFiles = petrick(prime, set, setCount, var);  //memory safe
 		if(petrickFiles->error){
 			data.errorMsg = "petrick Failed";
 			goto FAIL;
@@ -153,6 +151,8 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	data.uncoveredCount     =  uncoveredCount;
 	data.newUncoveredTerms  =  newUncoveredTerms;
 	data.newUncoveredCount  =  newUncoveredCount;
+	data.set                =  set;
+	data.setCount           =  setCount;
 	data.petrick            =  petrickFiles;
 	data.result             =  result;
 
@@ -164,6 +164,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	essentialPi        =  NULL;
 	uncoveredTerms     =  NULL;
 	newUncoveredTerms  =  NULL;
+	set                =  NULL;
 	petrickFiles       =  NULL;
 	result             =  NULL;
 
@@ -189,6 +190,8 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		}
 		free(group);
 		free(newGroup);
+
+		free_2d_pointer(set, setCount);
 
 		if(prime) free_2d_pointer((char**)piChart , prime->count);
 		clear_quine(prime);

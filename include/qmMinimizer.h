@@ -23,6 +23,9 @@ typedef struct qmData{
 	int *newUncoveredTerms;
 	int newUncoveredCount;
 
+	char **set;
+	int setCount;
+
 	petrickData *petrick;
 
 	char *result;
@@ -48,6 +51,7 @@ static void destroyQmData(qmData *var)
 	destroyQmGroupTables(var);
 
 	if(var->PI) free_2d_pointer((char**)var->piChart , var->PI->count);
+	if(var->set) free_2d_pointer(var->set , var->setCount);
 
 	clear_quine(var->PI);
 	free(var->PI);

@@ -117,11 +117,20 @@ int main() {
 			displayPiChart(data.PI, data.piChart, data.newUncoveredTerms, data.newUncoveredCount);
 		}
 
-		printf("\nPretrick Algorithm:\n\n");
-
-		printf("let,\n");
+		printf("\nlet,\n");
 		for(int i = 0; i < data.PI->count; i++)
 			printf("  P%d = %s\n", i+1, data.PI->expression[i]);
+
+		printf("\nSET Representation:\n");
+		for(int i = 0; i < data.setCount; i++){
+			if(data.newUncoveredTerms) printf("PI(%d) = ",data.newUncoveredTerms[i]);
+			else printf("PI(%d) = { ",data.uncoveredTerms[i]);
+			for(int j = 0; data.set[i][j]; j++){
+				char ch = data.set[i][j];
+				printf(j == 0 ? "P%d" : " + P%d", 1+ch-'A');
+			}
+			printf(" }\n");
+		}
 
 		printf("\nBy law of Distribution and absorption,\n");
 		for(int i = 0; i < data.petrick->processCount; i++)
