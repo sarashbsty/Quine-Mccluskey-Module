@@ -2,14 +2,14 @@
 #include "memory_tracker.h"
 #include "memory.h"
 
-typedef struct quine {
+typedef struct groupData {
     int count;
 	int capacity;
     char **binary;
     int **minterms;
     int *mintermCount;
     int *combined;
-} quine;
+} groupData;
 
 typedef struct{
 	int capacity;
@@ -21,20 +21,20 @@ typedef struct{
 	int cost;
 } primeData;
 
-quine* createGroupTable(int *minterms, int n_terms, int var);
-quine* getReducedTable(quine *group , int var);
-int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapPtr, quine *group, int groupSize);
+groupData* createGroupTable(int *minterms, int n_terms, int var);
+groupData* getReducedTable(groupData *group , int var);
+int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapPtr, groupData *group, int groupSize);
 int** createPiChart(primeData *prime ,int primeCount, int *minterms , int min_count, int var);
 int getEssentialPi(char ***returnPtr, int **table, primeData *prime, int primeCount , int *minterms, int minCount);
 int getUncovered(int **returnPtr, int **piChart, int start, int primeCount, int *minterms, int minCount);
 int getSetCoverage(char*** returnPtr, int primeCount, int **table ,int *uncoveredTerms ,int uncoveredCount);
 int column_domination(char** setArr, int* setArrCount,int *uncovered_terms ,int uncovered_count);
 
-void displayGroups(quine *group , int var);
+void displayGroups(groupData *group , int var);
 void displayPi(primeData *prime , int primeCount);
 void displayPiChart(primeData *prime , int primeCount, int** table , int *minterms , int min_count);
 
-static inline void clear_quine(quine *var){
+static inline void clear_quine(groupData *var){
 	if(!var) return;
 	if(var->binary){ free_2d_pointer(var->binary , var->count); var->binary = NULL; }
 	if(var->minterms){ free_2d_pointer((char**)var->minterms , var->count); var->minterms = NULL; }
@@ -55,8 +55,8 @@ static void destroyPrimeData(primeData *var, int primeCount){
 	return;
 }
 
-static int allocate(quine *var , int size){
-	//Memory Allocation for quine items
+static int allocate(groupData *var , int size){
+	//Memory Allocation for groupData items
 
 	char **binaryTmp =  NULL;
 	int **mintermsTmp = NULL, *mintermCountTmp = NULL, *combinedTmp = NULL;

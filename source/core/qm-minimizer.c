@@ -15,7 +15,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 	primeData *prime = NULL;
 
-	quine **groupTables = NULL , *group = NULL , *newGroup = NULL;
+	groupData **groupTables = NULL , *group = NULL , *newGroup = NULL;
 
 	char **essential = NULL , **result = NULL, **set = NULL;
 
@@ -178,7 +178,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	FAIL:
 		//clear group tables
 		for(int i = 0; i < groupTablesCount; i++){
-			quine *table = groupTables[i];
+			groupData *table = groupTables[i];
 			for(int j = 0; j < groupSize[i]; j++)
 				clear_quine(&table[j]);
 			free(table);

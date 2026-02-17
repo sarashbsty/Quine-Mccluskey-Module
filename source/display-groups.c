@@ -4,11 +4,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
-#include "quine.h" // quine struture
+#include "quine.h" // groupData struture
 #include "memory.h" //
 #include "display_tools.h" //for make_line
 
-void displayGroups(quine *group , int var){
+void displayGroups(groupData *group , int var){
 
 	//To find group with atleast one count
 	int idx = 0;

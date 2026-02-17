@@ -1,12 +1,12 @@
 #include<string.h>
 #include<stdlib.h>
-#include "quine.h" // quine struture
+#include "quine.h" // groupData struture
 
 static int find_string(char **arr, int size, const char item[]);
 
-quine* getReducedTable(quine *group , int var){
+groupData* getReducedTable(groupData *group , int var){
 
-    quine *newGroup = calloc(var+1 , sizeof(*newGroup));
+    groupData *newGroup = calloc(var+1 , sizeof(*newGroup));
 	if(!newGroup) return NULL;
 
 	int *mergedArray = NULL;
@@ -40,7 +40,7 @@ quine* getReducedTable(quine *group , int var){
 					if(exist) free(reducedBinary);
 					else{
 
-						//allocating quine items
+						//allocating groupData items
 						if(newGroup[i].capacity == 0){
 							if(allocate(&newGroup[i] , 4))
 								goto FAIL;
@@ -63,7 +63,7 @@ quine* getReducedTable(quine *group , int var){
 						for (int m = 0; m < group[i+1].mintermCount[b]; m++)
 							mergedArray[mCount++] = group[i+1].minterms[b][m];
 
-						//inserting quine items
+						//inserting groupData items
 						int idx = newGroup[i].count;
 						newGroup[i].binary[idx] = reducedBinary; reducedBinary = NULL;
 						newGroup[i].minterms[idx] = mergedArray; mergedArray = NULL;

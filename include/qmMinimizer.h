@@ -9,7 +9,7 @@ typedef struct qmData{
 	char *errorMsg;
 
 	int *groupSize;
-	quine **groupTables;
+	groupData **groupTables;
 	int tableCount;
 	int tableCapacity;
 

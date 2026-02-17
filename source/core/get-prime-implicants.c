@@ -1,11 +1,11 @@
 #include<stdlib.h>
 #include<string.h>
-#include "quine.h" // quine struture
+#include "quine.h" // groupData struture
 #include "int_array_dup.h"
 
 static char* Expression(const char *binary);
 
-int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapPtr, quine *group, int groupSize){
+int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapPtr, groupData *group, int groupSize){
 
 	char *bin = NULL;
 	char *expres = NULL;
@@ -41,7 +41,7 @@ int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapP
 			expres = Expression(bin);
 			if(!expres) goto FAIL;
 
-			//Inserting quine items
+			//Inserting groupData items
 			int idx = primeCount;
 			prime[idx].binary = bin;
 			prime[idx].expression = expres;
