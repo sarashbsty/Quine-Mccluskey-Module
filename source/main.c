@@ -13,15 +13,6 @@ static inline void clear_input_buffer(){
     while ((c = getchar()) != '\n' && c != EOF);  //clear stdin
 }
 
-static void commaFormatted(char *str, char* format){
-	if(!str || !format){ printf("NULL"); return; }
-	for(int i = 0; str[i]; i++){
-		char ch = str[i];
-		if(ch == ',') printf("%s",format);
-		else printf("%c",ch);
-	}
-}
-
 static int get_minterms(int *minterms , int index, int max_terms);
 
 int main() {

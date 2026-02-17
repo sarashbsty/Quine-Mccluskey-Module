@@ -36,11 +36,12 @@ static void destroyCombiStruct(combiStruct *var , int count){
 static void destroyPetrick(petrickData *var){
 	if(!var) return;
 	if(var->process)      { free_2d_pointer(var->process, var->processCount); var->process = NULL; }
-	if(var->SOP_terms)    { free_2d_pointer(var->SOP_terms , var->SOP_count); var->SOP_terms = NULL; }
+	var->process = 0;
 
 	destroyCombiStruct(var->combinations , var->SOP_count);
 
-	if(var->cost)         { free(var->cost);  var->cost = NULL; }
+	if(var->SOP_terms)    { free_2d_pointer(var->SOP_terms , var->SOP_count); var->SOP_terms = NULL; }
 	var->SOP_count = 0;
-	var->process = 0;
+
+	if(var->cost)         { free(var->cost);  var->cost = NULL; }
 }
