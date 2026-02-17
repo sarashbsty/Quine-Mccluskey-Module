@@ -2,8 +2,6 @@
 #include "memory_tracker.h"
 #include "memory.h"
 
-typedef struct qmData qmData;
-
 typedef struct quine {
     int count;
 	int capacity;
@@ -16,19 +14,28 @@ typedef struct quine {
 	int *cost;
 } quine;
 
+typedef struct{
+	int capacity;
+    char *binary;
+	char *expression;
+    int *minterms;
+    int mintermCount;
+	int minimal;
+	int cost;
+} primeData;
+
 quine* createGroupTable(int *minterms, int n_terms, int var);
 quine* getReducedTable(quine *group , int var);
-int getPrimeImplicants(quine *group , quine *prime , int var);
-int** createPiChart(quine *prime , int minterms[] , int min_count, int var);
-int getEssentialPi(char **returnPtr, quine *prime);
-int getUncovered(int **returnPtr, quine *prime, int **piChart, int *minterms, int minCount);
-int getSetCoverage(char*** returnPtr, quine *prime,int **table ,int *uncovered_terms ,int uncovered_count);
+int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapPtr, quine *group, int groupSize);
+int** createPiChart(primeData *prime ,int primeCount, int *minterms , int min_count, int var);
+int getEssentialPi(char ***returnPtr, primeData *prime, int primeCount);
+int getUncovered(int **returnPtr, int **piChart, primeData *prime, int primeCount, int *minterms, int minCount);
+int getSetCoverage(char*** returnPtr, int primeCount, int **table ,int *uncoveredTerms ,int uncoveredCount);
 int column_domination(char** setArr, int* setArrCount,int *uncovered_terms ,int uncovered_count);
-char* getResult(char *str1, char *str2);
 
 void displayGroups(quine *group , int var);
-void displayPi(const quine *prime);
-void displayPiChart(const quine *prime , int** table , int *minterms , int min_count);
+void displayPi(primeData *prime , int primeCount);
+void displayPiChart(primeData *prime , int primeCount, int** table , int *minterms , int min_count);
 
 static inline void clear_quine(quine *var){
 	if(!var) return;
@@ -41,6 +48,17 @@ static inline void clear_quine(quine *var){
 	if(var->cost) { free(var->cost); var->cost = NULL; }
 	var->capacity = 0;
 	var->count = 0;
+}
+
+static void destroyPrimeData(primeData *var, int primeCount){
+	if(!var) return;
+	for(int i = 0; i < primeCount; i++){
+		if(var[i].binary){ free(var[i].binary); var[i].binary = NULL; }
+		if(var[i].expression){ free(var[i].expression); var[i].expression = NULL; }
+		if(var[i].minterms){ free(var[i].minterms); var[i].minterms = NULL; }
+	}
+	free(var);
+	return;
 }
 
 static int allocate(quine *var , int size){

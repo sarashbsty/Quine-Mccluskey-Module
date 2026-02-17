@@ -14,6 +14,7 @@ static inline void clear_input_buffer(){
 }
 
 static void commaFormatted(char *str, char* format){
+	if(!str || !format){ printf("NULL"); return; }
 	for(int i = 0; str[i]; i++){
 		char ch = str[i];
 		if(ch == ',') printf("%s",format);
@@ -83,22 +84,23 @@ int main() {
 	}
 
 	printf("\nPrime Implicants:");
-	displayPi(data.PI);
+	displayPi(data.prime , data.primeCount);
 
 	printf("\nPrime Implicant Chart:");
-	displayPiChart(data.PI, data.piChart, minterms, minCount);
-	if(data.essentialPi){
-		printf("Essential Implicants: " , data.essentialPi);
-		commaFormatted(data.essentialPi , " , ");
+	displayPiChart(data.prime, data.primeCount, data.piChart, minterms, minCount);
+	if(data.essential){
+		printf("Essential Implicants: ");
+		for(int i = 0; i < data.essentialCount; i++)
+			printf("%s ", data.essential[i]);
 		printf("\n");
 	}
 
 	if(data.uncoveredCount)
 	{
-		if(data.essentialPi)
+		if(data.essentialCount)
 		{
 			printf("\nUncovered minterms Prime Implicant Chart:");
-			displayPiChart(data.PI, data.piChart, data.uncoveredTerms, data.uncoveredCount);
+			displayPiChart(data.prime, data.primeCount, data.piChart, data.uncoveredTerms, data.uncoveredCount);
 		}
 
 		if(data.newUncoveredCount)
@@ -114,15 +116,16 @@ int main() {
 			}
 			printf("Removed through Column Domination");
 
-			displayPiChart(data.PI, data.piChart, data.newUncoveredTerms, data.newUncoveredCount);
+			displayPiChart(data.prime, data.primeCount,  data.piChart, data.newUncoveredTerms, data.newUncoveredCount);
 		}
 
 		printf("\nlet,\n");
-		for(int i = 0; i < data.PI->count; i++)
-			printf("  P%d = %s\n", i+1, data.PI->expression[i]);
+		for(int i = 0; i < data.primeCount; i++)
+			printf("  P%d = %s\n", i+1, data.prime[i].expression);
 
 		printf("\nSET Representation:\n");
-		for(int i = 0; i < data.setCount; i++){
+		for(int i = 0; i < data.setCount; i++)
+		{
 			if(data.newUncoveredTerms) printf("PI(%d) = ",data.newUncoveredTerms[i]);
 			else printf("PI(%d) = { ",data.uncoveredTerms[i]);
 			for(int j = 0; data.set[i][j]; j++){
@@ -132,23 +135,32 @@ int main() {
 			printf(" }\n");
 		}
 
-		printf("\nBy law of Distribution and absorption,\n");
-		for(int i = 0; i < data.petrick->processCount; i++)
-			printf("\n%s\n",data.petrick->process[i]);
-
-		printf("\n\nMinimum literal SOP Terms: ");
-		for(int i = 0; i < data.petrick->SOP_count; i++)
-			printf("%s ",data.petrick->SOP_terms[i]);
-
-		printf("\n\n\nPossible Combinations and Cost:\n\n");
-		for(int i = 0; i < data.petrick->SOP_count; i++)
+		if(data.petrick)
 		{
-			printf("%d. ",i+1);
-			commaFormatted(data.petrick->combinations[i] , " + ");
-			printf(" \t\t (%d)\n", data.petrick->cost[i]);
-		}
+			printf("\nBy law of Distribution and absorption,\n");
+			for(int i = 0; i < data.petrick->processCount; i++)
+				printf("\n%s\n",data.petrick->process[i]);
 
-		printf("\nChosen #%d Combination.\n",1+data.petrick->minCostIdx);
+			printf("\n\nMinimum literal SOP Terms: ");
+			for(int i = 0; i < data.petrick->SOP_count; i++)
+				printf("%s ",data.petrick->SOP_terms[i]);
+
+			printf("\n\n\nPossible Combinations and Cost:\n\n");
+			for(int i = 0; i < data.petrick->SOP_count; i++)
+			{
+				printf("%d. ",i+1);
+
+				char **terms = data.petrick->combinations[i].terms;
+				int termsCount = data.petrick->combinations[i].termsCount;
+
+				for(int j = 0; j < termsCount; j++)
+					printf( j == 0 ? "%s" : "+ %s" , terms[j]);
+
+				printf(" \t\t (%d)\n", data.petrick->cost[i]);
+			}
+
+			printf("\nChosen #%d Combination.\n",1+data.petrick->minCostIdx);
+		}
 	}
 	else printf("\nAll Minterms Covered By Essential Implicants.\n");
 
@@ -156,7 +168,9 @@ int main() {
 	for(int i = 0; i < var; i++)
 		printf( i==0 ? "%c" : ",%c", 'A'+i);
 	printf(") = ");
-	commaFormatted(data.result , " + ");
+
+	for(int i = 0; i < data.resultCount; i++)
+		printf( i == 0 ? "%s" : " + %s", data.result[i]);
 	printf("\n");
 
 	destroyQmData(&data);

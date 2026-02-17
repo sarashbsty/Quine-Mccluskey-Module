@@ -1,7 +1,7 @@
 #include<stdlib.h>
 #include "quine.h"
 
-int getUncovered(int **returnPtr, quine *prime, int **piChart, int *minterms, int minCount){
+int getUncovered(int **returnPtr, int **piChart, primeData *prime, int primeCount, int *minterms, int minCount){
 
 	int *uncoveredTerms = malloc(minCount * sizeof(int));
 	if(!uncoveredTerms) return -1;
@@ -10,8 +10,8 @@ int getUncovered(int **returnPtr, quine *prime, int **piChart, int *minterms, in
 	int count = 0;
 	for(int i = 0; i < minCount; i++){
 		int exist = 0;
-		for(int j = 0; j < prime->count; j++){
-			if(prime->minimal[j] == 0) continue;
+		for(int j = 0; j < primeCount; j++){
+			if(prime[j].minimal == 0) continue;
 			if(piChart[j][minterms[i]] != 0){
 			 	exist = 1; break;
 			}

@@ -11,13 +11,15 @@ static int removeNonMinimalTerms(char **SOP_terms, int SOP_count, int min_litera
 static int logger(char** returnPtr, char **SOP_terms, int SOP_count, char **POS_terms, int POS_count);
 static int convertStyle(char **ptr);
 
-petrickData* petrick(quine *prime , char **POS_terms, int POS_count, int var){
+petrickData* petrick(primeData *prime , int primeCount , char **POS_terms, int POS_count, int var){
 
 	//all dynamic variable Declaration
 	petrickData *P = calloc(1, sizeof(*P));
 	if(!P) goto FAIL;
 
-	char **processArr = NULL, **combinations = NULL, **SOP_terms = NULL;
+	combiStruct *combinations = NULL;
+
+	char **processArr = NULL, **SOP_terms = NULL;
 	int *costArr = NULL, combiCount = 0 , SOP_count = 0, processCount = 0;
 
 	//initialization
@@ -31,7 +33,7 @@ petrickData* petrick(quine *prime , char **POS_terms, int POS_count, int var){
 	if(!SOP_terms[0]) goto FAIL;
 	SOP_count++;
 
-	int termSize = prime->count;
+	int termSize = primeCount;
 
 	//Petrick Algorithm
 	for(int i = 0; i < POS_count; i++)
@@ -62,27 +64,24 @@ petrickData* petrick(quine *prime , char **POS_terms, int POS_count, int var){
 	costArr = malloc(SOP_count * sizeof(*costArr));
 	if(!costArr) goto FAIL;
 
-	//storing combinations of Expressions and cost
 	for(int i = 0; i < SOP_count; i++)
 	{
-		int cost = 0 , offset = 0 , cap = (var*2 + 1) * min_literal + 1;
+		char **terms = malloc(min_literal * sizeof(*terms));
+		if(!terms) goto FAIL;
+		int termsCount = 0;
 
-		char* str = malloc(cap * sizeof(*str)); //A'B'C', = 7
-		if(!str) goto FAIL;
-
-		char* term = SOP_terms[i];
-		for(int j = 0; term[j] != '\0'; j++)
-		{
-			int idx = term[j] - 'A';
-			offset += snprintf(str+offset, cap-offset, "%s,", prime->expression[idx]);
-			cost   += prime->cost[idx];
+		int cost = 0;
+		for(char *ch = SOP_terms[i]; *ch; ch++){
+			int idx = *ch - 'A';
+			char *str = strdup(prime[idx].expression);
+			if(!str){ free_2d_pointer(terms,termsCount); goto FAIL; }
+			terms[termsCount++] = str;
+			cost += prime[idx].cost;
 		}
-
-		str[offset-1] = '\0';
-		combinations[combiCount++] = str;
 		costArr[i] = cost;
-
-		str = NULL;
+		combinations[combiCount].terms = terms;
+		combinations[combiCount].termsCount = termsCount;
+		combiCount++;
 	}
 
 	//determine index of the SOP term with minimum cost
@@ -97,7 +96,7 @@ petrickData* petrick(quine *prime , char **POS_terms, int POS_count, int var){
 	char* term = SOP_terms[minCostIdx];
 	for(int i = 0; term[i] != '\0'; i++){
 		int idx = term[i] - 'A';
-		prime->minimal[idx] = 1;
+		prime[idx].minimal = 1;
 	}
 
 	for(int i = 0; i < SOP_count; i++)
@@ -121,7 +120,9 @@ petrickData* petrick(quine *prime , char **POS_terms, int POS_count, int var){
 	FAIL:
 		free_2d_pointer(processArr , processCount);
 		free_2d_pointer(SOP_terms, SOP_count);
-		free_2d_pointer(combinations, combiCount);
+
+		destroyCombiStruct(combinations , combiCount);
+
 		free(costArr);
 		P->error = 1;
 		return P;

@@ -5,9 +5,9 @@
 #include "quine.h" // quine struture
 #include "display_tools.h" //make_line
 
-void displayPiChart(const quine *prime , int **table , int *minterms , int min_count){
+void displayPiChart(primeData *prime , int primeCount, int** table , int *minterms , int min_count){
 
-	int n = strlen(prime->binary[0]);
+	int n = strlen(prime[0].binary);
 	int width[2] = {(n<10) ? 10 : (n*2)+1 , 5*min_count };
 
 	int line_width[2];
@@ -23,10 +23,10 @@ void displayPiChart(const quine *prime , int **table , int *minterms , int min_c
 		printf("%-5d" , minterms[j]);
 	printf("│\n");
 
-	for(int i = 0; i < prime->count; i++){
+	for(int i = 0; i < primeCount; i++){
 
 		printf("├%s┼%s┤\n",line[0] , line[1]);
-		printf("│ %-*s │ " , width[0] , prime->expression[i]);
+		printf("│ %-*s │ " , width[0] , prime[i].expression);
 		for(int j = 0; j < min_count; j++){
 			if(table[i][minterms[j]] == 2) printf("%-5s" , "(X)");
 			else if(table[i][minterms[j]] == 1) printf("%-5s" , " X");
