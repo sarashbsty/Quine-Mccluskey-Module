@@ -163,7 +163,7 @@ int main() {
 
 	for(int i = 0; i < data.resultCount; i++)
 		printf( i == 0 ? "%s" : " + %s", data.result[i]);
-	printf("\n");
+	printf("\n\n");
 
 	destroyQmData(&data);
 
