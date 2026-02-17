@@ -21,7 +21,7 @@ A terminal-based tool to **simplify Boolean expressions** using the **Quine-McCl
 
  ## Build Guide
  - Open a terminal and change to the project’s source directory.
-  Example: "C:\Users\user123\Desktop\GitHub\Glyphix"
+  Example: "C:\Users\user123\Desktop\GitHub\Quine-Mccluskey"
 
  - Configure the project with CMake:
    Run "cmake -S . -B build"
