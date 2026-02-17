@@ -13,14 +13,6 @@ static inline void clear_input_buffer(){
     while ((c = getchar()) != '\n' && c != EOF);  //clear stdin
 }
 
-static void commaFormatted(char *str, char* format){
-	for(int i = 0; str[i]; i++){
-		char ch = str[i];
-		if(ch == ',') printf("%s",format);
-		else printf("%c",ch);
-	}
-}
-
 static int get_minterms(int *minterms , int index, int max_terms);
 
 int main() {
@@ -83,22 +75,24 @@ int main() {
 	}
 
 	printf("\nPrime Implicants:");
-	displayPi(data.PI);
+	displayPi(data.prime , data.primeCount);
 
 	printf("\nPrime Implicant Chart:");
-	displayPiChart(data.PI, data.piChart, minterms, minCount);
-	if(data.essentialPi){
-		printf("Essential Implicants: " , data.essentialPi);
-		commaFormatted(data.essentialPi , " , ");
+	displayPiChart(data.prime, data.primeCount, data.piChart, minterms, minCount);
+	if(data.essential){
+		printf("Essential Implicants: ");
+		for(int i = 0; i < data.essentialCount; i++)
+			printf("%s ", data.essential[i]);
 		printf("\n");
 	}
 
 	if(data.uncoveredCount)
 	{
-		if(data.essentialPi)
+		if(data.essentialCount)
 		{
 			printf("\nUncovered minterms Prime Implicant Chart:");
-			displayPiChart(data.PI, data.piChart, data.uncoveredTerms, data.uncoveredCount);
+			displayPiChart(data.prime, data.noEssentialPrimeCount, data.piChart, data.uncoveredTerms, data.uncoveredCount);
+			printf("Essential Expressions Removed.\n");
 		}
 
 		if(data.newUncoveredCount)
@@ -114,32 +108,51 @@ int main() {
 			}
 			printf("Removed through Column Domination");
 
-			displayPiChart(data.PI, data.piChart, data.newUncoveredTerms, data.newUncoveredCount);
+			displayPiChart(data.prime, data.noEssentialPrimeCount,  data.piChart, data.newUncoveredTerms, data.newUncoveredCount);
 		}
 
-		printf("\nPretrick Algorithm:\n\n");
+		printf("\nlet,\n");
+		for(int i = 0; i < data.noEssentialPrimeCount; i++)
+			printf("  P%d = %s\n", i+1, data.prime[i].expression);
 
-		printf("let,\n");
-		for(int i = 0; i < data.PI->count; i++)
-			printf("  P%d = %s\n", i+1, data.PI->expression[i]);
-
-		printf("\nBy law of Distribution and absorption,\n");
-		for(int i = 0; i < data.petrick->processCount; i++)
-			printf("\n%s\n",data.petrick->process[i]);
-
-		printf("\n\nMinimum literal SOP Terms: ");
-		for(int i = 0; i < data.petrick->SOP_count; i++)
-			printf("%s ",data.petrick->SOP_terms[i]);
-
-		printf("\n\n\nPossible Combinations and Cost:\n\n");
-		for(int i = 0; i < data.petrick->SOP_count; i++)
+		printf("\nSET Representation:\n");
+		for(int i = 0; i < data.setCount; i++)
 		{
-			printf("%d. ",i+1);
-			commaFormatted(data.petrick->combinations[i] , " + ");
-			printf(" \t\t (%d)\n", data.petrick->cost[i]);
+			if(data.newUncoveredTerms) printf("PI(%d) = ",data.newUncoveredTerms[i]);
+			else printf("PI(%d) = ",data.uncoveredTerms[i]);
+			for(int j = 0; data.set[i][j]; j++){
+				char ch = data.set[i][j];
+				printf(j == 0 ? "P%d" : " + P%d", 1+ch-'A');
+			}
+			printf("\n");
 		}
 
-		printf("\nChosen #%d Combination.\n",1+data.petrick->minCostIdx);
+		if(data.petrick)
+		{
+			printf("\nBy law of Distribution and absorption,\n");
+			for(int i = 0; i < data.petrick->processCount; i++)
+				printf("\n%s\n",data.petrick->process[i]);
+
+			printf("\n\nMinimum literal SOP Terms: ");
+			for(int i = 0; i < data.petrick->SOP_count; i++)
+				printf("%s ",data.petrick->SOP_terms[i]);
+
+			printf("\n\n\nPossible Combinations and Cost:\n\n");
+			for(int i = 0; i < data.petrick->SOP_count; i++)
+			{
+				printf("%d. ",i+1);
+
+				char **terms = data.petrick->combinations[i].terms;
+				int termsCount = data.petrick->combinations[i].termsCount;
+
+				for(int j = 0; j < termsCount; j++)
+					printf( j == 0 ? "%s" : "+ %s" , terms[j]);
+
+				printf(" \t\t (%d)\n", data.petrick->cost[i]);
+			}
+
+			printf("\nChosen #%d Combination.\n",1+data.petrick->minCostIdx);
+		}
 	}
 	else printf("\nAll Minterms Covered By Essential Implicants.\n");
 
@@ -147,8 +160,10 @@ int main() {
 	for(int i = 0; i < var; i++)
 		printf( i==0 ? "%c" : ",%c", 'A'+i);
 	printf(") = ");
-	commaFormatted(data.result , " + ");
-	printf("\n\n");
+
+	for(int i = 0; i < data.resultCount; i++)
+		printf( i == 0 ? "%s" : " + %s", data.result[i]);
+	printf("\n");
 
 	destroyQmData(&data);
 

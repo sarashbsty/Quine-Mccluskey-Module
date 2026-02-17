@@ -1,13 +1,13 @@
 #include<string.h>
 #include<stdlib.h>
-#include "quine.h" // quine struture
+#include "quine.h" // groupData struture
 
 static int count_1s(char *binary);
 static char* ToBinary(int minterm , int var);
 
-quine* createGroupTable(int *minterms, int n_terms, int var){
+groupData* createGroupTable(int *minterms, int n_terms, int var){
 
-	quine *group = calloc(var+1, sizeof(*group));
+	groupData *group = calloc(var+1, sizeof(*group));
 	if(!group) return NULL;
 
 	char *bin = NULL;
@@ -27,7 +27,7 @@ quine* createGroupTable(int *minterms, int n_terms, int var){
 		int ones = count_1s(bin);
 		int index = group[ones].count;
 
-		//allocating quine items
+		//allocating groupData items
 		if(group[ones].capacity == 0){
 			if(allocate(&group[ones] , 4))
 				goto FAIL;
@@ -54,9 +54,6 @@ quine* createGroupTable(int *minterms, int n_terms, int var){
 
 		//combined
 		group[ones].combined[index] = 0;
-
-		//expression NULL initialize
-		group[ones].expression[index] = NULL;
 
 		group[ones].count++;
 	}

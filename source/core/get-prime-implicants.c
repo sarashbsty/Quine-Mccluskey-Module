@@ -1,32 +1,32 @@
 #include<stdlib.h>
 #include<string.h>
-#include "quine.h" // quine struture
+#include "quine.h" // groupData struture
 #include "int_array_dup.h"
 
 static char* Expression(const char *binary);
 
-int getPrimeImplicants(quine *group , quine *prime , int var){
+int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapPtr, groupData *group, int groupSize){
 
 	char *bin = NULL;
 	char *expres = NULL;
 	int *arr = NULL;
 
-	for (int i = 0; i <= var; i++){
+	primeData *prime = *primePtr;
+	int primeCount = *primeCountPtr;
+	int primeCap = *primeCapPtr;
+
+	for (int i = 0; i <= groupSize; i++){
 		if (group[i].count == 0) continue; // skip empty groups
 
         for (int j = 0; j < group[i].count; j++){
 
 			if(group[i].combined[j] == 1) continue; //skip Combined Binaries
 
-			//allocating quine items
-			if(prime->capacity == 0){
-				if(allocate(prime , 4))
-					goto FAIL;
-			}
-			else if(prime->count >= prime->capacity){
-				int new_cap = prime->capacity + 5;
-				if(allocate(prime , new_cap))
-					goto FAIL;
+			if(primeCount >= primeCap){
+				primeCap *= 2;
+				primeData *tmp = realloc(prime , primeCap * sizeof(*tmp));
+				if(!tmp) goto FAIL;
+				prime = tmp;
 			}
 
 			//duplicate binary
@@ -38,30 +38,44 @@ int getPrimeImplicants(quine *group , quine *prime , int var){
 			if(!arr) goto FAIL;
 
 			//get expression string from binary
-			expres = Expression(group[i].binary[j]);
+			expres = Expression(bin);
 			if(!expres) goto FAIL;
 
-			//Inserting quine items
-			int index = prime->count;
-			prime->binary[index] = bin;
-			prime->expression[index] = expres;
-			prime->minterms[index] = arr;
-			prime->mintermCount[index] = group[i].mintermCount[j];
-			prime->minimal[index] = 0;
-			prime->cost[index] = strlen(expres);
-			prime->count++;
+			//Inserting groupData items
+			int idx = primeCount;
+			prime[idx].binary = bin;
+			prime[idx].expression = expres;
+			prime[idx].minterms = arr;
+			prime[idx].mintermCount = group[i].mintermCount[j];
+			prime[idx].isEssential = 0;
+			prime[idx].cost = strlen(expres);
+			primeCount++;
 
 			bin = NULL;
 			expres = NULL;
 			arr = NULL;
         }
 	}
+
+	*primePtr = prime;
+	*primeCountPtr = primeCount;
+	*primeCapPtr = primeCap;
+
+	prime = NULL;
+
 	return 0;
 
 	FAIL:
 		free(bin);
 		free(arr);
 		free(expres);
+
+		destroyPrimeData(prime, primeCount);
+
+		*primePtr = NULL;
+		*primeCountPtr = 0;
+		*primeCapPtr = 0;
+
 		return 1;
 }
 
@@ -88,9 +102,9 @@ static char* Expression(const char *binary){
 	//write
 	int count = 0;
 	for(int i = 0; binary[i] != '\0'; i++){
-		char var = 'A'+i;
-		if(binary[i] == '0') { str[count++] = var; str[count++] = '\''; }
-		else if(binary[i] == '1') str[count++] = var;
+		char groupSize = 'A'+i;
+		if(binary[i] == '0') { str[count++] = groupSize; str[count++] = '\''; }
+		else if(binary[i] == '1') str[count++] = groupSize;
 		else continue;
 	}
 	str[count] = '\0';

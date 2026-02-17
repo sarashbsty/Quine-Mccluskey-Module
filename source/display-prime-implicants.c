@@ -6,11 +6,17 @@
 #include "memory.h"
 #include "display_tools.h" // for make_line , array_to_string , digit
 
-void displayPi(const quine *prime){
-	if(prime->count == 0){ printf("\nEmpty Implicant table\n"); return; }
+void displayPi(primeData *prime , int primeCount){
+	if(primeCount == 0){ printf("\nEmpty Implicant table\n"); return; }
 
-	int n = strlen(prime->binary[0]);                                         // also gives no. of variables
-	int m = (digit(pow(2,n)) + 1) * prime->mintermCount[prime->count-1];      // digit + 1 = no. of digits + comma(,)
+	int maxIdx = 0;
+	for(int i = 0; i < primeCount; i++){
+		if(prime[i].mintermCount > prime[maxIdx].mintermCount)
+			maxIdx = i;
+	}
+
+	int n = strlen(prime[0].binary);                                         // also gives no. of variables
+	int m = (digit(pow(2,n)) + 1) * prime[maxIdx].mintermCount;      // digit + 1 = no. of digits + comma(,)
 
 	int width[3] = {((n*2) > 10) ? n*2 : 10 , (n > 6) ? n : 6 , (m > 8) ? m : 8};
 
@@ -23,14 +29,14 @@ void displayPi(const quine *prime){
 	printf("\n╭%s┬%s┬%s╮\n",line[0],line[1],line[2]);
 	printf("│ %-*s │ %-*s │ %-*s │\n", width[0], "Expression" ,width[1], "Binary" , width[2], "Minterms");
 
-	for(int i = 0; i < prime->count; i++){
+	for(int i = 0; i < primeCount; i++){
 
 		// create a string of minterms
-		char *str = array_to_string(prime->minterms[i] , prime->mintermCount[i] , ",%d");
+		char *str = array_to_string(prime[i].minterms , prime[i].mintermCount , ",%d");
 		if(str == NULL) { printf("\nERROR: minterms string creation Failed | Low Memory | Display-Implicants\n"); exit(0); }
 
 		printf("├%s┼%s┼%s┤\n",line[0],line[1],line[2]);
-		printf("│ %-*s │ %-*s │ %-*s │\n", width[0], prime->expression[i] , width[1], prime->binary[i] , width[2], str);
+		printf("│ %-*s │ %-*s │ %-*s │\n", width[0], prime[i].expression , width[1], prime[i].binary , width[2], str);
 
 		free(str);
 	}
