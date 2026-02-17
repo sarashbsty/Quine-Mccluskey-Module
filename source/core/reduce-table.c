@@ -69,7 +69,6 @@ quine* getReducedTable(quine *group , int var){
 						newGroup[i].minterms[idx] = mergedArray; mergedArray = NULL;
 						newGroup[i].mintermCount[idx] = mCount;
 						newGroup[i].combined[idx] = 0;
-						newGroup[i].expression[idx] = NULL;
 						newGroup[i].count++;
 					}
 
