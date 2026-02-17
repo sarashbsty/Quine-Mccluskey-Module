@@ -22,22 +22,31 @@ int getEssentialPi(char ***returnPtr, int **table, primeData *prime, int primeCo
 			//marking for visual guide
 			table[index][minterms[j]] = 2;
 
-			prime[index].isEssential = 1;
-
-			int error = insertEntry(&essential , &essentialCount, &cap , prime[index].expression);
-			if(error) goto FAIL;
-
-			int y = primeCount-1;
-			while(prime[y].isEssential == 1) y--;
-
-			primeData tmp = prime[y];
-			prime[y] = prime[index];
-			prime[index] = tmp;
-
-			int *tmp1 = table[y];
-			table[y] = table[index];
-			table[index] = tmp1;
+			if(prime[index].isEssential == 0){
+				int error = insertEntry(&essential , &essentialCount, &cap , prime[index].expression);
+				if(error) goto FAIL;
+				prime[index].isEssential = 1;
+			}
 		}
+	}
+
+	//put essential Primes below the list/table
+	for(int i = 0; i < primeCount; i++)
+	{
+		if(prime[i].isEssential == 0) continue;
+
+		int y = primeCount-1;
+		while(prime[y].isEssential == 1 && y > i) y--;
+		if(y <= i) break;
+
+		primeData tmp = prime[y];
+		prime[y] = prime[i];
+		prime[i] = tmp;
+
+		int *tmp1 = table[y];
+		table[y] = table[i];
+		table[i] = tmp1;
+
 	}
 
 	*returnPtr = essential;
