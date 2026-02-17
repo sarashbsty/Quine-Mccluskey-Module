@@ -138,6 +138,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		}
 	}
 
+
 	//Result
 	int resultCap = 0;
 	for(int i = 0; i < essentialCount; i++){
