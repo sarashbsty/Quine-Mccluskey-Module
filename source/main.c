@@ -91,7 +91,8 @@ int main() {
 		if(data.essentialCount)
 		{
 			printf("\nUncovered minterms Prime Implicant Chart:");
-			displayPiChart(data.prime, data.primeCount, data.piChart, data.uncoveredTerms, data.uncoveredCount);
+			displayPiChart(data.prime, data.noEssentialPrimeCount, data.piChart, data.uncoveredTerms, data.uncoveredCount);
+			printf("Essential Expressions Removed.\n");
 		}
 
 		if(data.newUncoveredCount)
@@ -107,11 +108,11 @@ int main() {
 			}
 			printf("Removed through Column Domination");
 
-			displayPiChart(data.prime, data.primeCount,  data.piChart, data.newUncoveredTerms, data.newUncoveredCount);
+			displayPiChart(data.prime, data.noEssentialPrimeCount,  data.piChart, data.newUncoveredTerms, data.newUncoveredCount);
 		}
 
 		printf("\nlet,\n");
-		for(int i = 0; i < data.primeCount; i++)
+		for(int i = 0; i < data.noEssentialPrimeCount; i++)
 			printf("  P%d = %s\n", i+1, data.prime[i].expression);
 
 		printf("\nSET Representation:\n");

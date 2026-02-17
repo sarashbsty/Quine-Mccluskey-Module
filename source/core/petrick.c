@@ -93,12 +93,6 @@ petrickData* petrick(primeData *prime , int primeCount , char **POS_terms, int P
 		}
 	}
 
-	char* term = SOP_terms[minCostIdx];
-	for(int i = 0; term[i] != '\0'; i++){
-		int idx = term[i] - 'A';
-		prime[idx].minimal = 1;
-	}
-
 	for(int i = 0; i < SOP_count; i++)
 		convertStyle(&SOP_terms[i]);  // convert ABC to P1P2P3
 

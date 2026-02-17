@@ -15,6 +15,7 @@ typedef struct qmData{
 
 	primeData *prime;
 	int primeCount;
+	int noEssentialPrimeCount;
 
 	int **piChart;
 

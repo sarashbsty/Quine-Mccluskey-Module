@@ -47,7 +47,7 @@ int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapP
 			prime[idx].expression = expres;
 			prime[idx].minterms = arr;
 			prime[idx].mintermCount = group[i].mintermCount[j];
-			prime[idx].minimal = 0;
+			prime[idx].isEssential = 0;
 			prime[idx].cost = strlen(expres);
 			primeCount++;
 

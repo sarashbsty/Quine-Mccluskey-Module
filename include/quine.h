@@ -20,7 +20,7 @@ typedef struct{
 	char *expression;
     int *minterms;
     int mintermCount;
-	int minimal;
+	int isEssential;
 	int cost;
 } primeData;
 
@@ -28,8 +28,8 @@ quine* createGroupTable(int *minterms, int n_terms, int var);
 quine* getReducedTable(quine *group , int var);
 int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapPtr, quine *group, int groupSize);
 int** createPiChart(primeData *prime ,int primeCount, int *minterms , int min_count, int var);
-int getEssentialPi(char ***returnPtr, primeData *prime, int primeCount);
-int getUncovered(int **returnPtr, int **piChart, primeData *prime, int primeCount, int *minterms, int minCount);
+int getEssentialPi(char ***returnPtr, int **table, primeData *prime, int primeCount , int *minterms, int minCount);
+int getUncovered(int **returnPtr, int **piChart, int start, int primeCount, int *minterms, int minCount);
 int getSetCoverage(char*** returnPtr, int primeCount, int **table ,int *uncoveredTerms ,int uncoveredCount);
 int column_domination(char** setArr, int* setArrCount,int *uncovered_terms ,int uncovered_count);
 

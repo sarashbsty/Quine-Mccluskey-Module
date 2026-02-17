@@ -22,7 +22,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	int *groupSize = NULL, **piChart = NULL, *uncoveredTerms = NULL, *newUncoveredTerms = NULL;
 
 	int groupTablesCount = 0, error = 0 , uncoveredCount = 0, newUncoveredCount = 0;
-	int setCount = 0 , primeCount = 0 , primeCap = 0, essentialCount = 0 , resultCount = 0;
+	int setCount = 0 , primeCount = 0 , noEssentialPrimeCount = 0, primeCap = 0, essentialCount = 0 , resultCount = 0;
 
 	//Allocate memory for group tables pointer array
 	groupTables = calloc(var+1 , sizeof(*groupTables));
@@ -81,6 +81,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 			goto FAIL;
 		}
 	}
+	noEssentialPrimeCount = primeCount - essentialCount;
 
 	// prime_implicant_chart_table
 	piChart = createPiChart(prime, primeCount, minterms, minCount, var);  //memory safe
@@ -90,14 +91,15 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	}
 
 	//store Essential Implicants
-	essentialCount = getEssentialPi(&essential, prime, primeCount);   //memory safe
+	essentialCount = getEssentialPi(&essential, piChart, prime, primeCount, minterms, minCount);   //memory safe
 	if(essentialCount == -1){
 		data.errorMsg = "getEssentialPi Failed";
 		goto FAIL;
 	}
+	noEssentialPrimeCount = primeCount - essentialCount;
 
 	//Get uncovered Minterms if exist
-	uncoveredCount = getUncovered(&uncoveredTerms, piChart, prime, primeCount, minterms, minCount);  //memory safe
+	uncoveredCount = getUncovered(&uncoveredTerms, piChart, noEssentialPrimeCount, primeCount, minterms, minCount);  //memory safe
 	if(uncoveredCount == -1){
 		data.errorMsg = "getUncovered Failed";
 		goto FAIL;
@@ -114,7 +116,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		newUncoveredCount = uncoveredCount;
 
 		//Create a string array where each string is the indexes of all prime-implicants that cover ith uncovered term
-		setCount = getSetCoverage(&set, primeCount, piChart, newUncoveredTerms, newUncoveredCount); // memory safe
+		setCount = getSetCoverage(&set, noEssentialPrimeCount, piChart, newUncoveredTerms, newUncoveredCount); // memory safe
 		if(setCount == -1){
 			data.errorMsg = "getSetCoverage Failed";
 			goto FAIL;
@@ -129,7 +131,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		}
 
 		//Apply petrick Algorithm
-		pet = petrick(prime, primeCount, set, setCount, var);  //memory safe
+		pet = petrick(prime, noEssentialPrimeCount, set, setCount, var);  //memory safe
 		if(pet->error){
 			data.errorMsg = "petrick Failed";
 			goto FAIL;
@@ -152,23 +154,24 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		}
 	}
 
-	data.tableCount 	    =  groupTablesCount;
-	data.groupTables	    =  groupTables;
-	data.groupSize   	    =  groupSize;
-	data.prime 			    =  prime;
-	data.primeCount         =  primeCount;
-	data.piChart		    =  piChart;
-	data.essential 	 	    =  essential;
-	data.essentialCount     =  essentialCount;
-	data.uncoveredTerms     =  uncoveredTerms;
-	data.uncoveredCount     =  uncoveredCount;
-	data.newUncoveredTerms  =  newUncoveredTerms;
-	data.newUncoveredCount  =  newUncoveredCount;
-	data.set                =  set;
-	data.setCount           =  setCount;
-	data.petrick            =  pet;
-	data.result             =  result;
-	data.resultCount        =  resultCount;
+	data.tableCount 	        =  groupTablesCount;
+	data.groupTables	        =  groupTables;
+	data.groupSize   	        =  groupSize;
+	data.prime 			        =  prime;
+	data.primeCount             =  primeCount;
+	data.noEssentialPrimeCount  =  noEssentialPrimeCount;
+	data.piChart		        =  piChart;
+	data.essential 	 	        =  essential;
+	data.essentialCount         =  essentialCount;
+	data.uncoveredTerms         =  uncoveredTerms;
+	data.uncoveredCount         =  uncoveredCount;
+	data.newUncoveredTerms      =  newUncoveredTerms;
+	data.newUncoveredCount      =  newUncoveredCount;
+	data.set                    =  set;
+	data.setCount               =  setCount;
+	data.petrick                =  pet;
+	data.result                 =  result;
+	data.resultCount            =  resultCount;
 
     return data;
 
