@@ -7,7 +7,7 @@
 #include "display_tools.h" // for make_line , array_to_string , digit
 
 void displayPi(primeData *prime , int primeCount){
-	if(primeCount == 0){ printf("\nEmpty Implicant table\n"); return; }
+	if(!prime || !primeCount){ printf("\nEmpty Implicant table\n"); return; }
 
 	int maxIdx = 0;
 	for(int i = 0; i < primeCount; i++){
@@ -16,7 +16,8 @@ void displayPi(primeData *prime , int primeCount){
 	}
 
 	int n = strlen(prime[0].binary);                                         // also gives no. of variables
-	int m = (digit(pow(2,n)) + 1) * prime[maxIdx].mintermCount;      // digit + 1 = no. of digits + comma(,)
+	int maxPossibleMinterm = pow(2,n);
+	int m = (digit(maxPossibleMinterm) + 1) * prime[maxIdx].mintermCount;      // digit + 1 = no. of digits + comma(,)
 
 	int width[3] = {((n*2) > 10) ? n*2 : 10 , (n > 6) ? n : 6 , (m > 8) ? m : 8};
 

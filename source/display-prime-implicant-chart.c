@@ -6,6 +6,7 @@
 #include "display_tools.h" //make_line
 
 void displayPiChart(primeData *prime , int primeCount, int** table , int *minterms , int min_count){
+	if(!prime || !table){ printf("Empty Prime"); return; }
 
 	int n = strlen(prime[0].binary);
 	int width[2] = {(n<10) ? 10 : (n*2)+1 , 5*min_count };
