@@ -15,7 +15,7 @@ int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapP
 	int primeCount = *primeCountPtr;
 	int primeCap = *primeCapPtr;
 
-	for (int i = 0; i <= groupSize; i++){
+	for (int i = 0; i < groupSize; i++){
 		if (group[i].count == 0) continue; // skip empty groups
 
         for (int j = 0; j < group[i].count; j++){

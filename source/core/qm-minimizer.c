@@ -81,7 +81,6 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 			goto FAIL;
 		}
 	}
-	noEssentialPrimeCount = primeCount - essentialCount;
 
 	// prime_implicant_chart_table
 	piChart = createPiChart(prime, primeCount, minterms, minCount, var);  //memory safe
@@ -137,7 +136,6 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 			goto FAIL;
 		}
 	}
-
 
 	//Result
 	int resultCap = 0;

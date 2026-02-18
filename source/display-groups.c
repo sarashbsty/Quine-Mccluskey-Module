@@ -8,12 +8,15 @@
 
 void displayGroups(groupData *group , int var){
 
+	if(!group) { printf("\nEMPTY table\n"); return; }
+
 	//To find group with atleast one count
 	int idx = 0;
 	while(idx < var+1 && group[idx].count == 0) idx++;
 	if(idx == var+1) { printf("\nEMPTY table\n"); return; }
 
-	int m = (digit(pow(2,var)) + 1) * group[idx].mintermCount[0];      // digit + 1 = no. of digits + comma(,)
+	int maxPossibleMinterm = pow(2,var);
+	int m = (digit(maxPossibleMinterm) + 1) * group[idx].mintermCount[0];      // digit + 1 = no. of digits + comma(,)
 	int width[4] = {5 , (m > 8) ? m : 8 , (var > 6) ? var : 6 , 6};
 
 	int line_width[4];
