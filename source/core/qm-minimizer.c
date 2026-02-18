@@ -37,7 +37,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		goto FAIL;
 	}
 
-	group = createGroupTable(minterms, n_terms, var); //memory safe
+	group = createGroupTable(minterms, n_terms, var);
 	if(!group){
 		data.errorMsg = "createGroupTable failed";
 		goto FAIL;
@@ -54,7 +54,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	while(group != newGroup)
 	{
 		//Reduction : returns 'group' if no reduction happened.
-		newGroup = getReducedTable(group, var);          //memory safe
+		newGroup = getReducedTable(group, var);
 		if (!newGroup){
 			data.errorMsg = "getReducedTable Failed";
 			goto FAIL;
@@ -75,7 +75,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 	//Gather prime-implicants from Each Tables
 	for(int i = 0; i < groupTablesCount; i++){
-		error = getPrimeImplicants(&prime , &primeCount, &primeCap, groupTables[i], groupSize[i]);  //memory safe
+		error = getPrimeImplicants(&prime , &primeCount, &primeCap, groupTables[i], groupSize[i]);
 		if(error){
 			data.errorMsg = "getPrimeImplicants Failed";
 			goto FAIL;
@@ -83,14 +83,14 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	}
 
 	// prime_implicant_chart_table
-	piChart = createPiChart(prime, primeCount, minterms, minCount, var);  //memory safe
+	piChart = createPiChart(prime, primeCount, minterms, minCount, var);
 	if(!piChart){
 		data.errorMsg = "createPiChart Failed";
 		goto FAIL;
 	}
 
 	//store Essential Implicants
-	essentialCount = getEssentialPi(&essential, piChart, prime, primeCount, minterms, minCount);   //memory safe
+	essentialCount = getEssentialPi(&essential, piChart, prime, primeCount, minterms, minCount);
 	if(essentialCount == -1){
 		data.errorMsg = "getEssentialPi Failed";
 		goto FAIL;
@@ -98,7 +98,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	noEssentialPrimeCount = primeCount - essentialCount;
 
 	//Get uncovered Minterms if exist
-	uncoveredCount = getUncovered(&uncoveredTerms, piChart, noEssentialPrimeCount, primeCount, minterms, minCount);  //memory safe
+	uncoveredCount = getUncovered(&uncoveredTerms, piChart, noEssentialPrimeCount, primeCount, minterms, minCount);
 	if(uncoveredCount == -1){
 		data.errorMsg = "getUncovered Failed";
 		goto FAIL;
@@ -107,7 +107,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	if(uncoveredCount > 0){
 
 		//create a copy of Uncovered minterms
-		newUncoveredTerms = intDupArr(uncoveredTerms, uncoveredCount); //memory safe
+		newUncoveredTerms = intDupArr(uncoveredTerms, uncoveredCount);
 		if(!newUncoveredTerms){
 			data.errorMsg = "intDupArr Failed";
 			goto FAIL;
@@ -122,7 +122,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		}
 
 		//Apply Column Reduction
-		newUncoveredCount = column_domination(set, &setCount, newUncoveredTerms, newUncoveredCount); //memory safe
+		newUncoveredCount = column_domination(set, &setCount, newUncoveredTerms, newUncoveredCount);
 		if(newUncoveredCount == uncoveredCount){
 			free(newUncoveredTerms);
 			newUncoveredTerms = NULL;
@@ -130,7 +130,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		}
 
 		//Apply petrick Algorithm
-		pet = petrick(prime, noEssentialPrimeCount, set, setCount, var);  //memory safe
+		pet = petrick(prime, noEssentialPrimeCount, set, setCount, var);
 		if(pet->error){
 			data.errorMsg = "petrick Failed";
 			goto FAIL;
