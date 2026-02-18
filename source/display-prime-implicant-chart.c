@@ -9,7 +9,7 @@ void displayPiChart(primeData *prime , int primeCount, int** table , int *minter
 	if(!prime || !table){ printf("Empty Prime"); return; }
 
 	int n = strlen(prime[0].binary);
-	int width[2] = {(n<10) ? 10 : (n*2)+1 , 5*min_count };
+	int width[2] = {n*2 < 10 ? 10 : n*2 , 5*min_count };
 
 	int line_width[2];
 	for(int i = 0; i < 2; i++) line_width[i] = width[i]+2;
