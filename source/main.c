@@ -146,7 +146,7 @@ int main() {
 				int termsCount = data.petrick->combinations[i].termsCount;
 
 				for(int j = 0; j < termsCount; j++)
-					printf( j == 0 ? "%s" : "+ %s" , terms[j]);
+					printf( j == 0 ? "%s" : " + %s" , terms[j]);
 
 				printf(" \t\t (%d)\n", data.petrick->cost[i]);
 			}
