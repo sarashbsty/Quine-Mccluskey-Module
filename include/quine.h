@@ -24,7 +24,7 @@ typedef struct{
 
 groupData* createGroupTable(int *minterms, int n_terms, int var);
 groupData* getReducedTable(groupData *group , int var);
-int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapPtr, groupData *group, int groupSize);
+int getPrimeImplicants(primeData **primePtr ,groupData **tables, int *groupSize, int tablesCount);
 int** createPiChart(primeData *prime ,int primeCount, int *minterms , int min_count, int var);
 int getEssentialPi(char ***returnPtr, int **table, primeData *prime, int primeCount , int *minterms, int minCount);
 int getUncovered(int **returnPtr, int **piChart, int start, int primeCount, int *minterms, int minCount);
