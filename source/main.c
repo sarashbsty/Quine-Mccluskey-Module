@@ -7,6 +7,7 @@
 #include <math.h>
 #include "qmMinimizer.h"
 #include "memory.h"
+#include "cJSON.h"
 
 static inline void clear_input_buffer(){
 	int c;
@@ -69,9 +70,9 @@ int main() {
 		return 1;
 	}
 
-	for(int i = 0 ; i < data.tableCount; i++){
+	for(int i = 0 ; i < data.tablesCount; i++){
 		printf("\nTABLE #%d",i+1);
-		displayGroups(data.groupTables[i], data.groupSize[i] - 1);
+		displayGroups(data.tables[i], data.groupSize[i] - 1);
 	}
 
 	printf("\nPrime Implicants:");

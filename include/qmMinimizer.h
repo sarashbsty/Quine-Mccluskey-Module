@@ -9,9 +9,8 @@ typedef struct qmData{
 	char *errorMsg;
 
 	int *groupSize;
-	groupData **groupTables;
-	int tableCount;
-	int tableCapacity;
+	groupData **tables;
+	int tablesCount;
 
 	primeData *prime;
 	int primeCount;
@@ -42,16 +41,16 @@ qmData qmMinimizer(int *minterms, int n_terms, int min_count, int var);
 
 static void destroyQmGroupTables(qmData *var)
 {
-	if(!var->groupTables) return;
-	for(int i = 0; i < var->tableCount; i++){
+	if(!var->tables) return;
+	for(int i = 0; i < var->tablesCount; i++){
 		for(int k = 0; k < var->groupSize[i]; k++)
-			clear_quine(&var->groupTables[i][k]);
-		free(var->groupTables[i]);
+			clear_quine(&var->tables[i][k]);
+		free(var->tables[i]);
 		var->groupSize[i] = 0;
 	}
-	free(var->groupTables); var->groupTables = NULL;
+	free(var->tables); var->tables = NULL;
 	free(var->groupSize); var->groupSize = NULL;
-	var->tableCount = 0;
+	var->tablesCount = 0;
 }
 
 static void destroyQmData(qmData *var)

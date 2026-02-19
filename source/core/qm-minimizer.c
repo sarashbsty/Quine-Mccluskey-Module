@@ -15,19 +15,19 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 	primeData *prime = NULL;
 
-	groupData **groupTables = NULL , *group = NULL , *newGroup = NULL;
+	groupData **tables = NULL , *group = NULL , *newGroup = NULL;
 
 	char **essential = NULL , **result = NULL, **set = NULL;
 
 	int *groupSize = NULL, **piChart = NULL, *uncoveredTerms = NULL, *newUncoveredTerms = NULL;
 
-	int groupTablesCount = 0, error = 0 , uncoveredCount = 0, newUncoveredCount = 0;
+	int tablesCount = 0, error = 0 , uncoveredCount = 0, newUncoveredCount = 0;
 	int setCount = 0 , primeCount = 0 , noEssentialPrimeCount = 0, essentialCount = 0 , resultCount = 0;
 
 	//Allocate memory for group tables pointer array
-	groupTables = calloc(var+1 , sizeof(*groupTables));
-	if(!groupTables){
-		data.errorMsg = "groupTables Allocation Failed";
+	tables = calloc(var+1 , sizeof(*tables));
+	if(!tables){
+		data.errorMsg = "tables Allocation Failed";
 		goto FAIL;
 	}
 
@@ -55,19 +55,19 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		else if(newGroup == group) newGroup = NULL;
 
 		//store each group Table
-		int idx = groupTablesCount;
-		groupTables[idx] = group;
+		int idx = tablesCount;
+		tables[idx] = group;
 		group = NULL;
 
 		groupSize[idx] = var+1;
-		groupTablesCount++;
+		tablesCount++;
 
 		group = newGroup;
 		newGroup = NULL;
 	}
 
-	//Gather prime-implicants  groupTables
-	primeCount = getPrimeImplicants(&prime , groupTables, groupSize , groupTablesCount);  //memory safe
+	//Gather prime-implicants  tables
+	primeCount = getPrimeImplicants(&prime , tables, groupSize , tablesCount);  //memory safe
 	if(primeCount == -1){
 		data.errorMsg = "getPrimeImplicants Failed";
 		goto FAIL;
@@ -144,8 +144,8 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		}
 	}
 
-	data.tableCount 	        =  groupTablesCount;
-	data.groupTables	        =  groupTables;
+	data.tablesCount 	        =  tablesCount;
+	data.tables	        =  tables;
 	data.groupSize   	        =  groupSize;
 	data.prime 			        =  prime;
 	data.primeCount             =  primeCount;
@@ -167,17 +167,17 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 	FAIL:
 		//clear group tables
-		for(int i = 0; i < groupTablesCount; i++){
-			groupData *table = groupTables[i];
+		for(int i = 0; i < tablesCount; i++){
+			groupData *table = tables[i];
 			for(int j = 0; j < groupSize[i]; j++)
 				clear_quine(&table[j]);
 			free(table);
 			groupSize[i] = 0;
 		}
 
-		free(groupTables); groupTables = NULL;
+		free(tables); tables = NULL;
 		free(groupSize); groupSize = NULL;
-		groupTablesCount = 0;
+		tablesCount = 0;
 
 		for(int i = 0; i < var+1; i++){
 			if(group) clear_quine(&group[i]);
@@ -200,7 +200,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 		destroyPrimeData(prime, primeCount);
 
-		data.groupTables	    =  NULL;
+		data.tables	    =  NULL;
 		data.groupSize   	    =  NULL;
 		data.prime 			    =  NULL;
 		data.piChart		    =  NULL;
