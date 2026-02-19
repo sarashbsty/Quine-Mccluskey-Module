@@ -1,5 +1,6 @@
 #include<string.h>
 #include<stdlib.h>
+#include<stdbool.h>
 #include "quine.h" // groupData struture
 
 static int find_string(char **arr, int size, const char item[]);
@@ -68,12 +69,12 @@ groupData* getReducedTable(groupData *group , int var){
 						newGroup[i].binary[idx] = reducedBinary; reducedBinary = NULL;
 						newGroup[i].minterms[idx] = mergedArray; mergedArray = NULL;
 						newGroup[i].mintermCount[idx] = mCount;
-						newGroup[i].combined[idx] = 0;
+						newGroup[i].isCombined[idx] = false;
 						newGroup[i].count++;
 					}
 
-					group[i].combined[a] = 1;
-					group[i+1].combined[b] = 1;
+					group[i].isCombined[a] = true;
+					group[i+1].isCombined[b] = true;
 					anyReduce = 1;;
 				}
             }

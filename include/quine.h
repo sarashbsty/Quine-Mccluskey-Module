@@ -1,6 +1,7 @@
 #pragma once
 #include "memory_tracker.h"
 #include "memory.h"
+#include "stdbool.h"
 
 typedef struct groupData {
     int count;
@@ -8,7 +9,7 @@ typedef struct groupData {
     char **binary;
     int **minterms;
     int *mintermCount;
-    int *combined;
+    bool *isCombined;
 } groupData;
 
 typedef struct{
@@ -17,7 +18,7 @@ typedef struct{
 	char *expression;
     int *minterms;
     int mintermCount;
-	int isEssential;
+	bool isEssential;
 	int cost;
 } primeData;
 
@@ -39,7 +40,7 @@ static inline void clear_quine(groupData *var){
 	if(var->binary){ free_2d_pointer(var->binary , var->count); var->binary = NULL; }
 	if(var->minterms){ free_2d_pointer((char**)var->minterms , var->count); var->minterms = NULL; }
 	if(var->mintermCount){ free(var->mintermCount); var->mintermCount = NULL; }
-	if(var->combined) { free(var->combined); var->combined = NULL; }
+	if(var->isCombined) { free(var->isCombined); var->isCombined = NULL; }
 	var->capacity = 0;
 	var->count = 0;
 }
@@ -59,7 +60,8 @@ static int allocate(groupData *var , int size){
 	//Memory Allocation for groupData items
 
 	char **binaryTmp =  NULL;
-	int **mintermsTmp = NULL, *mintermCountTmp = NULL, *combinedTmp = NULL;
+	int **mintermsTmp = NULL, *mintermCountTmp = NULL;
+	bool *combinedTmp = NULL;
 
 	binaryTmp = realloc(var->binary , size * sizeof(*binaryTmp));
 	if(!binaryTmp) goto FAIL;
@@ -70,13 +72,13 @@ static int allocate(groupData *var , int size){
 	mintermCountTmp = realloc(var->mintermCount , size * sizeof(*mintermCountTmp));
 	if(!mintermCountTmp) goto FAIL;
 
-	combinedTmp = realloc(var->combined , size * sizeof(*combinedTmp));
+	combinedTmp = realloc(var->isCombined , size * sizeof(*combinedTmp));
 	if(!combinedTmp) goto FAIL;
 
 	var->binary = binaryTmp;
 	var->minterms = mintermsTmp;
 	var->mintermCount = mintermCountTmp;
-	var->combined = combinedTmp;
+	var->isCombined = combinedTmp;
 	var->capacity = size;
 	return 0;
 

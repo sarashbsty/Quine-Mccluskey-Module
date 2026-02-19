@@ -1,5 +1,6 @@
 #include<stdlib.h>
 #include<string.h>
+#include<stdbool.h>
 #include "quine.h"
 #include "insert_entry.h"
 
@@ -21,10 +22,10 @@ int getEssentialPi(char ***returnPtr, int **table, primeData *prime, int primeCo
 			//marking for visual guide
 			table[index][minterms[j]] = 2;
 
-			if(prime[index].isEssential == 0){
+			if(!prime[index].isEssential){
 				int error = insertEntry(&essential , &essentialCount, &cap , prime[index].expression);
 				if(error) goto FAIL;
-				prime[index].isEssential = 1;
+				prime[index].isEssential = true;
 			}
 		}
 	}
@@ -32,10 +33,10 @@ int getEssentialPi(char ***returnPtr, int **table, primeData *prime, int primeCo
 	//put essential Primes below the list/table
 	for(int i = 0; i < primeCount; i++)
 	{
-		if(prime[i].isEssential == 0) continue;
+		if(!prime[i].isEssential) continue;
 
 		int y = primeCount-1;
-		while(prime[y].isEssential == 1 && y > i) y--;
+		while(prime[y].isEssential && y > i) y--;
 		if(y <= i) break;
 
 		primeData tmp = prime[y];

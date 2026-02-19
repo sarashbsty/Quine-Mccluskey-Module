@@ -1,5 +1,6 @@
 #include<stdlib.h>
 #include<string.h>
+#include<stdbool.h>
 #include "quine.h" // groupData struture
 #include "int_array_dup.h"
 
@@ -20,7 +21,7 @@ int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapP
 
         for (int j = 0; j < group[i].count; j++){
 
-			if(group[i].combined[j] == 1) continue; //skip Combined Binaries
+			if(group[i].isCombined[j]) continue; //skip Combined Binaries
 
 			if(primeCount >= primeCap){
 				primeCap *= 2;
@@ -47,7 +48,7 @@ int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapP
 			prime[idx].expression = expres;
 			prime[idx].minterms = arr;
 			prime[idx].mintermCount = group[i].mintermCount[j];
-			prime[idx].isEssential = 0;
+			prime[idx].isEssential = false;
 			prime[idx].cost = strlen(expres);
 			primeCount++;
 

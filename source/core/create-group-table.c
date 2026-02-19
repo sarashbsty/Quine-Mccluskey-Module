@@ -1,5 +1,6 @@
 #include<string.h>
 #include<stdlib.h>
+#include<stdbool.h>
 #include "quine.h" // groupData struture
 
 static int count_1s(char *binary);
@@ -54,7 +55,7 @@ groupData* createGroupTable(int *minterms, int n_terms, int var){
 		group[ones].mintermCount[index] = 1;
 
 		//combined
-		group[ones].combined[index] = 0;
+		group[ones].isCombined[index] = false;
 
 		group[ones].count++;
 	}

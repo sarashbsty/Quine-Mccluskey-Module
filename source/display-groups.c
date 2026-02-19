@@ -47,8 +47,8 @@ void displayGroups(groupData *group , int var){
 			char *str = array_to_string(group[i].minterms[j] , group[i].mintermCount[j] , ",%d");
 			if(str == NULL) { printf("\nERROR: minterms string creation Failed | Low Memory | Display-Group\n"); exit(0); }
 
-			//In conditional the symbols decay to char* type
-			char *symbol = (group[i].combined[j] == 0) ? "  ❌" : "  ✅";
+			//storing literal string
+			char *symbol = (group[i].isCombined[j]) ? "  ✅" : "  ❌";
 
 			printf("│ %-*s │ %-*s │ %-*s │ %-*s │\n", width[0], No, width[1], str, width[2], group[i].binary[j], width[3]+1, symbol);
 			free(str);
