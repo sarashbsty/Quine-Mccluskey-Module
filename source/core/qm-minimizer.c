@@ -7,7 +7,7 @@
 #include "petrick.h"
 #include "insert_entry.h"
 
-qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
+qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 
 	qmData data = {0};
 
@@ -37,7 +37,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		goto FAIL;
 	}
 
-	group = createGroupTable(minterms, n_terms, var); //memory safe
+	group = createGroupTable(minterms, minCount + dontCareCount, var); //memory safe
 	if(!group){
 		data.errorMsg = "createGroupTable failed";
 		goto FAIL;

@@ -39,7 +39,7 @@ typedef struct qmData{
 
 } qmData;
 
-qmData qmMinimizer(int *minterms, int n_terms, int min_count, int var);
+qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var);
 
 static void destroyQmGroupTables(qmData *var)
 {
