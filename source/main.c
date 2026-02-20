@@ -49,20 +49,20 @@ int main() {
 	}
 
 	printf("Enter dont care : ");
-	int dont_care_count = get_minterms(minterms , minCount , maxTerms);
+	int dontCareCount = get_minterms(minterms , minCount , maxTerms);
 
-    int n_terms = minCount + dont_care_count;
+    int n_terms = minCount + dontCareCount;
 
     printf("\n\n%d Min terms: ", minCount);
     for (int i = 0; i < minCount; i++)
         printf("%d ", minterms[i]);
 
-    printf("\n%d Dont care: ", dont_care_count);
+    printf("\n%d Dont care: ", dontCareCount);
     for (int i = minCount; i < n_terms; i++)
         printf("%d ", minterms[i]);
 	printf("\n");
 
-    qmData data = qmMinimizer(minterms, n_terms, minCount, var);
+    qmData data = qmMinimizer(minterms, minCount, dontCareCount, var);
 
 	if(data.error){
 		printf("%s\n",data.errorMsg);
