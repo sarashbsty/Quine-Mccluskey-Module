@@ -6,7 +6,7 @@
 static int count_1s(char *binary);
 static char* ToBinary(int minterm , int var);
 
-groupData* createGroupTable(int *minterms, int n_terms, int var){
+groupData* createGroupTable(int *minterms, int allTermsCount, int var){
 
 	groupData *group = calloc(var+1, sizeof(*group));
 	if(!group) return NULL;
@@ -14,7 +14,7 @@ groupData* createGroupTable(int *minterms, int n_terms, int var){
 	char *bin = NULL;
 	int* arr = NULL;
 
-	for(int i = 0; i < n_terms; i++){
+	for(int i = 0; i < allTermsCount; i++){
 
 		// get Binary equivalents of the minterms
 		bin = ToBinary(minterms[i] , var);
