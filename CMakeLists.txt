@@ -11,6 +11,7 @@ include_directories(include)
 file(GLOB_RECURSE ALL_SOURCES
     "source/*.c"
     "utils/*.c"
+	"cjson/*.c"
 )
 
 add_executable(quine ${ALL_SOURCES} ${ALL_HEADERS})

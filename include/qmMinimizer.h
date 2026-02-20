@@ -8,6 +8,8 @@ typedef struct qmData{
 	int error; // handles error boolean
 	char *errorMsg;
 
+	int var;
+
 	int *groupSize;
 	groupData **tables;
 	int tablesCount;

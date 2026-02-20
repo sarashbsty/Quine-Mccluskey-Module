@@ -144,6 +144,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		}
 	}
 
+	data.var                    =  var;
 	data.tablesCount 	        =  tablesCount;
 	data.tables	        =  tables;
 	data.groupSize   	        =  groupSize;
