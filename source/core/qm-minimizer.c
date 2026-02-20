@@ -15,7 +15,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 	primeData *prime = NULL;
 
-	groupData **tables = NULL , *group = NULL , *newGroup = NULL;
+	groupData **tables = NULL , *group = NULL;
 
 	char **essential = NULL , **result = NULL, **set = NULL;
 
@@ -44,10 +44,10 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	}
 
 	//Table Reduction Process
-	while(group != newGroup)
+	while(group)
 	{
 		//Reduction : returns 'group' if no reduction happened.
-		newGroup = getReducedTable(group, var);          //memory safe
+		groupData *newGroup = getReducedTable(group, var);          //memory safe
 		if (!newGroup){
 			data.errorMsg = "getReducedTable Failed";
 			goto FAIL;
@@ -57,13 +57,10 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		//store each group Table
 		int idx = tablesCount;
 		tables[idx] = group;
-		group = NULL;
+		group = newGroup;
 
 		groupSize[idx] = var+1;
 		tablesCount++;
-
-		group = newGroup;
-		newGroup = NULL;
 	}
 
 	//Gather prime-implicants  tables
@@ -146,7 +143,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 	data.var                    =  var;
 	data.tablesCount 	        =  tablesCount;
-	data.tables	        =  tables;
+	data.tables	                =  tables;
 	data.groupSize   	        =  groupSize;
 	data.prime 			        =  prime;
 	data.primeCount             =  primeCount;
@@ -180,12 +177,9 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		free(groupSize); groupSize = NULL;
 		tablesCount = 0;
 
-		for(int i = 0; i < var+1; i++){
+		for(int i = 0; i < var+1; i++)
 			if(group) clear_quine(&group[i]);
-			if(newGroup) clear_quine(&newGroup[i]);
-		}
 		free(group);
-		free(newGroup);
 
 		free_2d_pointer((char**)piChart, primeCount);
 		free_2d_pointer(essential, essentialCount);
@@ -201,7 +195,7 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 		destroyPrimeData(prime, primeCount);
 
-		data.tables	    =  NULL;
+		data.tables	            =  NULL;
 		data.groupSize   	    =  NULL;
 		data.prime 			    =  NULL;
 		data.piChart		    =  NULL;
