@@ -43,4 +43,5 @@ cJSON *primeData_to_json(const primeData *prime, int primeCount)
 
 	FAIL:
 		cJSON_Delete(primeArr);
+		return NULL;
 }
