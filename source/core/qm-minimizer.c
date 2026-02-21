@@ -27,14 +27,18 @@ qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 
 	int maxPossibleTerm = pow(2,var) - 1;
 
-	if(var <= 0){
+	if(var < 1){
 		data.errorMsg = "Invalid Variable Given";
 		goto FAIL;
 	}
 
 	int allTermsCount = minCount + dontCareCount;
 
-	if(allTermsCount > pow(2,var)){
+	if(!allTermsCount){
+		data.errorMsg = "No minterms given";
+		goto FAIL;
+	}
+	else if(allTermsCount > pow(2,var)){
 		data.errorMsg = "No. of terms exceed maximum terms possible for given Variable";
 		goto FAIL;
 	}
