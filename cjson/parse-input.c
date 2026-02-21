@@ -20,10 +20,8 @@ int parse_input_json(const char *json_text, int *variables, int **minterms, int 
     *min_count = cJSON_GetArraySize(mins);
     *minterms = malloc(sizeof(int) * (*min_count));
 
-    for (int i = 0; i < *min_count; i++) {
-        (*minterms)[i] =
-            cJSON_GetArrayItem(mins, i)->valueint;
-    }
+    for (int i = 0; i < *min_count; i++)
+        (*minterms)[i] = cJSON_GetArrayItem(mins, i)->valueint;
 
     // dontCares optional
     cJSON *dc = cJSON_GetObjectItem(root, "dontCares");
