@@ -73,7 +73,7 @@ int main() {
 
 	for(int i = 0 ; i < data.tablesCount; i++){
 		printf("\nTABLE #%d",i+1);
-		displayGroups(data.tables[i], data.groupSize[i] - 1);
+		displayTable(&data.tables[i], var);
 	}
 
 	printf("\nPrime Implicants:");
@@ -173,7 +173,6 @@ int main() {
 //	char *out = cJSON_PrintUnformatted(qmData_json);
 
 	printf("\n\nJSON = %s",out);
-
 	free(out);
 
 	cJSON_Delete(qmData_json);

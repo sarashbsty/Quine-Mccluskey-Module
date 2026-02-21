@@ -6,7 +6,7 @@
 
 static char* Expression(const char *binary);
 
-int getPrimeImplicants(primeData **primePtr ,groupData **tables, int *groupSize, int tablesCount){
+int getPrimeImplicants(primeData **primePtr ,Table *tables, int tablesCount){
 
 	char *bin = NULL;
 	char *expres = NULL;
@@ -19,15 +19,18 @@ int getPrimeImplicants(primeData **primePtr ,groupData **tables, int *groupSize,
 
 	for(int i = 0; i < tablesCount; i++)
 	{
-		groupData *group = tables[i];
-		int groupCount = groupSize[i];
+		Group *groups = tables[i].groups;
+		int groupCount = tables[i].count;
+
 		for (int x = 0; x < groupCount; x++)
 		{
-			if (group[x].count == 0) continue; // skip empty groups
+			if (groups[x].count == 0) continue; // skip empty groups
 
-			for (int y = 0; y < group[x].count; y++){
+			for (int y = 0; y < groups[x].count; y++){
 
-				if(group[x].isCombined[y]) continue; //skip Combined Binaries
+				Implicant *currImp = &groups[x].implicants[y];
+
+				if(currImp->isCombined) continue; //skip Combined Binaries
 
 				if(primeCount >= primeCap){
 					primeCap = (!primeCap) ? 2 : primeCap*2;
@@ -37,11 +40,11 @@ int getPrimeImplicants(primeData **primePtr ,groupData **tables, int *groupSize,
 				}
 
 				//duplicate binary
-				bin = strdup(group[x].binary[y]);
+				bin = strdup(currImp->binary);
 				if(!bin) goto FAIL;
 
 				//duplicare int array
-				arr = intDupArr(group[x].minterms[y], group[x].mintermCount[y]);
+				arr = intDupArr(currImp->minterms, currImp->mintermCount);
 				if(!arr) goto FAIL;
 
 				//get expression string from binary
@@ -53,7 +56,7 @@ int getPrimeImplicants(primeData **primePtr ,groupData **tables, int *groupSize,
 				prime[idx].binary = bin;
 				prime[idx].expression = expres;
 				prime[idx].minterms = arr;
-				prime[idx].mintermCount = group[x].mintermCount[y];
+				prime[idx].mintermCount = currImp->mintermCount;
 				prime[idx].isEssential = false;
 				prime[idx].cost = strlen(expres);
 				primeCount++;

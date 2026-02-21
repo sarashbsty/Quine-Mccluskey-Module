@@ -8,17 +8,20 @@
 #include "memory.h" //
 #include "display_tools.h" //for make_line
 
-void displayGroups(groupData *group , int var){
+void displayTable(Table *table, int var){
 
-	if(!group) { printf("\nEMPTY table\n"); return; }
+	if(!table) { printf("\nEMPTY table\n"); return; }
+
+	int groupCount = table->count;
+	Group *groups = table->groups;
 
 	//To find group with atleast one count
 	int idx = 0;
-	while(idx < var+1 && group[idx].count == 0) idx++;
-	if(idx == var+1) { printf("\nEMPTY table\n"); return; }
+	while(idx < groupCount && groups[idx].count == 0) idx++;
+	if(idx == groupCount) { printf("\nEMPTY table\n"); return; }
 
 	int maxPossibleMinterm = pow(2,var);
-	int m = (digit(maxPossibleMinterm) + 1) * group[idx].mintermCount[0];      // digit + 1 = no. of digits + comma(,)
+	int m = (digit(maxPossibleMinterm) + 1) * groups[idx].implicants[0].mintermCount;      // digit + 1 = no. of digits + comma(,)
 	int width[4] = {5 , (m > 8) ? m : 8 , (var > 6) ? var : 6 , 6};
 
 	int line_width[4];
@@ -30,27 +33,27 @@ void displayGroups(groupData *group , int var){
 	printf("\n╭%s┬%s┬%s┬%s╮\n",line[0],line[1],line[2],line[3]);
 	printf("│ %-*s │ %-*s │ %-*s │ %-*s │\n", width[0], "GROUP", width[1], "MINTERMS", width[2], "BINARY", width[3], "REDUCE");
 
-    for (int i = 0; i < var+1; i++) {
+    for (int i = 0; i < groupCount; i++) {
 
-        if (group[i].count == 0) continue; // skip empty groups
+        if (groups[i].count == 0) continue; // skip empty groups
 
 		// separator line before every group
 		printf("├%s┼%s┼%s┼%s┤\n",line[0],line[1],line[2],line[3]);
 
-        for (int j = 0; j < group[i].count; j++){
+        for (int j = 0; j < groups[i].count; j++){
 
 			//Print group No. only at first
 			char No[5] = " ";
 			if(j == 0) snprintf(No,5,"%d",i);
 
 			//Store all minterms associated with this binary to a string var
-			char *str = array_to_string(group[i].minterms[j] , group[i].mintermCount[j] , ",%d");
+			char *str = array_to_string(groups[i].implicants[j].minterms , groups[i].implicants[j].mintermCount , ",%d");
 			if(str == NULL) { printf("\nERROR: minterms string creation Failed | Low Memory | Display-Group\n"); exit(0); }
 
 			//storing literal string
-			char *symbol = (group[i].isCombined[j]) ? "  ✅" : "  ❌";
+			char *symbol = (groups[i].implicants[j].isCombined) ? "  ✅" : "  ❌";
 
-			printf("│ %-*s │ %-*s │ %-*s │ %-*s │\n", width[0], No, width[1], str, width[2], group[i].binary[j], width[3]+1, symbol);
+			printf("│ %-*s │ %-*s │ %-*s │ %-*s │\n", width[0], No, width[1], str, width[2], groups[i].implicants[j].binary, width[3]+1, symbol);
 			free(str);
         }
     }

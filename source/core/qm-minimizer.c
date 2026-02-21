@@ -15,11 +15,12 @@ qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 
 	primeData *prime = NULL;
 
-	groupData **tables = NULL , *group = NULL;
+	Table *tables = NULL;
+	Group *groups = NULL;
 
 	char **essential = NULL , **result = NULL, **set = NULL;
 
-	int *groupSize = NULL, **piChart = NULL, *uncoveredTerms = NULL, *newUncoveredTerms = NULL;
+	int **piChart = NULL, *uncoveredTerms = NULL, *newUncoveredTerms = NULL;
 
 	int tablesCount = 0, error = 0 , uncoveredCount = 0, newUncoveredCount = 0;
 	int setCount = 0 , primeCount = 0 , noEssentialPrimeCount = 0, essentialCount = 0 , resultCount = 0;
@@ -31,40 +32,34 @@ qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 		goto FAIL;
 	}
 
-	groupSize = calloc(var+1 , sizeof(*groupSize));
-	if(!groupSize){
-		data.errorMsg = "groupSize Allocation Failed";
-		goto FAIL;
-	}
-
-	group = createGroupTable(minterms, minCount + dontCareCount, var); //memory safe
-	if(!group){
+	groups = createGroups(minterms, minCount + dontCareCount, var); //memory safe
+	if(!groups){
 		data.errorMsg = "createGroupTable failed";
 		goto FAIL;
 	}
 
 	//Table Reduction Process
-	while(group)
+	while(groups)
 	{
 		//Reduction : returns 'group' if no reduction happened.
-		groupData *newGroup = getReducedTable(group, var);          //memory safe
-		if (!newGroup){
+		Group *newGroups = getReducedGroups(groups, var);          //memory safe
+		if (!newGroups){
 			data.errorMsg = "getReducedTable Failed";
 			goto FAIL;
 		}
-		else if(newGroup == group) newGroup = NULL;
+		else if(newGroups == groups) newGroups = NULL;
 
 		//store each group Table
 		int idx = tablesCount;
-		tables[idx] = group;
-		group = newGroup;
+		tables[idx].groups =  groups;
+		groups = newGroups;
 
-		groupSize[idx] = var+1;
+		tables[idx].count  =  var+1;
 		tablesCount++;
 	}
 
 	//Gather prime-implicants  tables
-	primeCount = getPrimeImplicants(&prime , tables, groupSize , tablesCount);  //memory safe
+	primeCount = getPrimeImplicants(&prime , tables , tablesCount);  //memory safe
 	if(primeCount == -1){
 		data.errorMsg = "getPrimeImplicants Failed";
 		goto FAIL;
@@ -141,10 +136,10 @@ qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 		}
 	}
 
+
 	data.var                    =  var;
 	data.tablesCount 	        =  tablesCount;
 	data.tables	                =  tables;
-	data.groupSize   	        =  groupSize;
 	data.prime 			        =  prime;
 	data.primeCount             =  primeCount;
 	data.noEssentialPrimeCount  =  noEssentialPrimeCount;
@@ -165,21 +160,17 @@ qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 
 	FAIL:
 		//clear group tables
-		for(int i = 0; i < tablesCount; i++){
-			groupData *table = tables[i];
-			for(int j = 0; j < groupSize[i]; j++)
-				clear_quine(&table[j]);
-			free(table);
-			groupSize[i] = 0;
-		}
+		for(int i = 0; i < tablesCount; i++)
+			Table_destroy(&tables[i]);
 
-		free(tables); tables = NULL;
-		free(groupSize); groupSize = NULL;
+		free(tables);
+		tables = NULL;
 		tablesCount = 0;
 
 		for(int i = 0; i < var+1; i++)
-			if(group) clear_quine(&group[i]);
-		free(group);
+			if(groups) Group_destroy(&groups[i]);
+
+		free(groups);
 
 		free_2d_pointer((char**)piChart, primeCount);
 		free_2d_pointer(essential, essentialCount);
@@ -196,7 +187,6 @@ qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 		destroyPrimeData(prime, primeCount);
 
 		data.tables	            =  NULL;
-		data.groupSize   	    =  NULL;
 		data.prime 			    =  NULL;
 		data.piChart		    =  NULL;
 		data.essential 	        =  NULL;
