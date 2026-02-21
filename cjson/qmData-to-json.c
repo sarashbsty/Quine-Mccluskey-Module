@@ -10,6 +10,10 @@ cJSON *qmData_to_json(const qmData *data){
     cJSON *root = cJSON_CreateObject();
     if (!root) goto FAIL;
 
+	//error
+	cJSON_AddBoolToObject(root, "error" , data->error);
+
+
 	//Tables
 	cJSON *tables = Table_to_json(data->tables , data->tablesCount);
 	if(!tables) goto FAIL;

@@ -78,7 +78,7 @@ char *qm_run(const char *input)
 		free(dontCare);
 
 		cJSON *error_json = cJSON_CreateObject();
-		cJSON_AddNumberToObject(error_json , "error" , 1);
+		cJSON_AddBoolToObject(error_json , "error" , 1);
 		cJSON_AddStringToObject(error_json , "errorMsg" , errorMsg);
 
 		out = cJSON_Print(error_json);
