@@ -25,6 +25,27 @@ qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 	int tablesCount = 0, error = 0 , uncoveredCount = 0, newUncoveredCount = 0;
 	int setCount = 0 , primeCount = 0 , noEssentialPrimeCount = 0, essentialCount = 0 , resultCount = 0;
 
+	int maxPossibleTerm = pow(2,var) - 1;
+
+	if(var <= 0){
+		data.errorMsg = "Invalid Variable Given";
+		goto FAIL;
+	}
+
+	int allTermsCount = minCount + dontCareCount;
+
+	if(allTermsCount > pow(2,var)){
+		data.errorMsg = "No. of terms exceed maximum terms possible for given Variable";
+		goto FAIL;
+	}
+
+	for(int i = 0; i < allTermsCount; i++){
+		if(minterms[i] > maxPossibleTerm){
+			data.errorMsg = "Found Invalid minterm for given Variable";
+			goto FAIL;
+		}
+	}
+
 	//Allocate memory for group tables pointer array
 	tables = calloc(var+1 , sizeof(*tables));
 	if(!tables){
