@@ -11,7 +11,7 @@ cJSON *qmData_to_json(const qmData *data){
     if (!root) goto FAIL;
 
 	//Tables
-	cJSON *tables = groupData_to_json(data->tables , data->groupSize, data->tablesCount);
+	cJSON *tables = Table_to_json(data->tables , data->tablesCount);
 	if(!tables) goto FAIL;
 	else cJSON_AddItemToObject(root, "tables" , tables);
 
@@ -80,23 +80,11 @@ cJSON *qmData_to_json(const qmData *data){
 	if(!process) goto FAIL;
 	else cJSON_AddItemToObject(root, "process" , process);
 
-	for(int i = 0; i < data->petrick->processCount; i++){
-		cJSON *str = cJSON_CreateString(data->petrick->process[i]);
-		if(!str) goto FAIL;
-		else cJSON_AddItemToArray(process, str);
-	}
-
 
 	//petrick final SOP terms
 	cJSON *SOP_terms = cJSON_CreateArray();
 	if(!SOP_terms) goto FAIL;
 	else cJSON_AddItemToObject(root, "sopTerms" , SOP_terms);
-
-	for(int i = 0; i < data->petrick->SOP_count; i++){
-		cJSON *str = cJSON_CreateString(data->petrick->SOP_terms[i]);
-		if(!str) goto FAIL;
-		else cJSON_AddItemToArray(SOP_terms, str);
-	}
 
 
 	//combinations and cost
@@ -104,28 +92,44 @@ cJSON *qmData_to_json(const qmData *data){
 	if(!combinations) goto FAIL;
 	else cJSON_AddItemToObject(root, "combinations" , combinations);
 
-	for(int i = 0; i < data->petrick->combiCount; i++){
-		cJSON *perCombinations = cJSON_CreateArray();
-		if(!perCombinations) goto FAIL;
-		else cJSON_AddItemToArray(combinations, perCombinations);
-
-		for(int j = 0; j < data->petrick->combinations[i].termsCount; j++){
-			cJSON *str = cJSON_CreateString(data->petrick->combinations[i].terms[j]);
+	if(data->petrick)
+	{
+		// adding process strings
+		for(int i = 0; i < data->petrick->processCount; i++){
+			cJSON *str = cJSON_CreateString(data->petrick->process[i]);
 			if(!str) goto FAIL;
-			else cJSON_AddItemToArray(perCombinations, str);
+			else cJSON_AddItemToArray(process, str);
 		}
 
-		cJSON *num = cJSON_CreateNumber(data->petrick->combinations[i].cost);
-		if(!num) goto FAIL;
-		else cJSON_AddItemToArray(perCombinations, num);
+		//adding SOP terms
+		for(int i = 0; i < data->petrick->SOP_count; i++){
+			cJSON *str = cJSON_CreateString(data->petrick->SOP_terms[i]);
+			if(!str) goto FAIL;
+			else cJSON_AddItemToArray(SOP_terms, str);
+		}
+
+		//adding combination and cost
+		for(int i = 0; i < data->petrick->combiCount; i++){
+			cJSON *perCombinations = cJSON_CreateArray();
+			if(!perCombinations) goto FAIL;
+			else cJSON_AddItemToArray(combinations, perCombinations);
+
+			for(int j = 0; j < data->petrick->combinations[i].termsCount; j++){
+				cJSON *str = cJSON_CreateString(data->petrick->combinations[i].terms[j]);
+				if(!str) goto FAIL;
+				else cJSON_AddItemToArray(perCombinations, str);
+			}
+
+			cJSON *num = cJSON_CreateNumber(data->petrick->combinations[i].cost);
+			if(!num) goto FAIL;
+			else cJSON_AddItemToArray(perCombinations, num);
+		}
+
+		//index of the combination with minimum cost in combinations(array)
+		cJSON *n = cJSON_CreateNumber(data->petrick->minCostIdx);
+		if(!n) goto FAIL;
+		else cJSON_AddItemToObject(root, "minCostIdx" , n);
 	}
-
-
-	//index of the combination with minimum cost in combinations(array)
-	cJSON *n = cJSON_CreateNumber(data->petrick->minCostIdx);
-	if(!n) goto FAIL;
-	else cJSON_AddItemToObject(root, "minCostIdx" , n);
-
 
 	//final result
 	cJSON *result = cJSON_CreateArray();
@@ -144,3 +148,4 @@ cJSON *qmData_to_json(const qmData *data){
 		cJSON_Delete(root);
 		return NULL;
 }
+
