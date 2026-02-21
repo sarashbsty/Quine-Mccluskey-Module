@@ -7,8 +7,6 @@
 #include <math.h>
 #include "qmMinimizer.h"
 #include "memory.h"
-#include "cJSON.h"
-#include "qmdata_to_json.h"
 
 static inline void clear_input_buffer(){
 	int c;
@@ -166,16 +164,6 @@ int main() {
 	for(int i = 0; i < data.resultCount; i++)
 		printf( i == 0 ? "%s" : " + %s", data.result[i]);
 	printf("\n");
-
-	cJSON *qmData_json = qmData_to_json(&data);
-
-	char *out = cJSON_Print(qmData_json);
-//	char *out = cJSON_PrintUnformatted(qmData_json);
-
-	printf("\n\nJSON = %s",out);
-	free(out);
-
-	cJSON_Delete(qmData_json);
 
 	destroyQmData(&data);
 
