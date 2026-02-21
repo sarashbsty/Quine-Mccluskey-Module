@@ -16,26 +16,46 @@ int parse_input_json(const char *json_text, int *variables, int **minterms, int 
     }
 
     *variables = vars->valueint;
+	*min_count = cJSON_GetArraySize(mins);
 
-    *min_count = cJSON_GetArraySize(mins);
-    *minterms = malloc(sizeof(int) * (*min_count));
+	if (*min_count > 0)
+	{
+		*minterms = malloc(sizeof(int) * (*min_count));
+		if (!*minterms) { cJSON_Delete(root); return 3; }
 
-    for (int i = 0; i < *min_count; i++)
-        (*minterms)[i] = cJSON_GetArrayItem(mins, i)->valueint;
+		for (int i = 0; i < *min_count; i++)
+		{
+			cJSON *item = cJSON_GetArrayItem(mins, i);
+			if (!cJSON_IsNumber(item)) { cJSON_Delete(root); return 4; }
+			(*minterms)[i] = item->valueint;
+		}
+	}
+	else *minterms = NULL;
 
     // dontCares optional
     cJSON *dc = cJSON_GetObjectItem(root, "dontCares");
-    if (dc && cJSON_IsArray(dc)) {
-        *dc_count = cJSON_GetArraySize(dc);
-        *dontCares = malloc(sizeof(int) * (*dc_count));
-        for (int i = 0; i < *dc_count; i++) {
-            (*dontCares)[i] =
-                cJSON_GetArrayItem(dc, i)->valueint;
-        }
-    } else {
-        *dc_count = 0;
-        *dontCares = NULL;
+    if (dc && cJSON_IsArray(dc))
+	{
+		*dc_count = cJSON_GetArraySize(dc);
+		if (*dc_count > 0)
+		{
+			*dontCares = malloc(sizeof(int) * (*dc_count));
+			if (!*dontCares) { cJSON_Delete(root); return 3; }
+
+			for (int i = 0; i < *dc_count; i++)
+			{
+				cJSON *item = cJSON_GetArrayItem(dc, i);
+				if (!cJSON_IsNumber(item)){ cJSON_Delete(root); return 4; }
+				(*dontCares)[i] = item->valueint;
+			}
+		}
+		else *dontCares = NULL;
     }
+	else
+	{
+		*dc_count = 0;
+		*dontCares = NULL;
+	}
 
     cJSON_Delete(root);
     return 0;
