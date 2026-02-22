@@ -8,7 +8,7 @@ void display_qm(const char *input)
 {
 	if(!input) puts("Failed to read input");
 
-	int var, *minterms = NULL , minCount = 0 , *dontCare = NULL, dontCareCount;
+	int var, *minterms = NULL , minCount = 0 , *dontCare = NULL, dontCareCount = 0;
 
 	int error = parse_input_json(input, &var, &minterms, &minCount, &dontCare, &dontCareCount);
 
