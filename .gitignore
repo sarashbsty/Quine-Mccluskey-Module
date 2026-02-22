@@ -42,3 +42,5 @@
 /build
 /build-wasm
 
+test_json2.txt
+test min term.txt
