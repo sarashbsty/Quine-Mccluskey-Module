@@ -13,6 +13,32 @@ cJSON *qmData_to_json(const qmData *data){
 	//error
 	cJSON_AddBoolToObject(root, "error" , data->error);
 
+	//variable
+	cJSON_AddNumberToObject(root, "variable", data->var);
+
+	//minterms
+	cJSON *minterms = cJSON_CreateArray();
+	if(!minterms) goto FAIL;
+	else cJSON_AddItemToObject(root, "minterms" , minterms);
+
+	for(int i = 0; i < data->minCount; i++){
+		cJSON *num =  cJSON_CreateNumber(data->minterms[i]);
+		if(!num) goto FAIL;
+		else cJSON_AddItemToArray(minterms , num);
+	}
+
+
+	//dontCares
+	cJSON *dontCares = cJSON_CreateArray();
+	if(!dontCares) goto FAIL;
+	else cJSON_AddItemToObject(root, "dontCares" , dontCares);
+
+	for(int i = 0; i < data->dontCareCount; i++){
+		cJSON *num =  cJSON_CreateNumber(data->dontCares[i]);
+		if(!num) goto FAIL;
+		else cJSON_AddItemToArray(dontCares , num);
+	}
+
 
 	//Tables
 	cJSON *tables = Table_to_json(data->tables , data->tablesCount);
