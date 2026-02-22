@@ -11,7 +11,7 @@
 char *qm_run(const char *input)
 {
     char *errorMsg = NULL;
-	int var = 0, *minterms = NULL, minCount = 0 , *dontCare = NULL, dontCareCount = 0;
+	int var = 0, *minterms = NULL, minCount = 0 , *dontCares = NULL, dontCareCount = 0;
 
 	cJSON *qmData_json = NULL;
 	qmData data = {0};
@@ -21,7 +21,7 @@ char *qm_run(const char *input)
 		goto FAIL;
 	}
 
-	int error = parse_input_json(input, &var, &minterms, &minCount, &dontCare, &dontCareCount);
+	int error = parse_input_json(input, &var, &minterms, &minCount, &dontCares, &dontCareCount);
 	if(error == 1){
 		errorMsg = "Parsing input failed due to invalid json";
 		goto FAIL;
@@ -45,14 +45,17 @@ char *qm_run(const char *input)
 
 	//inserting dontcare elements at the end of minterms
 	for(int i = 0; i < dontCareCount; i++)
-		minterms[minCount + i] = dontCare[i];
+		minterms[minCount + i] = dontCares[i];
 
 	//call minimizer
-	data = qmMinimizer(minterms, minCount, dontCareCount, var);
+	data = qmMinimizer(minterms, minCount,dontCares, dontCareCount, var);
 	if(data.error){
 		errorMsg = data.errorMsg;
 		goto FAIL;
 	}
+
+	minterms = NULL;
+	dontCares = NULL;
 
 	//convert to json
 	qmData_json = qmData_to_json(&data);
@@ -65,17 +68,12 @@ char *qm_run(const char *input)
 
 	cJSON_Delete(qmData_json);
 	destroyQmData(&data);
-	free(minterms);
-	free(dontCare);
 
 	return out;
 
 	FAIL:
 		cJSON_Delete(qmData_json);
 		destroyQmData(&data);
-
-		free(minterms);
-		free(dontCare);
 
 		cJSON *error_json = cJSON_CreateObject();
 		cJSON_AddBoolToObject(error_json , "error" , 1);

@@ -8,9 +8,9 @@ void display_qm(const char *input)
 {
 	if(!input) puts("Failed to read input");
 
-	int var, *minterms = NULL , minCount = 0 , *dontCare = NULL, dontCareCount = 0;
+	int var, *minterms = NULL , minCount = 0 , *dontCares = NULL, dontCareCount = 0;
 
-	int error = parse_input_json(input, &var, &minterms, &minCount, &dontCare, &dontCareCount);
+	int error = parse_input_json(input, &var, &minterms, &minCount, &dontCares, &dontCareCount);
 
 	if(error == 1){	puts("Parsing input failed due to invalid json"); return; }
 
@@ -24,14 +24,14 @@ void display_qm(const char *input)
 	if(!tmp){
 		puts("minterm input reallocation Failed");
 		free(minterms);
-		free(dontCare) ;
+		free(dontCares) ;
 		return;
 	}
 	minterms = tmp;
 
 	//inserting dontcare elements at the end of minterms
 	for(int i = 0; i < dontCareCount; i++)
-		minterms[minCount + i] = dontCare[i];
+		minterms[minCount + i] = dontCares[i];
 
 	//show minterms
 	 printf("%d Min terms: ", minCount);
@@ -45,13 +45,16 @@ void display_qm(const char *input)
 	printf("\n");
 
 	//call minimizer
-	qmData data = qmMinimizer(minterms, minCount, dontCareCount, var);
+	qmData data = qmMinimizer(minterms, minCount, dontCares, dontCareCount, var);
 	if(data.error){
 		puts(data.errorMsg);
 		free(minterms);
-		free(dontCare) ;
+		free(dontCares) ;
 		return;
 	}
+
+	minterms = NULL;
+	dontCares = NULL;
 
 	//Display Portion
 	for(int i = 0 ; i < data.tablesCount; i++){
@@ -63,7 +66,7 @@ void display_qm(const char *input)
 	displayPi(data.prime , data.primeCount);
 
 	printf("\nPrime Implicant Chart:");
-	displayPiChart(data.prime, data.primeCount, data.piChart, minterms, minCount);
+	displayPiChart(data.prime, data.primeCount, data.piChart, data.minterms, data.minCount);
 	if(data.essential){
 		printf("Essential Implicants: ");
 		for(int i = 0; i < data.essentialCount; i++)
@@ -151,9 +154,6 @@ void display_qm(const char *input)
 	printf("\n");
 
 	destroyQmData(&data);
-
-	free(minterms);
-	free(dontCare);
 }
 
 
