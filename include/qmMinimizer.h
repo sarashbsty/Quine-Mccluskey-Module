@@ -10,6 +10,12 @@ typedef struct qmData{
 
 	int var;
 
+	int *minterms;
+	int minCount;
+
+	int *dontCares;
+	int dontCareCount;
+
 	Table *tables;
 	int tablesCount;
 
@@ -38,7 +44,7 @@ typedef struct qmData{
 
 } qmData;
 
-qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var);
+qmData qmMinimizer(int *minterms, int minCount, int *dontCares, int dontCareCount, int var);
 
 static void destroyQmData(qmData *var)
 {
@@ -63,4 +69,7 @@ static void destroyQmData(qmData *var)
 	free(var->petrick);
 
 	free_2d_pointer(var->result , var->resultCount);
+
+	free(var->minterms);
+	free(var->dontCares);
 }
