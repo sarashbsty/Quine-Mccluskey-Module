@@ -8,20 +8,25 @@ void display_qm(const char *input)
 {
 	if(!input) puts("Failed to read input");
 
-	int var, *minterms , minCount , *dontCare, dontCareCount;
+	int var, *minterms = NULL , minCount = 0 , *dontCare = NULL, dontCareCount;
 
 	int error = parse_input_json(input, &var, &minterms, &minCount, &dontCare, &dontCareCount);
 
-	if(error == 1)	puts("Parsing input failed due to invalid json");
+	if(error == 1){	puts("Parsing input failed due to invalid json"); return; }
 
-	else if(error == 2) puts("Some input variable not Found");
+	else if(error == 2){ puts("Some input variable not Found"); return; }
 
-	else if(error == 3) puts("memory Allocation fail");
+	else if(error == 3){ puts("memory Allocation fail"); return; }
 
-	else if(error == 4) puts("Invalid Datatypes Found");
+	else if(error == 4){ puts("Invalid Datatypes Found"); return; }
 
 	int *tmp = realloc(minterms, (minCount + dontCareCount) * sizeof(*tmp));
-	if(!tmp) puts("minterm input reallocation Failed");
+	if(!tmp){
+		puts("minterm input reallocation Failed");
+		free(minterms);
+		free(dontCare) ;
+		return;
+	}
 	minterms = tmp;
 
 	//inserting dontcare elements at the end of minterms
@@ -41,7 +46,12 @@ void display_qm(const char *input)
 
 	//call minimizer
 	qmData data = qmMinimizer(minterms, minCount, dontCareCount, var);
-	if(data.error) puts(data.errorMsg);
+	if(data.error){
+		puts(data.errorMsg);
+		free(minterms);
+		free(dontCare) ;
+		return;
+	}
 
 	//Display Portion
 	for(int i = 0 ; i < data.tablesCount; i++){
