@@ -45,3 +45,4 @@
 test_json.txt
 test_json2.txt
 test min term.txt
+*.wasm
