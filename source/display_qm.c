@@ -14,7 +14,7 @@ void display_qm(const char *input)
 
 	if(error == 1){	puts("Parsing input failed due to invalid json"); return; }
 
-	else if(error == 2){ puts("Some input variable not Found"); return; }
+	else if(error == 2){ puts("Invalid input variable or not Found"); return; }
 
 	else if(error == 3){ puts("memory Allocation fail"); return; }
 

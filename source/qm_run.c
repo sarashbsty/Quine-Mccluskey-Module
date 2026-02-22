@@ -27,7 +27,7 @@ char *qm_run(const char *input)
 		goto FAIL;
 	}
 	else if(error == 2){
-		errorMsg = "Some input variable not Found";
+		errorMsg = "Invalid input variable or not Found";
 		goto FAIL;
 	}
 	else if(error == 3){
