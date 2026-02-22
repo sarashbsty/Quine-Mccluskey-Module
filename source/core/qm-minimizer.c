@@ -7,7 +7,9 @@
 #include "petrick.h"
 #include "insert_entry.h"
 
-qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
+static int input_validate(int *minterms, int minCount, int *dontCares, int dontCareCount, int var);
+
+qmData qmMinimizer(int *minterms, int minCount, int *dontCares, int dontCareCount, int var){
 
 	qmData data = {0};
 
@@ -22,44 +24,31 @@ qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 
 	int **piChart = NULL, *uncoveredTerms = NULL, *newUncoveredTerms = NULL;
 
-	int tablesCount = 0, error = 0 , uncoveredCount = 0, newUncoveredCount = 0;
-	int setCount = 0 , primeCount = 0 , noEssentialPrimeCount = 0, essentialCount = 0 , resultCount = 0;
+	int tablesCount = 0, uncoveredCount = 0, newUncoveredCount = 0, setCount = 0;
+	int primeCount = 0 , noEssentialPrimeCount = 0, essentialCount = 0 , resultCount = 0, resultCap = 0;
 
-	int maxPossibleTerm = pow(2,var) - 1;
+	int flag = input_validate(minterms, minCount, dontCares, dontCareCount, var);
 
-	if(var < 1){
+	if(flag == 1)
+	{
 		data.errorMsg = "Invalid Variable Given";
 		goto FAIL;
 	}
-
-	int allTermsCount = minCount + dontCareCount;
-
-	if(!minCount){
-		data.result = malloc(sizeof(*data.result));
-		if(!data.result){
-			data.errorMsg = "Result Aallocation Failed";
-			goto FAIL;
-		}
-
-		data.result[0] = strdup("0");
-		if(!data.result[0]){
-			data.errorMsg = "Result '0' Aallocation Failed";
-			goto FAIL;
-		}
-		data.resultCount = 1;
-		return data;
+	else if(flag == 2)
+	{
+		int error = insertEntry(&result , &resultCount, &resultCap , "0");
+		if(error){ data.errorMsg = "insertEntry Failed"; goto FAIL; }
+		goto return_section;
 	}
-
-	if(allTermsCount > pow(2,var)){
+	else if(flag == 3)
+	{
 		data.errorMsg = "No. of terms exceed maximum terms possible for given Variable";
 		goto FAIL;
 	}
-
-	for(int i = 0; i < allTermsCount; i++){
-		if(minterms[i] > maxPossibleTerm){
-			data.errorMsg = "Found Invalid minterm for given Variable";
-			goto FAIL;
-		}
+	else if(flag == 4)
+	{
+		data.errorMsg = "Found Invalid minterm for given Variable";
+		goto FAIL;
 	}
 
 	//Allocate memory for group tables pointer array
@@ -158,7 +147,6 @@ qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 	}
 
 	//Result
-	int resultCap = 0;
 	for(int i = 0; i < essentialCount; i++){
 		int error = insertEntry(&result , &resultCount, &resultCap , essential[i]);
 		if(error){ data.errorMsg = "insertEntry Failed"; goto FAIL; }
@@ -173,27 +161,31 @@ qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 		}
 	}
 
+	return_section:
+		data.minterms               =  minterms;
+		data.minCount               =  minCount;
+		data.dontCares              =  dontCares;
+		data.dontCareCount          =  dontCareCount;
+		data.var                    =  var;
+		data.tablesCount 	        =  tablesCount;
+		data.tables	                =  tables;
+		data.prime 			        =  prime;
+		data.primeCount             =  primeCount;
+		data.noEssentialPrimeCount  =  noEssentialPrimeCount;
+		data.piChart		        =  piChart;
+		data.essential 	 	        =  essential;
+		data.essentialCount         =  essentialCount;
+		data.uncoveredTerms         =  uncoveredTerms;
+		data.uncoveredCount         =  uncoveredCount;
+		data.newUncoveredTerms      =  newUncoveredTerms;
+		data.newUncoveredCount      =  newUncoveredCount;
+		data.set                    =  set;
+		data.setCount               =  setCount;
+		data.petrick                =  pet;
+		data.result                 =  result;
+		data.resultCount            =  resultCount;
 
-	data.var                    =  var;
-	data.tablesCount 	        =  tablesCount;
-	data.tables	                =  tables;
-	data.prime 			        =  prime;
-	data.primeCount             =  primeCount;
-	data.noEssentialPrimeCount  =  noEssentialPrimeCount;
-	data.piChart		        =  piChart;
-	data.essential 	 	        =  essential;
-	data.essentialCount         =  essentialCount;
-	data.uncoveredTerms         =  uncoveredTerms;
-	data.uncoveredCount         =  uncoveredCount;
-	data.newUncoveredTerms      =  newUncoveredTerms;
-	data.newUncoveredCount      =  newUncoveredCount;
-	data.set                    =  set;
-	data.setCount               =  setCount;
-	data.petrick                =  pet;
-	data.result                 =  result;
-	data.resultCount            =  resultCount;
-
-    return data;
+		return data;
 
 	FAIL:
 		//clear group tables
@@ -213,6 +205,7 @@ qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 		free_2d_pointer(essential, essentialCount);
 		free_2d_pointer(set, setCount);
 
+
 		free(uncoveredTerms);
 		free(newUncoveredTerms);
 
@@ -223,6 +216,11 @@ qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 
 		destroyPrimeData(prime, primeCount);
 
+		free(minterms);
+		free(dontCares);
+
+		data.minterms           =  NULL;
+		data.dontCares          =  NULL;
 		data.tables	            =  NULL;
 		data.prime 			    =  NULL;
 		data.piChart		    =  NULL;
@@ -237,4 +235,25 @@ qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 		data.error = 1;
 		return data;
 
+}
+
+static int input_validate(int *minterms, int minCount, int *dontCares, int dontCareCount, int var){
+
+	if(var < 1) return 1;
+
+	if(!minCount) return 2;
+
+	if(minCount + dontCareCount > pow(2,var)) return 3;
+
+	int maxPossibleTerm = pow(2,var) - 1;
+
+	for(int i = 0; i < minCount; i++)
+		if(minterms[i] > maxPossibleTerm)
+			return 4;
+
+	for(int i = 0; i < dontCareCount; i++)
+		if(dontCares[i] > maxPossibleTerm)
+			return 4;
+
+	return 0;
 }
