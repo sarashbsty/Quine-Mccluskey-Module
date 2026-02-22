@@ -34,7 +34,7 @@ qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 
 	int allTermsCount = minCount + dontCareCount;
 
-	if(!allTermsCount){
+	if(!minCount){
 		data.errorMsg = "No minterms given";
 		goto FAIL;
 	}
