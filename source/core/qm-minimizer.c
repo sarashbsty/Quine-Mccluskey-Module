@@ -35,10 +35,22 @@ qmData qmMinimizer(int *minterms, int minCount, int dontCareCount, int var){
 	int allTermsCount = minCount + dontCareCount;
 
 	if(!minCount){
-		data.errorMsg = "No minterms given";
-		goto FAIL;
+		data.result = malloc(sizeof(*data.result));
+		if(!data.result){
+			data.errorMsg = "Result Aallocation Failed";
+			goto FAIL;
+		}
+
+		data.result[0] = strdup("0");
+		if(!data.result[0]){
+			data.errorMsg = "Result '0' Aallocation Failed";
+			goto FAIL;
+		}
+		data.resultCount = 1;
+		return data;
 	}
-	else if(allTermsCount > pow(2,var)){
+
+	if(allTermsCount > pow(2,var)){
 		data.errorMsg = "No. of terms exceed maximum terms possible for given Variable";
 		goto FAIL;
 	}
