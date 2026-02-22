@@ -6,54 +6,52 @@
 
 cJSON *Table_to_json(Table *tables , int tablesCount)
 {
-	if(!tables || !tablesCount) return NULL;
-
 	cJSON *tableArr = cJSON_CreateArray();
 	if(!tableArr) goto FAIL;
 
-	for(int i = 0; i < tablesCount; i++)
-	{
-		cJSON *perTableObj = cJSON_CreateObject();
-		if(!perTableObj) goto FAIL;
-
-		cJSON *groupsJson = cJSON_AddArrayToObject(perTableObj, "groups");
-		if(!groupsJson) goto FAIL;
-
-		Group *groups = tables[i].groups;
-		int groupCount = tables[i].count;
-
-		for(int x = 0; x < groupCount; x++)
+	if(tables){
+		for(int i = 0; i < tablesCount; i++)
 		{
-			if(!groups[x].count) continue;
+			cJSON *perTableObj = cJSON_CreateObject();
+			if(!perTableObj) goto FAIL;
+			else cJSON_AddItemToArray(tableArr, perTableObj);
 
-			cJSON *perGroupObj = cJSON_CreateObject();
-			if (!perGroupObj) goto FAIL;
+			cJSON *groupsArr = cJSON_AddArrayToObject(perTableObj, "groups");
+			if(!groupsArr) goto FAIL;
 
-			cJSON *implicants = cJSON_AddArrayToObject(perGroupObj, "implicants");
-			if(!implicants) goto FAIL;
+			Group *groups = tables[i].groups;
+			int groupCount = tables[i].count;
 
-			for (int i = 0; i < groups[x].count; i++)
+			for(int x = 0; x < groupCount; x++)
 			{
-				cJSON *imp = cJSON_CreateObject();
-				if(!imp) goto FAIL;
+				if(!groups[x].count) continue;
 
-				cJSON_AddStringToObject(imp, "binary", groups[x].implicants[i].binary);  // binary string
+				cJSON *perGroupObj = cJSON_CreateObject();
+				if (!perGroupObj) goto FAIL;
+				else cJSON_AddItemToArray(groupsArr, perGroupObj);
 
-				cJSON *minterms_arr = cJSON_AddArrayToObject(imp, "minterms");  // minterms array
-				if(!minterms_arr) goto FAIL;
+				cJSON *implicants = cJSON_AddArrayToObject(perGroupObj, "implicants");
+				if(!implicants) goto FAIL;
 
-				cJSON_AddBoolToObject(imp, "combined", groups[x].implicants[i].isCombined); // combined flag
+				for (int i = 0; i < groups[x].count; i++)
+				{
+					cJSON *imp = cJSON_CreateObject();
+					if(!imp) goto FAIL;
 
-				for (int j = 0; j < groups[x].implicants[i].mintermCount; j++)
-					cJSON_AddItemToArray(minterms_arr, cJSON_CreateNumber(groups[x].implicants[i].minterms[j])); //add minterms to mintermArr
+					cJSON_AddStringToObject(imp, "binary", groups[x].implicants[i].binary);  // binary string
 
-				cJSON_AddItemToArray(implicants, imp);
+					cJSON *minterms_arr = cJSON_AddArrayToObject(imp, "minterms");  // minterms array
+					if(!minterms_arr) goto FAIL;
+
+					cJSON_AddBoolToObject(imp, "combined", groups[x].implicants[i].isCombined); // combined flag
+
+					for (int j = 0; j < groups[x].implicants[i].mintermCount; j++)
+						cJSON_AddItemToArray(minterms_arr, cJSON_CreateNumber(groups[x].implicants[i].minterms[j])); //add minterms to mintermArr
+
+					cJSON_AddItemToArray(implicants, imp);
+				}
 			}
-
-			cJSON_AddItemToArray(groupsJson, perGroupObj);
 		}
-
-		cJSON_AddItemToArray(tableArr, perTableObj);
 	}
 
 	return tableArr;
