@@ -113,8 +113,8 @@ qmData qmMinimizer(int *minterms, int minCount, int *dontCares, int dontCareCoun
 		goto FAIL;
 	}
 
-	if(uncoveredCount > 0){
-
+	if(uncoveredCount > 0)
+	{
 		//create a copy of Uncovered minterms
 		newUncoveredTerms = intDupArr(uncoveredTerms, uncoveredCount); //memory safe
 		if(!newUncoveredTerms){
