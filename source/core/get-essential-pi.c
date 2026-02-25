@@ -1,6 +1,7 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include<string.h>
+#include<stdbool.h>
 #include "quine.h"
 #include "insert_entry.h"
 
@@ -22,31 +23,30 @@ int getEssentialPi(char ***returnPtr, int **table, primeData *prime, int primeCo
 			//marking for visual guide
 			table[index][minterms[j]] = 2;
 
-			if(prime[index].isEssential == 0){
+			if(!prime[index].isEssential){
 				int error = insertEntry(&essential , &essentialCount, &cap , prime[index].expression);
 				if(error) goto FAIL;
-				prime[index].isEssential = 1;
+				prime[index].isEssential = true;
 			}
 		}
 	}
 
 	//put essential Primes below the list/table
-	for(int i = 0; i < primeCount; i++)
+	int i = 0 , j = primeCount - 1;
+	while(i < j)
 	{
-		if(prime[i].isEssential == 0) continue;
+		while(i < j && !prime[i].isEssential) i++;
+		while(j > i && prime[j].isEssential) j--;
 
-		int y = primeCount-1;
-		while(prime[y].isEssential == 1 && y > i) y--;
-		if(y <= i) break;
+		if(i < j){
+			primeData tmp = prime[j];
+			prime[j] = prime[i];
+			prime[i] = tmp;
 
-		primeData tmp = prime[y];
-		prime[y] = prime[i];
-		prime[i] = tmp;
-
-		int *tmp1 = table[y];
-		table[y] = table[i];
-		table[i] = tmp1;
-
+			int *tmp1 = table[j];
+			table[j] = table[i];
+			table[i] = tmp1;
+		}
 	}
 
 	*returnPtr = essential;

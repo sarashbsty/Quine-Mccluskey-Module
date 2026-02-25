@@ -20,7 +20,7 @@ petrickData* petrick(primeData *prime , int primeCount , char **POS_terms, int P
 	combiStruct *combinations = NULL;
 
 	char **processArr = NULL, **SOP_terms = NULL;
-	int *costArr = NULL, combiCount = 0 , SOP_count = 0, processCount = 0;
+	int combiCount = 0 , SOP_count = 0, processCount = 0;
 
 	//initialization
 	processArr       = malloc(POS_count * sizeof(*processArr));
@@ -58,11 +58,8 @@ petrickData* petrick(primeData *prime , int primeCount , char **POS_terms, int P
 	SOP_count       = removeNonMinimalTerms(SOP_terms, SOP_count, min_literal);
 
 	combiCount   = 0;
-	combinations = malloc(SOP_count * sizeof(*combinations));
+	combinations = calloc(SOP_count , sizeof(*combinations));
 	if(!combinations) goto FAIL;
-
-	costArr = malloc(SOP_count * sizeof(*costArr));
-	if(!costArr) goto FAIL;
 
 	for(int i = 0; i < SOP_count; i++)
 	{
@@ -78,18 +75,18 @@ petrickData* petrick(primeData *prime , int primeCount , char **POS_terms, int P
 			terms[termsCount++] = str;
 			cost += prime[idx].cost;
 		}
-		costArr[i] = cost;
 		combinations[combiCount].terms = terms;
 		combinations[combiCount].termsCount = termsCount;
+		combinations[combiCount].cost = cost;
 		combiCount++;
 	}
 
 	//determine index of the SOP term with minimum cost
-	int min_cost = costArr[0] , minCostIdx = 0;
+	int min_cost = combinations[0].cost , minCostIdx = 0;
 	for(int i = 1; i < SOP_count; i++){
-		if(costArr[i] < min_cost){
+		if(combinations[i].cost < min_cost){
 			minCostIdx = i;
-			min_cost   = costArr[i];
+			min_cost   = combinations[i].cost;
 		}
 	}
 
@@ -101,13 +98,12 @@ petrickData* petrick(primeData *prime , int primeCount , char **POS_terms, int P
 	P->SOP_terms    = SOP_terms;
 	P->SOP_count    = SOP_count;
 	P->combinations = combinations;
-	P->cost         = costArr;
+	P->combiCount   = combiCount;
 	P->minCostIdx   = minCostIdx;
 
 	processArr   = NULL;
 	SOP_terms    = NULL;
 	combinations = NULL;
-	costArr      = NULL;
 
 	return P;
 
@@ -117,7 +113,6 @@ petrickData* petrick(primeData *prime , int primeCount , char **POS_terms, int P
 
 		destroyCombiStruct(combinations , combiCount);
 
-		free(costArr);
 		P->error = 1;
 		return P;
 }

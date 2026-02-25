@@ -1,69 +1,75 @@
 #include<stdlib.h>
 #include<string.h>
+#include<stdbool.h>
 #include "quine.h" // groupData struture
 #include "int_array_dup.h"
 
 static char* Expression(const char *binary);
 
-int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapPtr, groupData *group, int groupSize){
+int getPrimeImplicants(primeData **primePtr ,Table *tables, int tablesCount){
 
 	char *bin = NULL;
 	char *expres = NULL;
 	int *arr = NULL;
 
 	primeData *prime = *primePtr;
-	int primeCount = *primeCountPtr;
-	int primeCap = *primeCapPtr;
+	int primeCount = 0;
+	int primeCap = 0;
 
-	for (int i = 0; i < groupSize; i++){
-		if (group[i].count == 0) continue; // skip empty groups
 
-        for (int j = 0; j < group[i].count; j++){
+	for(int i = 0; i < tablesCount; i++)
+	{
+		Group *groups = tables[i].groups;
+		int groupCount = tables[i].count;
 
-			if(group[i].combined[j] == 1) continue; //skip Combined Binaries
+		for (int x = 0; x < groupCount; x++)
+		{
+			if (groups[x].count == 0) continue; // skip empty groups
 
-			if(primeCount >= primeCap){
-				primeCap *= 2;
-				primeData *tmp = realloc(prime , primeCap * sizeof(*tmp));
-				if(!tmp) goto FAIL;
-				prime = tmp;
+			for (int y = 0; y < groups[x].count; y++){
+
+				Implicant *currImp = &groups[x].implicants[y];
+
+				if(currImp->isCombined) continue; //skip Combined Binaries
+
+				if(primeCount >= primeCap){
+					primeCap = (!primeCap) ? 2 : primeCap*2;
+					primeData *tmp = realloc(prime , primeCap * sizeof(*tmp));
+					if(!tmp) goto FAIL;
+					prime = tmp;
+				}
+
+				//duplicate binary
+				bin = strdup(currImp->binary);
+				if(!bin) goto FAIL;
+
+				//duplicare int array
+				arr = intDupArr(currImp->minterms, currImp->mintermCount);
+				if(!arr) goto FAIL;
+
+				//get expression string from binary
+				expres = Expression(bin);
+				if(!expres) goto FAIL;
+
+				//Inserting groupData items
+				int idx = primeCount;
+				prime[idx].binary = bin;
+				prime[idx].expression = expres;
+				prime[idx].minterms = arr;
+				prime[idx].mintermCount = currImp->mintermCount;
+				prime[idx].isEssential = false;
+				prime[idx].cost = strlen(expres);
+				primeCount++;
+
+				bin = NULL;
+				expres = NULL;
+				arr = NULL;
 			}
-
-			//duplicate binary
-			bin = strdup(group[i].binary[j]);
-			if(!bin) goto FAIL;
-
-			//duplicare int array
-			arr = intDupArr(group[i].minterms[j], group[i].mintermCount[j]);
-			if(!arr) goto FAIL;
-
-			//get expression string from binary
-			expres = Expression(bin);
-			if(!expres) goto FAIL;
-
-			//Inserting groupData items
-			int idx = primeCount;
-			prime[idx].binary = bin;
-			prime[idx].expression = expres;
-			prime[idx].minterms = arr;
-			prime[idx].mintermCount = group[i].mintermCount[j];
-			prime[idx].isEssential = 0;
-			prime[idx].cost = strlen(expres);
-			primeCount++;
-
-			bin = NULL;
-			expres = NULL;
-			arr = NULL;
-        }
+		}
 	}
 
 	*primePtr = prime;
-	*primeCountPtr = primeCount;
-	*primeCapPtr = primeCap;
-
-	prime = NULL;
-
-	return 0;
+	return primeCount;
 
 	FAIL:
 		free(bin);
@@ -71,15 +77,14 @@ int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapP
 		free(expres);
 
 		destroyPrimeData(prime, primeCount);
-
 		*primePtr = NULL;
-		*primeCountPtr = 0;
-		*primeCapPtr = 0;
 
-		return 1;
+		return -1;
 }
 
 static char* Expression(const char *binary){
+
+	if(!binary) return NULL;
 
 	//Finding required size
 	int size = 1; //reserved for '\0'
@@ -90,8 +95,7 @@ static char* Expression(const char *binary){
 
 	//for empty binary string or string with numbers other than 0 and 1
 	if(size == 1){
-		char *str = malloc(2);
-		if(str) { str[0] = '1'; str[1] = '\0'; }
+		char *str = strdup("1");
 		return str;
 	}
 
@@ -102,9 +106,9 @@ static char* Expression(const char *binary){
 	//write
 	int count = 0;
 	for(int i = 0; binary[i] != '\0'; i++){
-		char groupSize = 'A'+i;
-		if(binary[i] == '0') { str[count++] = groupSize; str[count++] = '\''; }
-		else if(binary[i] == '1') str[count++] = groupSize;
+		char ch = 'A'+i;
+		if(binary[i] == '0') { str[count++] = ch; str[count++] = '\''; }
+		else if(binary[i] == '1') str[count++] = ch;
 		else continue;
 	}
 	str[count] = '\0';

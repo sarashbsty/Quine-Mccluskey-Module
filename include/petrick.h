@@ -5,6 +5,7 @@
 typedef struct{
 	char **terms;
 	int termsCount;
+	int cost;
 } combiStruct;
 
 typedef struct{
@@ -17,7 +18,8 @@ typedef struct{
 	int SOP_count;
 
 	combiStruct *combinations;
-	int *cost;
+	int combiCount;
+
 	int minCostIdx;
 
 } petrickData;
@@ -33,15 +35,14 @@ static void destroyCombiStruct(combiStruct *var , int count){
 	free(var);
 }
 
-static void destroyPetrick(petrickData *var){
+static void destroyPetrick(petrickData *var)
+{
 	if(!var) return;
 	if(var->process)      { free_2d_pointer(var->process, var->processCount); var->process = NULL; }
 	var->process = 0;
 
-	destroyCombiStruct(var->combinations , var->SOP_count);
-
 	if(var->SOP_terms)    { free_2d_pointer(var->SOP_terms , var->SOP_count); var->SOP_terms = NULL; }
 	var->SOP_count = 0;
 
-	if(var->cost)         { free(var->cost);  var->cost = NULL; }
+	destroyCombiStruct(var->combinations , var->combiCount);
 }

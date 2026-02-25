@@ -7,7 +7,9 @@
 #include "petrick.h"
 #include "insert_entry.h"
 
-qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
+static int input_validate(int *minterms, int minCount, int *dontCares, int dontCareCount, int var);
+
+qmData qmMinimizer(int *minterms, int minCount, int *dontCares, int dontCareCount, int var){
 
 	qmData data = {0};
 
@@ -15,71 +17,78 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 	primeData *prime = NULL;
 
-	groupData **groupTables = NULL , *group = NULL , *newGroup = NULL;
+	Table *tables = NULL;
+	Group *groups = NULL;
 
 	char **essential = NULL , **result = NULL, **set = NULL;
 
-	int *groupSize = NULL, **piChart = NULL, *uncoveredTerms = NULL, *newUncoveredTerms = NULL;
+	int **piChart = NULL, *uncoveredTerms = NULL, *newUncoveredTerms = NULL;
 
-	int groupTablesCount = 0, error = 0 , uncoveredCount = 0, newUncoveredCount = 0;
-	int setCount = 0 , primeCount = 0 , noEssentialPrimeCount = 0, primeCap = 0, essentialCount = 0 , resultCount = 0;
+	int tablesCount = 0, uncoveredCount = 0, newUncoveredCount = 0, setCount = 0;
+	int primeCount = 0 , noEssentialPrimeCount = 0, essentialCount = 0 , resultCount = 0, resultCap = 0;
+
+	int flag = input_validate(minterms, minCount, dontCares, dontCareCount, var);
+
+	if(flag == 1)
+	{
+		data.errorMsg = "Invalid Variable Given";
+		goto FAIL;
+	}
+	else if(flag == 2)
+	{
+		int error = insertEntry(&result , &resultCount, &resultCap , "0");
+		if(error){ data.errorMsg = "insertEntry Failed"; goto FAIL; }
+		goto return_section;
+	}
+	else if(flag == 3)
+	{
+		data.errorMsg = "No. of terms exceed maximum terms possible for given Variable";
+		goto FAIL;
+	}
+	else if(flag == 4)
+	{
+		data.errorMsg = "Found Invalid minterm for given Variable";
+		goto FAIL;
+	}
 
 	//Allocate memory for group tables pointer array
-	groupTables = calloc(var+1 , sizeof(*groupTables));
-	if(!groupTables){
-		data.errorMsg = "groupTables Allocation Failed";
+	tables = calloc(var+1 , sizeof(*tables));
+	if(!tables){
+		data.errorMsg = "tables Allocation Failed";
 		goto FAIL;
 	}
 
-	groupSize = calloc(var+1 , sizeof(*groupSize));
-	if(!groupSize){
-		data.errorMsg = "groupSize Allocation Failed";
-		goto FAIL;
-	}
-
-	group = createGroupTable(minterms, n_terms, var);
-	if(!group){
+	groups = createGroups(minterms, minCount + dontCareCount, var); //memory safe
+	if(!groups){
 		data.errorMsg = "createGroupTable failed";
 		goto FAIL;
 	}
 
-	prime = calloc(1, sizeof(*prime));
-	if(!prime){
-		data.errorMsg = "var :prime allocation Failed";
-		goto FAIL;
-	}
-	primeCap++;
-
 	//Table Reduction Process
-	while(group != newGroup)
+	while(groups)
 	{
 		//Reduction : returns 'group' if no reduction happened.
-		newGroup = getReducedTable(group, var);
-		if (!newGroup){
+		Group *newGroups = getReducedGroups(groups, var);          //memory safe
+		if (!newGroups){
 			data.errorMsg = "getReducedTable Failed";
 			goto FAIL;
 		}
-		else if(newGroup == group) newGroup = NULL;
+		else if(newGroups == groups) newGroups = NULL;
 
 		//store each group Table
-		int idx = groupTablesCount;
-		groupTables[idx] = group;
-		group = NULL;
+		int idx = tablesCount;
+		tables[idx].groups =  groups;
+		groups = newGroups;
 
-		groupSize[idx] = var+1;
-		groupTablesCount++;
-
-		group = newGroup;
-		newGroup = NULL;
+		tables[idx].count  =  var+1;
+		tablesCount++;
 	}
 
-	//Gather prime-implicants from Each Tables
-	for(int i = 0; i < groupTablesCount; i++){
-		error = getPrimeImplicants(&prime , &primeCount, &primeCap, groupTables[i], groupSize[i]);
-		if(error){
-			data.errorMsg = "getPrimeImplicants Failed";
-			goto FAIL;
-		}
+	//Gather prime-implicants  tables
+	primeCount = getPrimeImplicants(&prime , tables , tablesCount);  //memory safe
+	if(primeCount == -1){
+		data.errorMsg = "getPrimeImplicants Failed";
+		goto FAIL;
 	}
 
 	// prime_implicant_chart_table
@@ -104,8 +113,8 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		goto FAIL;
 	}
 
-	if(uncoveredCount > 0){
-
+	if(uncoveredCount > 0)
+	{
 		//create a copy of Uncovered minterms
 		newUncoveredTerms = intDupArr(uncoveredTerms, uncoveredCount);
 		if(!newUncoveredTerms){
@@ -138,7 +147,6 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 	}
 
 	//Result
-	int resultCap = 0;
 	for(int i = 0; i < essentialCount; i++){
 		int error = insertEntry(&result , &resultCount, &resultCap , essential[i]);
 		if(error){ data.errorMsg = "insertEntry Failed"; goto FAIL; }
@@ -153,51 +161,50 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		}
 	}
 
-	data.tableCount 	        =  groupTablesCount;
-	data.groupTables	        =  groupTables;
-	data.groupSize   	        =  groupSize;
-	data.prime 			        =  prime;
-	data.primeCount             =  primeCount;
-	data.noEssentialPrimeCount  =  noEssentialPrimeCount;
-	data.piChart		        =  piChart;
-	data.essential 	 	        =  essential;
-	data.essentialCount         =  essentialCount;
-	data.uncoveredTerms         =  uncoveredTerms;
-	data.uncoveredCount         =  uncoveredCount;
-	data.newUncoveredTerms      =  newUncoveredTerms;
-	data.newUncoveredCount      =  newUncoveredCount;
-	data.set                    =  set;
-	data.setCount               =  setCount;
-	data.petrick                =  pet;
-	data.result                 =  result;
-	data.resultCount            =  resultCount;
+	return_section:
+		data.minterms               =  minterms;
+		data.minCount               =  minCount;
+		data.dontCares              =  dontCares;
+		data.dontCareCount          =  dontCareCount;
+		data.var                    =  var;
+		data.tablesCount 	        =  tablesCount;
+		data.tables	                =  tables;
+		data.prime 			        =  prime;
+		data.primeCount             =  primeCount;
+		data.noEssentialPrimeCount  =  noEssentialPrimeCount;
+		data.piChart		        =  piChart;
+		data.essential 	 	        =  essential;
+		data.essentialCount         =  essentialCount;
+		data.uncoveredTerms         =  uncoveredTerms;
+		data.uncoveredCount         =  uncoveredCount;
+		data.newUncoveredTerms      =  newUncoveredTerms;
+		data.newUncoveredCount      =  newUncoveredCount;
+		data.set                    =  set;
+		data.setCount               =  setCount;
+		data.petrick                =  pet;
+		data.result                 =  result;
+		data.resultCount            =  resultCount;
 
-    return data;
+		return data;
 
 	FAIL:
 		//clear group tables
-		for(int i = 0; i < groupTablesCount; i++){
-			groupData *table = groupTables[i];
-			for(int j = 0; j < groupSize[i]; j++)
-				clear_quine(&table[j]);
-			free(table);
-			groupSize[i] = 0;
-		}
+		for(int i = 0; i < tablesCount; i++)
+			Table_destroy(&tables[i]);
 
-		free(groupTables); groupTables = NULL;
-		free(groupSize); groupSize = NULL;
-		groupTablesCount = 0;
+		free(tables);
+		tables = NULL;
+		tablesCount = 0;
 
-		for(int i = 0; i < var+1; i++){
-			if(group) clear_quine(&group[i]);
-			if(newGroup) clear_quine(&newGroup[i]);
-		}
-		free(group);
-		free(newGroup);
+		for(int i = 0; i < var+1; i++)
+			if(groups) Group_destroy(&groups[i]);
+
+		free(groups);
 
 		free_2d_pointer((char**)piChart, primeCount);
 		free_2d_pointer(essential, essentialCount);
 		free_2d_pointer(set, setCount);
+
 
 		free(uncoveredTerms);
 		free(newUncoveredTerms);
@@ -209,8 +216,12 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 
 		destroyPrimeData(prime, primeCount);
 
-		data.groupTables	    =  NULL;
-		data.groupSize   	    =  NULL;
+		free(minterms);
+		free(dontCares);
+
+		data.minterms           =  NULL;
+		data.dontCares          =  NULL;
+		data.tables	            =  NULL;
 		data.prime 			    =  NULL;
 		data.piChart		    =  NULL;
 		data.essential 	        =  NULL;
@@ -224,4 +235,25 @@ qmData qmMinimizer(int *minterms, int n_terms, int minCount, int var){
 		data.error = 1;
 		return data;
 
+}
+
+static int input_validate(int *minterms, int minCount, int *dontCares, int dontCareCount, int var){
+
+	if(var < 1) return 1;
+
+	if(!minCount) return 2;
+
+	if(minCount + dontCareCount > pow(2,var)) return 3;
+
+	int maxPossibleTerm = pow(2,var) - 1;
+
+	for(int i = 0; i < minCount; i++)
+		if(minterms[i] > maxPossibleTerm)
+			return 4;
+
+	for(int i = 0; i < dontCareCount; i++)
+		if(dontCares[i] > maxPossibleTerm)
+			return 4;
+
+	return 0;
 }

@@ -1,19 +1,20 @@
 #include<string.h>
 #include<stdlib.h>
-#include "quine.h" // groupData struture
+#include<stdbool.h>
+#include "quine.h"
 
 static int count_1s(char *binary);
 static char* ToBinary(int minterm , int var);
 
-groupData* createGroupTable(int *minterms, int n_terms, int var){
+Group* createGroups(int *minterms, int allTermsCount, int var){
 
-	groupData *group = calloc(var+1, sizeof(*group));
-	if(!group) return NULL;
+	Group *groups = calloc(var+1, sizeof(*groups));
+	if(!groups) return NULL;
 
 	char *bin = NULL;
 	int* arr = NULL;
 
-	for(int i = 0; i < n_terms; i++){
+	for(int i = 0; i < allTermsCount; i++){
 
 		// get Binary equivalents of the minterms
 		bin = ToBinary(minterms[i] , var);
@@ -25,46 +26,48 @@ groupData* createGroupTable(int *minterms, int n_terms, int var){
 
 		//find no.s of ones in binary
 		int ones = count_1s(bin);
-		int index = group[ones].count;
 
-		//allocating groupData items
-		if(group[ones].capacity == 0){
-			if(allocate(&group[ones] , 4))
-				goto FAIL;
+		int count = groups[ones].count;
+		int cap = groups[ones].capacity;
+
+		//allocating implicants
+		if(count >= cap){
+			cap = (!cap) ? 2 : cap * 2;
+			Implicant *tmp = realloc(groups[ones].implicants , cap * sizeof(*tmp));
+			if(!tmp) goto FAIL;
+			groups[ones].implicants = tmp;
+			groups[ones].capacity = cap;
 		}
 
-		else if(group[ones].count >= group[ones].capacity){
-			int new_cap = (group[ones].capacity) * 2;
-			if(allocate(&group[ones] , new_cap))
-				goto FAIL;
-		}
+		Implicant *currentImplicant = &groups[ones].implicants[count];
 
 		//inserting the binary , minterm , Count according to no.s of ones
 		//Binary
-		group[ones].binary[index] = bin;
+		currentImplicant->binary = bin;
 		bin = NULL;
 
 		//minterms
 		arr[0] = minterms[i];
-		group[ones].minterms[index] = arr;
+		currentImplicant->minterms = arr;
 		arr = NULL;
 
 		//mintermCount
-		group[ones].mintermCount[index] = 1;
+		currentImplicant->mintermCount = 1;
 
 		//combined
-		group[ones].combined[index] = 0;
+		currentImplicant->isCombined = false;
 
-		group[ones].count++;
+		groups[ones].count++;
+
 	}
-	return group;
+	return groups;
 
 	FAIL:
 		free(bin);
 		free(arr);
 		for(int i = 0; i < var+1; i++)
-			clear_quine(&group[i]);
-		free(group);
+			Group_destroy(&groups[i]);
+		free(groups);
 		return NULL;
 }
 

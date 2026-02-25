@@ -8,10 +8,16 @@ typedef struct qmData{
 	int error; // handles error boolean
 	char *errorMsg;
 
-	int *groupSize;
-	groupData **groupTables;
-	int tableCount;
-	int tableCapacity;
+	int var;
+
+	int *minterms;
+	int minCount;
+
+	int *dontCares;
+	int dontCareCount;
+
+	Table *tables;
+	int tablesCount;
 
 	primeData *prime;
 	int primeCount;
@@ -38,25 +44,15 @@ typedef struct qmData{
 
 } qmData;
 
-qmData qmMinimizer(int *minterms, int n_terms, int min_count, int var);
-
-static void destroyQmGroupTables(qmData *var)
-{
-	if(!var->groupTables) return;
-	for(int i = 0; i < var->tableCount; i++){
-		for(int k = 0; k < var->groupSize[i]; k++)
-			clear_quine(&var->groupTables[i][k]);
-		free(var->groupTables[i]);
-		var->groupSize[i] = 0;
-	}
-	free(var->groupTables); var->groupTables = NULL;
-	free(var->groupSize); var->groupSize = NULL;
-	var->tableCount = 0;
-}
+qmData qmMinimizer(int *minterms, int minCount, int *dontCares, int dontCareCount, int var);
 
 static void destroyQmData(qmData *var)
 {
-	destroyQmGroupTables(var);
+	if(var->tables){
+		for(int i = 0; i < var->tablesCount; i++)
+			Table_destroy(&var->tables[i]);
+	}
+	free(var->tables);
 
 	free_2d_pointer((char**)var->piChart , var->primeCount);
 	free_2d_pointer(var->set , var->setCount);
@@ -73,4 +69,7 @@ static void destroyQmData(qmData *var)
 	free(var->petrick);
 
 	free_2d_pointer(var->result , var->resultCount);
+
+	free(var->minterms);
+	free(var->dontCares);
 }

@@ -40,3 +40,9 @@
 # debug information files
 *.dwo
 /build
+/build-wasm
+
+test_json.txt
+test_json2.txt
+test min term.txt
+*.wasm

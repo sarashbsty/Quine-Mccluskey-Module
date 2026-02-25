@@ -1,14 +1,61 @@
 #pragma once
 #include "memory.h"
+#include "stdbool.h"
 
-typedef struct groupData {
+typedef struct {
+    char *binary;
+    int *minterms;
+    int mintermCount;
+    bool isCombined;
+} Implicant;
+
+static void Implicant_destroy(Implicant *var){
+	if(!var) return;
+
+	free(var->binary);
+	free(var->minterms);
+
+	var->binary = NULL;
+	var->minterms = NULL;
+	var->mintermCount = 0;
+	var->isCombined = false;
+}
+
+typedef struct {
+    Implicant *implicants;
     int count;
-	int capacity;
-    char **binary;
-    int **minterms;
-    int *mintermCount;
-    int *combined;
-} groupData;
+    int capacity;
+} Group;
+
+static void Group_destroy(Group *var){
+	if(!var) return;
+	if(var->implicants){
+		for(int i = 0; i < var->count; i++)
+			Implicant_destroy(&var->implicants[i]);
+		free(var->implicants);
+		var->implicants = NULL;
+	}
+	var->count = 0;
+	var->capacity = 0;
+}
+
+typedef struct {
+    Group *groups;
+    int count;
+    int capacity;
+} Table;
+
+static void Table_destroy(Table *var){
+	if(!var) return;
+	if(var->groups){
+		for(int i = 0; i < var->count; i++)
+			Group_destroy(&var->groups[i]);
+		free(var->groups);
+		var->groups = NULL;
+	}
+	var->count = 0;
+	var->capacity = 0;
+}
 
 typedef struct{
 	int capacity;
@@ -16,32 +63,9 @@ typedef struct{
 	char *expression;
     int *minterms;
     int mintermCount;
-	int isEssential;
+	bool isEssential;
 	int cost;
 } primeData;
-
-groupData* createGroupTable(int *minterms, int n_terms, int var);
-groupData* getReducedTable(groupData *group , int var);
-int getPrimeImplicants(primeData **primePtr , int *primeCountPtr, int *primeCapPtr, groupData *group, int groupSize);
-int** createPiChart(primeData *prime ,int primeCount, int *minterms , int min_count, int var);
-int getEssentialPi(char ***returnPtr, int **table, primeData *prime, int primeCount , int *minterms, int minCount);
-int getUncovered(int **returnPtr, int **piChart, int start, int primeCount, int *minterms, int minCount);
-int getSetCoverage(char*** returnPtr, int primeCount, int **table ,int *uncoveredTerms ,int uncoveredCount);
-int column_domination(char** setArr, int* setArrCount,int *uncovered_terms ,int uncovered_count);
-
-void displayGroups(groupData *group , int var);
-void displayPi(primeData *prime , int primeCount);
-void displayPiChart(primeData *prime , int primeCount, int** table , int *minterms , int min_count);
-
-static inline void clear_quine(groupData *var){
-	if(!var) return;
-	if(var->binary){ free_2d_pointer(var->binary , var->count); var->binary = NULL; }
-	if(var->minterms){ free_2d_pointer((char**)var->minterms , var->count); var->minterms = NULL; }
-	if(var->mintermCount){ free(var->mintermCount); var->mintermCount = NULL; }
-	if(var->combined) { free(var->combined); var->combined = NULL; }
-	var->capacity = 0;
-	var->count = 0;
-}
 
 static void destroyPrimeData(primeData *var, int primeCount){
 	if(!var) return;
@@ -54,35 +78,15 @@ static void destroyPrimeData(primeData *var, int primeCount){
 	return;
 }
 
-static int allocate(groupData *var , int size){
-	//Memory Allocation for groupData items
+Group* createGroups(int *minterms, int allTermsCount, int var);
+Group* getReducedGroups(Group *groups , int var);
+int getPrimeImplicants(primeData **primePtr ,Table *tables, int tablesCount);
+int** createPiChart(primeData *prime ,int primeCount, int *minterms , int min_count, int var);
+int getEssentialPi(char ***returnPtr, int **table, primeData *prime, int primeCount , int *minterms, int minCount);
+int getUncovered(int **returnPtr, int **piChart, int start, int primeCount, int *minterms, int minCount);
+int getSetCoverage(char*** returnPtr, int primeCount, int **table ,int *uncoveredTerms ,int uncoveredCount);
+int column_domination(char** setArr, int* setArrCount,int *uncovered_terms ,int uncovered_count);
 
-	char **binaryTmp =  NULL;
-	int **mintermsTmp = NULL, *mintermCountTmp = NULL, *combinedTmp = NULL;
-
-	binaryTmp = realloc(var->binary , size * sizeof(*binaryTmp));
-	if(!binaryTmp) goto FAIL;
-
-	mintermsTmp = realloc(var->minterms , size * sizeof(*mintermsTmp));
-	if(!mintermsTmp) goto FAIL;
-
-	mintermCountTmp = realloc(var->mintermCount , size * sizeof(*mintermCountTmp));
-	if(!mintermCountTmp) goto FAIL;
-
-	combinedTmp = realloc(var->combined , size * sizeof(*combinedTmp));
-	if(!combinedTmp) goto FAIL;
-
-	var->binary = binaryTmp;
-	var->minterms = mintermsTmp;
-	var->mintermCount = mintermCountTmp;
-	var->combined = combinedTmp;
-	var->capacity = size;
-	return 0;
-
-	FAIL:
-		free(binaryTmp);
-		free(mintermsTmp);
-		free(mintermCountTmp);
-		free(combinedTmp);
-		return 1;
-}
+void displayTable(Table *table, int var);
+void displayPi(primeData *prime , int primeCount);
+void displayPiChart(primeData *prime , int primeCount, int** table , int *minterms , int min_count);

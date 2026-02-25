@@ -1,15 +1,13 @@
-# Quine-McCluskey & Petrick Method Boolean Expression Minimizer
-
 A terminal-based tool to **simplify Boolean expressions** using the **Quine-McCluskey algorithm** and **Petrick's method**. Designed as a lightweight hobby project with an easy-to-use terminal UI.
 
 ---
 
 ## Features
 
-- Implements **Quine-McCluskey algorithm** for exact minimization of Boolean expressions.  
-- Supports **Petrick’s method** for selecting minimal solutions when multiple prime implicants exist.  
-- Terminal-based **interactive user interface**.  
-- Handles up to `n` variables (customizable).  
+- Implements **Quine-McCluskey algorithm** for exact minimization of Boolean expressions.
+- Supports **Petrick’s method** for selecting minimal solutions when multiple prime implicants exist.
+- Terminal-based **interactive user interface**.
+- Handles up to `n` variables (customizable).
 - Step-by-step display of:
   - Grouping minterms
   - Reducing minterms
@@ -38,8 +36,3 @@ A terminal-based tool to **simplify Boolean expressions** using the **Quine-McCl
 <img width="1918" height="936" alt="image" src="https://github.com/user-attachments/assets/01cff14c-a209-4cce-81ed-a4fc34b2dcb1" />
 <img width="1536" height="886" alt="image" src="https://github.com/user-attachments/assets/7e0eb22c-9b4b-4aa9-994a-27f71dcc252a" />
 <img width="1483" height="852" alt="image" src="https://github.com/user-attachments/assets/05cac7c9-c7d6-45c7-b2d8-b4684f6afb87" />
-
-
-
-
-
