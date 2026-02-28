@@ -162,6 +162,7 @@ qmData qmMinimizer(int *minterms, int minCount, int *dontCares, int dontCareCoun
 	}
 
 	return_section:
+		data.errorMsg               =  "No Errors";
 		data.minterms               =  minterms;
 		data.minCount               =  minCount;
 		data.dontCares              =  dontCares;
