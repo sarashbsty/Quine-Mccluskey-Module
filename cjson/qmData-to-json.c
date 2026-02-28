@@ -13,6 +13,9 @@ cJSON *qmData_to_json(const qmData *data){
 	//error
 	cJSON_AddBoolToObject(root, "error" , data->error);
 
+	//errorMsg
+	cJSON_AddStringToObject(root , "errorMsg" , data->errorMsg);
+
 	//variable
 	cJSON_AddNumberToObject(root, "variable", data->var);
 
