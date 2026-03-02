@@ -102,9 +102,23 @@ cJSON *qmData_to_json(const qmData *data){
 	else cJSON_AddItemToObject(root, "set" , set);
 
 	for(int i = 0; i < data->setCount; i++){
-		cJSON *str = cJSON_CreateString(data->set[i]);
-		if(!str) goto FAIL;
-		else cJSON_AddItemToArray(set, str);
+		cJSON *arr = cJSON_CreateArray();
+		if(!arr) goto FAIL;
+		else cJSON_AddItemToArray(set, arr);
+
+		cJSON *num = cJSON_CreateNumber(data->newUncoveredTerms[i]);
+		if(!num) goto FAIL;
+		else cJSON_AddItemToArray(arr, num);
+
+		for(char *ch = data->set[i]; *ch; ch++)
+		{
+			char PI[4];
+			snprintf(PI,4,"P%d",1+(*ch-'A'));
+
+			cJSON *str = cJSON_CreateString(PI);
+			if(!str) goto FAIL;
+			else cJSON_AddItemToArray(arr, str);
+		}
 	}
 
 
