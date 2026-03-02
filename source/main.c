@@ -25,7 +25,6 @@ int main()
 	char *json_text = qm_run(input);
 	puts(json_text);
 	free(json_text);
-//	display_qm(input);
 	free(input);
 	return 0;
 }

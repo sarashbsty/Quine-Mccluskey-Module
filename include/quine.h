@@ -86,7 +86,3 @@ int getEssentialPi(char ***returnPtr, int **table, primeData *prime, int primeCo
 int getUncovered(int **returnPtr, int **piChart, int start, int primeCount, int *minterms, int minCount);
 int getSetCoverage(char*** returnPtr, int primeCount, int **table ,int *uncoveredTerms ,int uncoveredCount);
 void column_domination(char** setArr, int* setArrCount,int *uncoveredTerms ,int *uncoveredCount);
-
-void displayTable(Table *table, int var);
-void displayPi(primeData *prime , int primeCount);
-void displayPiChart(primeData *prime , int primeCount, int** table , int *minterms , int min_count);
