@@ -115,6 +115,13 @@ qmData qmMinimizer(int *minterms, int minCount, int *dontCares, int dontCareCoun
 
 	if(uncoveredCount > 0)
 	{
+		//Create a string array where each string is the indexes of all prime-implicants that cover ith uncovered term
+		setCount = getSetCoverage(&set, noEssentialPrimeCount, piChart, uncoveredTerms, uncoveredCount); // memory safe
+		if(setCount == -1){
+			data.errorMsg = "getSetCoverage Failed";
+			goto FAIL;
+		}
+
 		//create a copy of Uncovered minterms
 		newUncoveredTerms = intDupArr(uncoveredTerms, uncoveredCount);
 		if(!newUncoveredTerms){
@@ -123,20 +130,8 @@ qmData qmMinimizer(int *minterms, int minCount, int *dontCares, int dontCareCoun
 		}
 		newUncoveredCount = uncoveredCount;
 
-		//Create a string array where each string is the indexes of all prime-implicants that cover ith uncovered term
-		setCount = getSetCoverage(&set, noEssentialPrimeCount, piChart, newUncoveredTerms, newUncoveredCount); // memory safe
-		if(setCount == -1){
-			data.errorMsg = "getSetCoverage Failed";
-			goto FAIL;
-		}
-
 		//Apply Column Reduction
-		newUncoveredCount = column_domination(set, &setCount, newUncoveredTerms, newUncoveredCount);
-		if(newUncoveredCount == uncoveredCount){
-			free(newUncoveredTerms);
-			newUncoveredTerms = NULL;
-			newUncoveredCount = 0;
-		}
+		column_domination(set, &setCount, newUncoveredTerms, &newUncoveredCount); //memory safe
 
 		//Apply petrick Algorithm
 		pet = petrick(prime, noEssentialPrimeCount, set, setCount, var);

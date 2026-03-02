@@ -1,7 +1,7 @@
 #include<stdlib.h>
 #include "boolean_algebra.h"
 
-int column_domination(char** setArr, int* setArrCount,int *uncoveredTerms ,int uncoveredCount){
+void column_domination(char** setArr, int* setArrCount,int *uncoveredTerms ,int *uncoveredCount){
 
 	int count = *setArrCount;
 	for(int a = 0; a < count-1; a++){
@@ -35,10 +35,10 @@ int column_domination(char** setArr, int* setArrCount,int *uncoveredTerms ,int u
 	*setArrCount = new_count;
 
 	int newUncoveredCount = 0;
-	for(int i = 0; i < uncoveredCount; i++){
+	for(int i = 0; i < *uncoveredCount; i++){
 		if(uncoveredTerms[i] == -1) continue;
 		uncoveredTerms[newUncoveredCount++] = uncoveredTerms[i];
 	}
 
-	return newUncoveredCount;
+	*uncoveredCount = newUncoveredCount;
 }
