@@ -13,6 +13,12 @@ file(GLOB_RECURSE ALL_SOURCES
 	"cjson/*.c"
 )
 
+set(MAIN_FILE ${CMAKE_SOURCE_DIR}/source/main.c)
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    list(REMOVE_ITEM ALL_SOURCES ${MAIN_FILE})
+endif()
+
 add_executable(quine ${ALL_SOURCES} ${ALL_HEADERS})
 
 if (EMSCRIPTEN)
