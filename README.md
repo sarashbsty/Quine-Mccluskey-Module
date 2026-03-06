@@ -4,5 +4,5 @@ prime-Implicants, Essential Implicants, Uncovered Minterms, Column Domination an
 
 ## Input Struture Example
 {"var": 4, "minterms":[1,2,3,4,5,6], "dontCares":[2,3]}
-note: dontcares is optionally, can be omitted
+note: dontcares is optional, can be omitted
 for CLI, input using pipelining
