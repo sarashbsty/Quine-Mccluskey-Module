@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "qm_run.h"
-#include "display_qm.h"
 
 static char* get_input();
 
